@@ -8,6 +8,9 @@ var Type = require('./models/Types')
 var User = require('./models/user')
 var jwt = require('jwt-simple')
 var _ = require('lodash')
+  var LocalStorage = require('node-localstorage').LocalStorage;
+  localStorage = new LocalStorage('./scratch');
+
 
 
 var fs = require('fs')
@@ -31,14 +34,19 @@ app.get('/api/posts', function (req, res, next) {
 })
 
 app.post('/api/posts', function (req, res, next) {
-    var idNumber, numbers;
+    var idNumber;
     Post.find({}, function (err, posts) {
         if (err) {
             return next(err)
         }
-        idNumber = posts.length
-        console.log(idNumber)
-        if (idNumber < 0) idNumber = 0
+      if(posts.length <= 0) {
+        idNumber = 0
+        localStorage.setItem("idNumber",idNumber)
+      }else{
+        idNumber = localStorage.getItem("idNumber")
+        console.log(idNumber++)
+        localStorage.setItem("idNumber",idNumber)
+      }
         callback(idNumber, req, res)
     })
 })
@@ -47,7 +55,6 @@ var callback = function (idNumber, req, res) {
     var post = new Post({
         id: idNumber,
         name: req.body.name,
-        numbers: req.body.numbers,
         category: req.body.category,
         productName: req.body.productName,
         productIntroduction: req.body.productIntroduction,
@@ -63,8 +70,27 @@ var callback = function (idNumber, req, res) {
     })
 }
 
-
-
+app.post('/api/postAll', function (req, res, next) {
+  var idNumber;
+  Post.find({}, function (err, posts) {
+    if (err) {
+      return next(err)
+    }else{
+    for(var i = 0; i< req.count; i++){
+  
+      if(posts.length <= 0) {
+        idNumber = 0
+        localStorage.setItem("idNumber",idNumber)
+      }else{
+        idNumber = localStorage.getItem("idNumber")
+        console.log(idNumber++)
+        localStorage.setItem("idNumber",idNumber)
+      }
+      callback(idNumber, req[i], res)
+      }
+    }
+  })
+})
 
 app.get('/api/types', function (req, res, next) {
     Type.find(function (err, Type) {
@@ -89,29 +115,7 @@ app.post('/api/types', function (req, res, next) {
     })
 })
 
-app.post('/api/add', function (req, res, next) {
-    Post.find({
-        "id": req.body.couponId
-    }, function (err, data) {
-        console.log(data[0].numbers)
-        console.log(data[0].category)
-        if (err) {
-            return next(err)
-        } else if (data[0].numbers > 0) {
-            Post.update({
-                "id": req.body.couponId
-            }, {
-                $inc: {
-                    numbers: -1
-                }
-            }, function () {
-                res.send("found")
-            })
-        } else {
-            res.send("couldn't find")
-        }
-    })
-})
+
 
 app.post('/api/user', function (req, res, next) {
     var name = req.body.username
