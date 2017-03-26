@@ -4,12 +4,13 @@ mongoose.Promise = require('bluebird');
 
 var mongoosePaginate = require('mongoose-paginate');
 
-var userSchema = new mongoose.Schema({
-    userType: {
+var serviceProviderSchema = new mongoose.Schema({
+
+    serviceProviderName: {
         type: String,
         required: true
     },
-    username: {
+    password: {
         type: String,
         required: true
     },
@@ -18,10 +19,6 @@ var userSchema = new mongoose.Schema({
         required: false
     },
     sex: {
-        type: String,
-        required: false
-    },
-    headimgurl: {
         type: String,
         required: false
     },
@@ -41,31 +38,30 @@ var userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    password: {
+    serviceProviderImageURL: {
         type: String,
         required: true
     },
-    introduction: {
+    serviceProviderTitle: {
         type: String,
         required: false
     },
-    contact: {
+    serviceProviderIntroduction: {
+        type: String,
+        required: true
+    },
+    serviceProviderLevel: {
         type: String,
         required: false
     },
-    likedServiceProvider: [String],
-    likedProduct: [String],
-    purchasedProduct: [String],
-    certificate: {
-        type: String,
-        required: false
-    },
-    product: [String],
-    preProduct: [String],
-    comment: []
+    likedBy: [String],
+    comment: [],
+    product: [],
+    preProduct: []
 })
-userSchema.plugin(mongoosePaginate);
 
-var user = db.model('user', userSchema)
+serviceProviderSchema.plugin(mongoosePaginate);
 
-module.exports = user
+var serviceProvider = db.model('serviceProvider', serviceProviderSchema)
+
+module.exports = serviceProvider
