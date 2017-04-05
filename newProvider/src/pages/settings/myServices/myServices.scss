@@ -1,0 +1,101 @@
+page-myServices {
+        z-index: 1;
+        background-color: white;
+        .flexWrap {}
+        .button-icon-only ion-icon {
+            font-size: 2.2em;
+        }
+        .noPaddingLeftRight{
+          padding-left: 0;
+          padding-right: 0;
+        }
+        .highLightsCard {
+            width: 100%;
+            margin: 0;
+            text-align: center;
+        }
+        ion-avatar img {
+            max-width: 3.2em;
+            max-height: 3.2em;
+            border-radius: 1.6em;
+        }
+        ion-card.adv-map {
+            width: 100%;
+            margin: 0;
+        }
+        .bigImage {
+            height: 56.25vw;
+            width: 100vw;
+            object-fit:cover;
+        }
+        .fab-favorite {
+            position: absolute;
+            background-color: transparent;
+            top: 0.3em;
+            right: 0.6em;
+            font-size: 2.8rem;
+            color: white;
+            z-index: 50;
+        }
+        .fab-time {
+            position: absolute;
+            background-color: green;
+            opacity: 0.7;
+            bottom: 0em;
+            font-size: 1.6rem;
+            padding: 0.1em 0.5em;
+            text-align: center;
+            color: white;
+            z-index: 50;
+        }
+        .fab-time-text {
+            opacity: 1;
+            color: white;
+            z-index: 50;
+        }
+        ion-list {
+            margin: 0;
+        }
+        .cardIntroduction {
+            top: -2.0em;
+            font-size: 1.3em;
+            margin-bottom: -1.6em;
+        }
+        ul {
+            &.rating {
+                margin: 0;
+                padding: 0 0 0.5em 0;
+                &li {}
+                background: none;
+                color: #ffb400;
+                ion-icon {
+                    font-size: 30px;
+                }
+            }
+        }
+    .buttonInMenu {
+        display: table-cell;
+        float: left;
+        width: 33.3%;
+        text-align: center;
+        font-size: 1.4em;
+    }
+    .calendarClass {
+        height: 85vw;
+    }
+    .card-title2 {
+        position: absolute;
+        top: 83%;
+        width: 100%;
+        font-size: 2.0em;
+        font-weight: bold;
+        color: #fff;
+        text-align: center
+    }
+    .weekview-allday-table{
+      display:none
+    }
+    .weekview-normal-event-container{
+      margin-top:37px
+    }
+}

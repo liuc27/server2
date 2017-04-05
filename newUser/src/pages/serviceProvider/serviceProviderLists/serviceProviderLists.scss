@@ -1,0 +1,39 @@
+page-serviceProviderLists {
+    .serviceProvider {
+        z-index: 1;
+        ion-card {
+            position: relative;
+            text-align: center;
+        }
+        .button-icon-only ion-icon {
+            font-size: 2.6em;
+        }
+        ion-avatar img {
+            max-width: 4.6rem;
+            max-height: 4.6rem;
+            border-radius: 2.3rem;
+        }
+        .card-title {
+            position: absolute;
+            top: 36%;
+            font-size: 2.0em;
+            width: 100%;
+            font-weight: bold;
+            color: #fff;
+        }
+        .card-subtitle {
+            font-size: 1.0em;
+            position: absolute;
+            top: 52%;
+            width: 100%;
+            color: #fff;
+        }
+    }
+    .buttonInMenu {
+        display: table-cell;
+        float: left;
+        width: 33.3%;
+        text-align: center;
+        font-size: 1.4em;
+    }
+}

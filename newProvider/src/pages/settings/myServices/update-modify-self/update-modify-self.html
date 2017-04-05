@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Modify SelfIntro</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding class="settings">
+
+  <ion-list>
+    <ion-item>
+      <ion-label primary>*化妆师名・Account</ion-label>
+      <ion-input [(ngModel)]="serviceProvider.serviceProviderName"></ion-input>
+    </ion-item>
+
+     <ion-item>
+      <ion-label primary>*password</ion-label>
+      <ion-input type="password" [(ngModel)]="serviceProvider.password"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label primary>*化妆师简介</ion-label>
+      <ion-textarea [(ngModel)]="serviceProvider.serviceProviderIntroduction"></ion-textarea>
+    </ion-item>
+
+    <ion-item>
+      <ion-label primary>*化妆师级别</ion-label>
+      <ion-select [(ngModel)]="serviceProvider.serviceProviderLevel">
+        <ion-option *ngFor="let key of categories">{{key}}</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label primary>*化妆师头衔</ion-label>
+      <ion-textarea [(ngModel)]="serviceProvider.serviceProviderTitle"></ion-textarea>
+    </ion-item>
+    <ion-item>
+
+      <label>*化妆师图片</label>
+      <input #label2  type="file" accept="image/*" (change)="uploadServiceProviderImage($event)"  >
+            <div>{{serviceProvider.serviceProviderImageURL}}></div>
+
+    </ion-item>
+  </ion-list>
+  <button ion-button full [disabled]=buttonDisabled (tap)="replaceServiceProvider()"> Modify</button>
+
+</ion-content>

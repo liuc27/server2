@@ -1,0 +1,167 @@
+<ion-header>
+  <!--<ion-navbar>
+        <ion-title>Details Page</ion-title>
+        <ion-buttons end>
+            <button ion-button (tap)="shareActionSheet()">
+      <ion-icon name="share-alt"></ion-icon>
+    </button>
+        </ion-buttons>
+    </ion-navbar>-->
+
+  <ion-navbar>
+    <ion-title>productDetails</ion-title>
+    <ion-buttons end>
+      <button ion-button (tap)="advertise()">
+  <ion-icon name="share-alt"></ion-icon>
+</button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+<ion-content #popoverContent class="productDetails">
+
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-card class="adv-map">
+    <div style="position: relative">
+      <ion-slides>
+        <ion-slide>
+          <!-- <div class="videoWrapper">
+                        <iframe class="youtubeVideo" [src]="url" frameborder="0" allowfullscreen></iframe>
+                    </div> -->
+          <video width="100%" [src]="url" [poster]="productDetails.imageURL" type="video/mp4" controls="controls" preload="none">
+                    </video>
+          <!-- <img class="bigImage" [src]="product.imageURL"> -->
+          <a class="fab-favorite" (tap)="likeProduct(product)">
+            <ion-icon name='heart-outline' [hidden]='alreadyLiked(product,validation)'></ion-icon>
+            <ion-icon name='heart' [hidden]='!alreadyLiked(product,validation)' style="color:pink"></ion-icon>
+          </a>
+        </ion-slide>
+      </ion-slides>
+      <a class="fab-serviceProvider" (tap)="openServiceProviderDetailsPage(product)">
+        <ion-avatar>
+          <ion-img class="roundServiceProviderButton" [src]="product.serviceProviderImageURL"></ion-img>
+        </ion-avatar>
+      </a>
+    </div>
+    <ion-item>
+      <h2> {{product.productName}}</h2>
+      <h3 [hidden]="product.serviceProviderNickname">{{product.serviceProviderName}}</h3>
+      <h3 [hidden]="!product.serviceProviderNickname">{{product.serviceProviderNickname}}</h3>
+      <p style="float: left;">{{likeCounts}}Likes</p>
+      <p>{{commentCounts}}Comment</p>
+
+    </ion-item>
+    <!--<ion-item actions>
+            <span item-left>{{product.retail}}</span>
+            <span item-left [hidden]="product.list==undefined"> {{(product.list - product.retail)/product.list | percent:'2.1-1'}} off</span>
+            <span item-right>100already purchased</span>
+        </ion-item>-->
+
+    <ion-card-content>
+      <p>{{productDetails.introduction}}</p>
+    </ion-card-content>
+    <!--
+        <ion-row style="padding: 0 0.5em">
+
+            <ion-col>
+                <ion-icon name='thumbs-up'></ion-icon>
+                ?Likes
+            </ion-col>
+            <ion-col text-middle>
+                <ion-icon name='text'></ion-icon>
+                ?Comments
+            </ion-col>
+            <ion-col text-right>
+                <ion-icon name='star'></ion-icon>
+                4.8
+                <button ion-button clear style="padding: 0 0.3em" (tap)="showCommentBox=!showCommentBox">
+            <ion-icon name='text'></ion-icon>
+            ?Comments
+          </button>
+
+            </ion-col>
+        </ion-row>-->
+
+
+    <ion-row style="padding: 0 0.5em">
+      <ion-col>
+        <button ion-button clear style="padding: 0 0.3em" (tap)="enterMorphingPage()">
+          <ion-icon name='photos'></ion-icon>
+          VR Try
+        </button>
+      </ion-col>
+      <ion-col text-middle>
+        <button ion-button clear style="padding: 0 0.3em" (tap)="showCommentBox=!showCommentBox">
+            <ion-icon name='text'></ion-icon>
+            Comment
+          </button>
+      </ion-col>
+      <ion-col text-right>
+        <button *ngIf="productDetails.link" ion-button clear style="padding: 0 0.3em" (tap)="purchaseProduct()">
+            <ion-icon name='link'></ion-icon>
+            Buy on Amazon
+          </button>
+      </ion-col>
+    </ion-row>
+  </ion-card>
+
+
+
+
+  <div [hidden]="!showCommentBox" style="padding: 0.5em">
+    <div no-padding>
+      <rating [(ngModel)]="rating"></rating>
+    </div>
+    <div>
+      <ion-textarea placeholder="Input comment here" [(ngModel)]="comment" style="border-bottom-width: 1px"></ion-textarea>
+    </div>
+
+    <button ion-button style="float: right" (tap)="sendComment()">Comment</button>
+
+  </div>
+
+
+
+
+
+
+
+  <ion-card class="highLightsCard">
+    <div class="spaceLine"></div>
+    <!--<ion-card-header>
+            Comments
+        </ion-card-header>-->
+    <ion-list *ngFor="let commentContent of productDetails.comment">
+      <ion-item>
+        <!--<ion-avatar item-left>
+                    <img src="{{'images/' + commentContent.username + '.userImage.jpg'}}">
+                </ion-avatar>-->
+        <p style="float:right">{{commentContent.posted | date:'yyyy/MM/dd hh:mm:ss'}}</p>
+        <p>{{commentContent.username}}</p>
+        <h3>{{commentContent.text}}</h3>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
+
+  <div #popoverText class="text-to-change">
+    <div> </div>
+  </div>
+
+
+</ion-content>
+
+<!-- <ion-footer class="nextStep">
+  <ion-segment padding>
+    <ion-segment-button (ionSelect)="learn()">
+      Learn
+    </ion-segment-button>
+    <ion-segment-button (ionSelect)="advertise()">
+      Adervertise
+    </ion-segment-button>
+  </ion-segment>
+</ion-footer> -->

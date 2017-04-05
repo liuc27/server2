@@ -1,0 +1,88 @@
+page-serviceProvider {
+    .serviceProvider {
+        z-index: 1;
+        .menuClass1 {
+            margin-bottom: 3vw;
+        }
+        .ion-slides-class {
+            margin: 0;
+            height: 50vw;
+        }
+        .swiper-pagination {
+            bottom: 1px;
+        }
+        .ion-col-class {
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .roundButton {
+            width: 11vw;
+            height: 11vw;
+            border-radius: 11vw;
+            border: 0;
+            overflow: hidden;
+            color: white;
+            padding: 0;
+            margin: 1vw 4.5vw;
+        }
+        .roundButton:hover {
+            width: 13vw;
+            height: 13vw;
+            border-radius: 13vw;
+            margin: 0 3.5vw;
+            box-shadow: 0 0 2vw gray;
+        }
+        .ion-icon-class {
+            display: inline-block;
+            padding: 0;
+            vertical-align: middle;
+            font-size: 8vw;
+        }
+        .flexWrap {
+            -webkit-flex-wrap: wrap;
+            flex-wrap: wrap;
+        }
+        ion-avatar img {
+            max-width: 3.2em;
+            max-height: 3.2em;
+            width: 3.2em;
+            height: 3.2em;
+            border-radius: 1.6em;
+        }
+        ion-card {
+            position: relative;
+            text-align: center;
+        }
+        .button-icon-only ion-icon {
+            font-size: 2.6em;
+        }
+        ion-avatar img {
+            max-width: 4.6rem;
+            max-height: 4.6rem;
+            border-radius: 2.3rem;
+        }
+        .card-title {
+            position: absolute;
+            top: 36%;
+            font-size: 2.0em;
+            width: 100%;
+            font-weight: bold;
+            color: #fff;
+        }
+        .card-subtitle {
+            font-size: 1.0em;
+            position: absolute;
+            top: 52%;
+            width: 100%;
+            color: #fff;
+        }
+    }
+    .buttonInMenu {
+        display: table-cell;
+        float: left;
+        width: 33.3%;
+        text-align: center;
+        font-size: 1.4em;
+    }
+}

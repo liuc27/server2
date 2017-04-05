@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{ 'Settings' | translate }}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="settings">
+
+  <ion-list>
+
+    <ion-item>
+      <ion-label fixed>Username</ion-label>
+      <ion-input type="text" [(ngModel)]="validation.username"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label fixed>Nick Name</ion-label>
+      <ion-input type="text" [(ngModel)]="validation.nickname"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label fixed>Sex</ion-label>
+      <ion-input type="text" [(ngModel)]="validation.sex"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label fixed>Province</ion-label>
+      <ion-input type="text" [(ngModel)]="validation.province"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label fixed>Country</ion-label>
+      <ion-input type="text" [(ngModel)]="validation.country"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <label fixed>head image</label>
+      <input #label3 type="file" accept="image/*" (change)="uploadImage($event)">
+    </ion-item>
+
+    <ion-item>
+      <ion-label fixed>Password</ion-label>
+      <ion-input type="password" [(ngModel)]="validation.password"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label fixed>Password</ion-label>
+      <ion-input type="password" [(ngModel)]="validation.password"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <div padding>
+    <button ion-button primary block (tap)="register()">Register</button>
+  </div>
+
+</ion-content>

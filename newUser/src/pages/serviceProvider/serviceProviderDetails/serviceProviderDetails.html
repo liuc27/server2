@@ -1,0 +1,219 @@
+<ion-header>
+    <!-- <ion-navbar>
+    <ion-toolbar>
+      <ion-segment style="padding:0; margin:0;text-align: center; " [(ngModel)]="serviceType">
+
+        <ion-segment-button value="guide" (ionSelect)="selectedGuide()">
+          Guide・Call
+        </ion-segment-button>
+        <ion-segment-button value="chat" (ionSelect)="selectedChat()">
+          TextChat
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </ion-navbar> -->
+
+    <ion-navbar>
+        <ion-title>
+            serviceProviderDetails
+        </ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content #popoverContent>
+
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-card class="adv-map">
+        <img [src]=serviceProvider.serviceProviderImageURL>
+
+        <a class="fab-favorite" (tap)="likeServiceProvider(serviceProvider)">
+            <ion-icon name='heart-outline' [hidden]='alreadyLikedServiceProvider(serviceProvider)'></ion-icon>
+            <ion-icon name='heart' [hidden]='!alreadyLikedServiceProvider(serviceProvider)' style="color:pink"></ion-icon>
+
+        </a>
+
+        <ion-card-content>
+            <ion-card-title [hidden]="serviceProvider.serviceProviderNickname">{{serviceProvider.serviceProviderName}}</ion-card-title>
+            <ion-card-title [hidden]="!serviceProvider.serviceProviderNickname">{{serviceProvider.serviceProviderNickname}}</ion-card-title>
+            <p>{{serviceProvider.serviceProviderIntroduction}}</p>
+        </ion-card-content>
+
+        <ion-row style="padding: 0 0.5em">
+            <ion-col>
+                <button ion-button clear style="padding: 0 0 0 0.3em" (tap)="likeServiceProvider(serviceProvider)">
+          <ion-icon name='thumbs-up'></ion-icon>
+          Like
+        </button>
+            </ion-col>
+            <ion-col text-center>
+                <button ion-button clear (tap)="showCommentBox=!showCommentBox">
+          <ion-icon name='text'></ion-icon>
+          Comment
+        </button>
+            </ion-col>
+            <ion-col text-right>
+                <button ion-button clear style="padding: 0 0.3em 0 0">
+          <ion-icon name='share-alt'></ion-icon>
+          Check blog
+        </button>
+            </ion-col>
+        </ion-row>
+
+    </ion-card>
+
+    <div [hidden]="!showCommentBox" style="padding: 0.5em">
+        <div no-padding>
+            <rating [(ngModel)]="rate"></rating>
+        </div>
+        <div>
+            <ion-textarea placeholder="Input comment here" [(ngModel)]="comment" style="border-bottom-width: 1px"></ion-textarea>
+        </div>
+
+        <button ion-button style="float: right" (tap)="sendComment()">Comment</button>
+
+    </div>
+
+    <!-- <ion-toolbar class="listsToolbar">
+        <div class="buttonInMenu">
+            <button ion-button clear (tap)="presentServiceProviderDetailsPop1Popover($event)">
+        shoPop1
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </button>
+        </div>
+        <div class="buttonInMenu">
+            <button ion-button clear (tap)="presentServiceProviderDetailsPop2Popover($event)">
+        shoPop2
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </button>
+        </div>
+
+        <div class="buttonInMenu">
+            <button ion-button clear (tap)="presentServiceProviderDetailsPop3Popover($event)">
+        shoPop3
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </button>
+        </div>
+    </ion-toolbar> -->
+
+    <ion-card class="highLightsCard">
+        <div class="spaceLine"></div>
+        <!--<ion-card-header>
+            Comments
+        </ion-card-header>-->
+        <ion-list *ngFor="let commentContent of serviceProvider.comment">
+            <ion-item>
+                <!--<ion-avatar item-left>
+                    <img src="{{'images/' + commentContent.username + '.userImage.jpg'}}">
+                </ion-avatar>-->
+                <p style="float:right">{{commentContent.posted | date:'yyyy/MM/dd hh:mm:ss'}}</p>
+                <p>{{commentContent.username}}</p>
+                <h3>{{commentContent.text}}</h3>
+            </ion-item>
+        </ion-list>
+    </ion-card>
+
+
+    <ion-list *ngFor="let product of serviceProviderDetails" approxItemHeight="220px">
+        <ion-card class="adv-map">
+            <div>
+                <!-- <ion-slides [options]="mySlideOptions"> -->
+                <div style="position: relative">
+                    <a (tap)="openProductDetailsPage(product)">
+                        <img class="bigImage" [src]="product.imageURL">
+                        <div class="card-title2">{{product.productName}}</div>
+                    </a>
+                    <a class="fab-favorite" (tap)="likeProduct(product)">
+                        <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
+                        <ion-icon name='heart' *ngIf="alreadyLiked(product) == true" style="color:pink"></ion-icon>
+                    </a>
+
+
+                    <!--<div class="feature"></div>-->
+                    <ion-row>
+                        <!--<ion-col width-25 *ngFor="let menuItem of grid">-->
+                        <div class="fab-time">
+                            <ion-icon name='time-outline'></ion-icon>
+                            <span class="fab-time-text">{{product.time}}分</span>
+                        </div>
+                        <!--</ion-col>-->
+                    </ion-row>
+
+                </div>
+            </div>
+        </ion-card>
+
+    </ion-list>
+
+
+    <!-- <ion-segment padding [(ngModel)]="serviceType">
+
+    <ion-segment-button value="guide" (ionSelect)="selectedGuide()">
+      Guide・Call
+    </ion-segment-button>
+    <ion-segment-button value="chat" (ionSelect)="selectedChat()">
+      TextChat
+    </ion-segment-button>
+  </ion-segment> -->
+
+    <!-- <div [ngSwitch]="serviceType"> -->
+
+    <!-- <div *ngSwitchCase="'guide'"> -->
+
+
+
+    <!-- <ion-card class="highLightsCard">
+    <ion-card-header class="noPaddingLeftRight">Please make reservation by taping table cells</ion-card-header>
+    <ion-toolbar>
+      <ion-buttons start>
+        {{viewTitle}}
+      </ion-buttons>
+      <ion-buttons end>
+        <button ion-button (tap)="changeMode('month')">Month</button>
+        <button ion-button (tap)="changeMode('week')">Week</button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-card>
+  <div></div>
+  <div class="calendarClass">
+    <calendar [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate" (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)" step="30">
+    </calendar>
+  </div>
+  <div></div> -->
+
+
+
+
+    <!-- </div> -->
+
+    <!-- <div *ngSwitchCase="'chat'">
+      <ion-card class="highLightsCard">
+        <ion-card-header class="noPaddingLeftRight">Please make reservation by taping table cells</ion-card-header>
+        <ion-toolbar>
+          <ion-buttons start>
+            {{viewTitle}}
+          </ion-buttons>
+          <ion-buttons end>
+            <button ion-button (tap)="changeMode('month')">Month</button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-card>
+      <div></div>
+      <div class="calendarClass">
+        <calendar [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate" (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)" step="30">
+        </calendar>
+      </div>
+    </div>
+  </div>-->
+
+</ion-content>
+
+<ion-footer class="nextStep">
+    <ion-toolbar (tap)="enterReservation()">
+        <ion-title>Make Reservation</ion-title>
+    </ion-toolbar>
+</ion-footer>

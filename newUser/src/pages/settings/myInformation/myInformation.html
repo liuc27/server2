@@ -1,0 +1,72 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            {{ 'Settings' | translate }}
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content class="settings">
+
+
+    <ion-list>
+
+        <button ion-item (tap)="changeInformation('imageURL')">
+      <ion-label >head image</ion-label>
+      <ion-thumbnail item-right color='dark'>
+        <img style="object-fit:cover; border-radius:5%;" src="{{validation.imageURL}}">
+      </ion-thumbnail>
+    </button>
+
+        <ion-item>
+            <ion-label>Username</ion-label>
+            <ion-note item-right color='dark'>{{validation.username}}</ion-note>
+        </ion-item>
+
+        <button ion-item (tap)="changeInformation('nickname')">
+      <ion-label >Nick Name</ion-label>
+      <ion-note item-right color='dark'>{{validation.nickname}}</ion-note>
+    </button>
+
+        <button ion-item (tap)="changeInformation('sex')">
+        <ion-label>Sex</ion-label>
+        <ion-note item-right color='dark'>{{validation.sex | translate}}</ion-note>
+        </button>
+
+        <button ion-item (tap)="changeInformation('province')">
+      <ion-label>Province</ion-label>
+      <ion-note item-right color='dark'>{{validation.province}}</ion-note>
+    </button>
+
+        <button ion-item (tap)="changeInformation('country')">
+          <ion-label>Country</ion-label>
+          <ion-note item-right color='dark'>{{validation.country}}</ion-note>
+    </button>
+
+        <button ion-item (tap)="changeInformation('introduction')">
+          <ion-label>Introduction</ion-label>
+          <ion-note item-right color='dark'>{{validation.introduction}}</ion-note>
+    </button>
+
+        <button ion-item (tap)="changeInformation('contact')">
+          <ion-label>Contact Info</ion-label>
+          <ion-note item-right color='dark'>{{validation.contact}}</ion-note>
+    </button>
+        <!--
+    <button ion-item>
+      <label >head image</label>
+      <input #label3 type=" file " accept="image/* " (change)="uploadImage($event) ">
+    </button> -->
+
+        <!-- <button ion-item>
+      <ion-label >Password</ion-label>
+      <ion-note item-right color='dark'type="password " (tap)="changeInformation(password)>}}</ion-note>
+      </button>
+
+      <button ion-item>
+      <ion-label >Password</ion-label>
+      <ion-note item-right color='dark'type="password" (tap)="changeInformation(password)>}}</ion-note>
+    </button> -->
+    </ion-list>
+
+</ion-content>

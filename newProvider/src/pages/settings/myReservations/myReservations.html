@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{ 'Settings' | translate }}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="settings">
+
+  <div *ngFor="let event of myReservation; let i = index " padding>
+    <ion-list>
+      <ion-list-header no-padding>
+        <!-- <ion-icon item-left name="add" (tap)="addReservation(i)"></ion-icon> -->
+        Reservation{{i}}
+        <!-- <span clear primary class="reservationCost">
+                    {{event.pricePerHour}}/h
+                  </span> -->
+        <!-- <a item-right clear primary (tap)="cancellReservation(i)">
+                    cancell<ion-icon  name="close"></ion-icon>
+                  </a> -->
+      </ion-list-header>
+      <ion-item>
+        <ion-label>Start Time</ion-label>
+        <ion-datetime min=2016 max="2020" disabled=true displayFormat="YYYY/MM/DD HH:mm" [(ngModel)]="event.startTime" (ionChange)="recaculateTotal()"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>End Time</ion-label>
+        <ion-datetime min=2016 max=2020 displayFormat="YYYY/MM/DD HH:mm" disabled=true [(ngModel)]="event.endTime" (ionChange)="recaculateTotal()"></ion-datetime>
+      </ion-item>
+      <ion-item>
+        <ion-label>Price per hour</ion-label>
+        <ion-note item-right style="color:black">{{event.pricePerHour}}</ion-note>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Capacity</ion-label>
+        <ion-note item-right style="color:black">{{event.title}}</ion-note>
+      </ion-item>
+
+      <div *ngFor="let username of event.username">
+        <ion-item>
+          <ion-label>users</ion-label>
+          <ion-note item-right style="color:black;width:70%;">
+            <a (tap)=showUsernameInfo(event,username)>
+            {{username}}
+          </a>
+          </ion-note>
+        </ion-item>
+      </div>
+    </ion-list>
+
+  </div>
+
+</ion-content>

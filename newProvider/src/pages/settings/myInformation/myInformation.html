@@ -1,0 +1,76 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{ 'Settings' | translate }}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="settings">
+
+
+  <ion-list>
+
+    <button ion-item (tap)="changeInformation('serviceProviderImageURL')">
+      <ion-label >head image</ion-label>
+      <ion-thumbnail item-right color='dark'>
+        <!-- <img style="object-fit:cover; border-radius:5%;" src="{{serviceProviderValidation.serviceProviderImageURL}}"> -->
+        <img style="object-fit:cover; border-radius:5%;" [src]="serviceProviderValidation.serviceProviderImageURL">
+      </ion-thumbnail>
+    </button>
+
+    <ion-item>
+      <ion-label>serviceProviderName</ion-label>
+      <ion-note item-right color='dark'>{{serviceProviderValidation.serviceProviderName}}</ion-note>
+    </ion-item>
+
+    <!-- <button ion-item (tap)="changeInformation('serviceProviderNickname')"> -->
+    <ion-item>
+      <ion-label>Nick Name</ion-label>
+      <ion-note item-right color='dark'>{{serviceProviderValidation.serviceProviderNickname}}</ion-note>
+    </ion-item>
+    <!-- </button> -->
+
+    <button ion-item (tap)="changeInformation('sex')">
+        <ion-label>Sex</ion-label>
+        <ion-note item-right color='dark'>{{serviceProviderValidation.sex | translate}}</ion-note>
+        </button>
+
+    <button ion-item (tap)="changeInformation('province')">
+      <ion-label>Province</ion-label>
+      <ion-note item-right color='dark'>{{serviceProviderValidation.province}}</ion-note>
+    </button>
+
+    <button ion-item (tap)="changeInformation('country')">
+          <ion-label>Country</ion-label>
+          <ion-note item-right color='dark'>{{serviceProviderValidation.country}}</ion-note>
+    </button>
+
+    <button ion-item (tap)="changeInformation('blog')">
+          <ion-label>Blog</ion-label>
+          <ion-note item-right color='dark'>{{serviceProviderValidation.blog}}</ion-note>
+    </button>
+
+    <button ion-item (tap)="changeInformation('serviceProviderIntroduction')">
+          <ion-label>Introduction</ion-label>
+          <ion-note item-right color='dark'>{{serviceProviderValidation.serviceProviderIntroduction}}</ion-note>
+    </button>
+
+    <!--
+    <button ion-item>
+      <label >head image</label>
+      <input #label3 type=" file " accept="image/* " (change)="uploadImage($event) ">
+    </button> -->
+
+    <!-- <button ion-item>
+      <ion-label >Password</ion-label>
+      <ion-note item-right color='dark'type="password " (tap)="changeInformation(password)>}}</ion-note>
+      </button>
+
+      <button ion-item>
+      <ion-label >Password</ion-label>
+      <ion-note item-right color='dark'type="password" (tap)="changeInformation(password)>}}</ion-note>
+    </button> -->
+  </ion-list>
+
+</ion-content>

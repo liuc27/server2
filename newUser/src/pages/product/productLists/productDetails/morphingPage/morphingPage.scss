@@ -1,0 +1,14 @@
+page-morphingPage {
+  .morphingPageDetails {
+    background-color: white;
+
+    z-index: 1;
+
+    .img {
+      display: inline-block;
+    }
+    .frames img {
+      width: 64px;
+    }
+  }
+}

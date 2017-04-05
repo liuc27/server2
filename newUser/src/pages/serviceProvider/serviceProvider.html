@@ -1,0 +1,78 @@
+<ion-header>
+    <ion-navbar hideBackButton>
+        <!--<ion-buttons start>
+        </ion-buttons>-->
+
+        <ion-title>Teacher</ion-title>
+        <!--
+        <ion-buttons end class="rightNavButton">
+            <button ion-button>
+        <ion-icon name="search"></ion-icon>
+      </button>
+        </ion-buttons>-->
+    </ion-navbar>
+
+</ion-header>
+
+
+
+<ion-content #popoverContent class="serviceProvider">
+
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-slides class="ion-slides-class">
+        <ion-slide>
+            <ion-grid>
+                <ion-row class="menuClass1" *ngFor="let row of grid">
+                    <ion-col width-20 class="ion-col-class" *ngFor="let menuItem of row">
+                        <button class="roundButton" primary (tap)="openServiceProviderListsPage(menuItem)" [ngStyle]="{'backgroundColor': menuItem.color}">
+                  <ion-icon class="ion-icon-class" [name]="menuItem.icon"></ion-icon>
+                </button>
+                        <div style="font-size:4vw;">
+                            {{menuItem.name}}
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-slide>
+    </ion-slides>
+
+    <!--<ion-toolbar class="listsToolbar">
+        <div class="buttonInMenu">
+            <button ion-button clear (tap)="presentServiceProviderPop1Popover($event)">
+        serviceProviderPop1
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </button>
+        </div>
+        <div class="buttonInMenu">
+            <button ion-button clear (tap)="presentServiceProviderPop2Popover($event)">
+        location
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </button>
+        </div>
+
+        <div class="buttonInMenu">
+            <button ion-button clear (tap)="presentServiceProviderPop3Popover($event)">
+        order
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </button>
+        </div>
+    </ion-toolbar>-->
+    <ion-list [virtualScroll]="serviceProviders" approxItemHeight="60px">
+        <ion-item *virtualItem="let serviceProvider" (tap)="openServiceProviderDetailsPage(serviceProvider)">
+            <ion-thumbnail item-left>
+                <img style="object-fit:cover; border-radius:5%;" src="{{serviceProvider.serviceProviderImageURL}}">
+            </ion-thumbnail>
+            <h2 [hidden]="serviceProvider.serviceProviderNickname">{{serviceProvider.serviceProviderName}}</h2>
+            <h2 [hidden]="!serviceProvider.serviceProviderNickname">{{serviceProvider.serviceProviderNickname}}</h2>
+            <p>{{serviceProvider.serviceProviderIntroduction}}</p>
+        </ion-item>
+    </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+</ion-content>

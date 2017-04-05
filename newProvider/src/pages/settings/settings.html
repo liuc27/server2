@@ -1,0 +1,92 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{ 'Settings' | translate }}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content class="settings">
+
+
+  <div *ngIf="alreadyLoggedIn == false">
+    <ion-list>
+
+      <ion-item>
+        <ion-label floating>serviceProviderName</ion-label>
+        <ion-input type="text" [(ngModel)]="serviceProviderValidation.serviceProviderName"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label floating>Password</ion-label>
+        <ion-input type="password" [(ngModel)]="serviceProviderValidation.password"></ion-input>
+      </ion-item>
+
+      <div padding>
+        <button ion-button clear block (tap)="login()">Login</button>
+      </div>
+
+    </ion-list>
+
+    <ion-list>
+      <a ion-item (tap)="openOauth('facebook')">
+        <ion-icon color="primary" name="logo-facebook">&nbsp;Facebook</ion-icon>
+      </a>
+      <a ion-item (tap)="openOauth('twitter')">
+        <ion-icon color="primary" name="logo-twitter">&nbsp;Twitter</ion-icon>
+      </a>
+      <a ion-item (tap)="openOauth('wechat')">
+        <ion-icon color="primary" name="logo-facebook">&nbsp;Wechat</ion-icon>
+      </a>
+      <a ion-item (tap)="openOauth('google')">
+        <ion-icon color="primary" name="logo-google">&nbsp;Google</ion-icon>
+      </a>
+    </ion-list>
+    <div padding>
+      <button ion-button clear primary block (tap)="register()">register</button>
+    </div>
+  </div>
+
+
+  <div *ngIf="alreadyLoggedIn == true">
+    <div padding>
+
+      <a ion-item (tap)="myInformation()">
+        <ion-thumbnail item-left>
+          <img style="object-fit:cover; border-radius:5%;" src="{{serviceProviderValidation.serviceProviderImageURL}}">
+        </ion-thumbnail>
+        <h2>{{serviceProviderValidation.serviceProviderNickname}} </h2>
+        <p>{{serviceProviderValidation.province}}</p>
+      </a>
+
+      <ion-list>
+        <ion-list-header>
+        </ion-list-header>
+        <a ion-item (tap)="myReservations()">
+          <ion-icon color="primary" name="cart">&nbsp;My Reservations</ion-icon>
+        </a>
+        <a ion-item (tap)="myServices()">
+          <ion-icon color="primary" name="cart">&nbsp;My Services</ion-icon>
+        </a>
+        <!-- <a ion-item (tap)="myFavorites()">
+          <ion-icon color="primary" name="heart">&nbsp;My Favorite Products</ion-icon>
+        </a>
+        <a ion-item (tap)="myFavoriteArtists()">
+          <ion-icon color="primary" name="heart">&nbsp;My Favorite Artists</ion-icon>
+        </a>
+        <a ion-item (tap)="myCoupons()">
+          <ion-icon color="primary" name="color-wand">&nbsp;My Coupons</ion-icon>
+        </a>
+        <a ion-item (tap)="myFriends()">
+          <ion-icon color="primary" name="people">&nbsp;My Friends</ion-icon>
+        </a> -->
+      </ion-list>
+      <div padding>
+        <button ion-button full clear (tap)="logout()">Logout</button>
+      </div>
+    </div>
+  </div>
+
+
+
+</ion-content>
