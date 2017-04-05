@@ -1,3 +1,9 @@
 # server2
+cd newServer
 npm install
-node server.js
+npm start
+
+cd ..
+ionic start newUser --v2
+copy /newUser to  local
+ionic serve
