@@ -12,10 +12,10 @@ var limiterGet = new Limiter({
 });
 var url = require('url');
 var User = require('../models/user')
-var ServiceProvider = require('../models/serviceProvider')
 var Offer = require('../models/offer')
 var Charge = require('../models/charge')
-var ChargeLog = require('../models/chargeLog')
+var ObjectId = require('mongoose').Types.ObjectId;
+var async = require('async');
 
 var pingpp = require('pingpp')('sk_live_KyX1uDXTOy9KzH4m9C0aDaL0');
 //pingpp.setPrivateKeyPath("./pingpp_pub_key.pem");
@@ -33,7 +33,16 @@ router.post('/', limiterGet.middleware({
     headers: false
 }), function(req, res, next) {
     console.log(req.body.data.object)
-    var params = req.body.data.object
+    const params = req.body.data.object
+
+    if (!params) {
+        return res.status(400)
+            .send({
+                error: "INVALID data",
+                code: 1
+            });
+    }
+
     if (params.channel == 'wx') {
         var name = "wechat" + params.extra.open_id;
         Charge.findOne({
@@ -43,10 +52,17 @@ router.post('/', limiterGet.middleware({
                 console.log("err");
                 return next(err)
             } else {
-                var thisChargeLog = new ChargeLog(prePayReservation)
-                thisChargeLog.save().then(function(result) {
-                    res.sendStatus(200);
-                })
+                if (data == null) res.status(500)
+                else {
+                    data.paid = true
+                    newCharge = new Charge(data)
+                    newCharge.save(err => {
+                        if (err) {
+                            throw err;
+                        }
+                        return res.status(200)
+                    });
+                }
             }
         })
     }
@@ -58,103 +74,118 @@ router.post('/wechatPay', limiterGet.middleware({
     outerLimit: 200,
     headers: false
 }), function(req, res, next) {
-    var amountFee = req.body.totalPrice
-    amountFee = 1
+    const order_no = (new Date()).getTime()
+    const reservation = req.body.reservation
+    const contact = req.body.contact
+    const note = req.body.note
+    let totalPrice = req.body.totalPrice
+    totalPrice = 1
 
-    var d = new Date();
-    var n = d.getTime();
+    if (!order_no || !totalPrice || !reservation || !contact) {
+        return res.status(400)
+            .send({
+                error: "INVALID data",
+                code: 1
+            });
+    }
 
     var prePayReservation = {}
-    prePayReservation.order_no = n
+    prePayReservation.order_no = order_no
     prePayReservation.totalPrice = req.body.totalPrice
     prePayReservation.reservation = req.body.reservation
     prePayReservation.contact = req.body.contact
     if (req.body.note) prePayReservation.note = req.body.note
 
     console.log(prePayReservation)
-
-
     var someoneElseBooked = false;
-    prePayReservation.reservation.forEach((element, index) => {
-        //make sure the creatorName is the sendername
-        //if (element.action === "put") {
+
+    async.each(reservation, function(element, next) {
+        console.log("0")
         Offer.findOne({
             _id: element._id
         }, function(err, data) {
             if (err) {
                 console.log("err")
                 return next(err)
+            } else if (data == null) {
+                console.log("null")
+                someoneElseBooked = true
             } else {
-                if (data != null) {
-                    if (data.userNumberLimit <= data.username.length)
-                        someoneElseBooked = true
-                }
+                console.log(data)
+                if (data.userNumberLimit <= data.id.length)
+                    someoneElseBooked = true
             }
         })
-        //}
-    })
+        next()
+    }, function(err) {
+        console.log("step 2")
 
-    if (someoneElseBooked === false) {
-        pingpp.charges.create({
-            order_no: n,
-            app: {
-                id: "app_jPGSGGC88aP4C4OO"
-            },
-            channel: "wx",
-            amount: amountFee,
-            client_ip: "127.0.0.1",
-            currency: "cny",
-            subject: "Your Subject",
-            body: "Your Body"
-        }, function(err, charge) {
-            // YOUR CODE
-            if (err) {
-                res.json({
-                    "data": "NO"
-                })
-            } else {
-                console.log(charge)
+        //処理2
+        if (err) throw err;
+        else if (someoneElseBooked === false) {
+            console.log("false")
 
-                var thisCharge
-                thisCharge = new Charge(prePayReservation)
-                thisCharge.save().then(function(result) {
-                    console.log("result")
-                    console.log(result)
+            pingpp.charges.create({
+                order_no: order_no,
+                app: {
+                    id: "app_jPGSGGC88aP4C4OO"
+                },
+                channel: "wx",
+                amount: totalPrice,
+                client_ip: "127.0.0.1",
+                currency: "cny",
+                subject: "Your Subject",
+                body: "Your Body"
+            }, function(err, charge) {
+                console.log("step3")
+                // YOUR CODE
+                if (err) {
+                    res.status(500).send("fail charge")
+                } else {
+                    console.log("charge")
 
-                    console.log("deal with the reservations")
-                    result.reservation.forEach((element, index) => {
-                        //make sure the creatorName is the sendername
-                        //  if (element.action === "put") {
-                        Offer.update({
-                            _id: element._id
-                        }, {
-                            $addToSet: {
-                                username: element.username
-                            }
-                        }, function(err, data2) {
-                            if (err) {
-                                console.log("err")
-                                return next(err)
-                            } else {
-                                var returnData = JSON.parse(JSON.stringify(charge.credential.wx))
-                                returnData["data"] = "OK"
-                                res.json(returnData)
-                            }
-                        })
+                    var thisCharge
+                    thisCharge = new Charge(prePayReservation)
+                    console.log("charge2")
+                    thisCharge.save((err, result) => {
+                        if (err) {
+                            console.log(err)
+                            throw err;
+                        } else {
+                            console.log("result")
+                            console.log(result)
 
+                            console.log("deal with the reservations")
+                            var updateOfferFlag = true
+
+                            async.each(result.reservation, function(element, next) {
+                                Offer.update({
+                                    _id: element._id
+                                }, {
+                                    $addToSet: {
+                                        id: element.id
+                                    }
+                                }, function(err, data2) {
+                                    if (err) {
+                                        console.log("err")
+                                        updateOfferFlag = false
+                                    }
+                                })
+                                next()
+                            }, function(err) {
+                                if (err) throw (err)
+                                else if (updateOfferFlag == true) return res.status(200).json(charge.credential.wx)
+                                else return res.status(500).send("updateOffer err")
+                            })
+                        }
                     })
+                }
 
-
-                }).catch(function(err) {
-                    console.error(err);
-                    res.send(err)
-                })
-
-            }
-        })
-    } else {
-        res.status(500).send('Sorry, someone else booked before you!');
-    }
+            })
+        } else {
+            res.status(500).send('Sorry, someone else booked before you!');
+        }
+    })
 })
 
 router.post('/refund', limiterGet.middleware({

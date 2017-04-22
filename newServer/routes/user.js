@@ -15,23 +15,253 @@ var limiterPost = new Limiter({
 });
 var url = require('url');
 var User = require('../models/user')
-var ServiceProvider = require('../models/serviceProvider')
-var Product = require('../models/product')
-var Offer = require('../models/offer')
 
 /* GET users listing. */
 var fs = require('fs')
 
-var fileURL = 'http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/images/'
+var fileURL = 'http://10.201.219.13:3000/images/'
+var ObjectId = require('mongoose').Types.ObjectId;
 
 // api/user
-router.get('/', function(req, res, next) {
-    User.find(function(err, data) {
-        if (err) {
-            return next(err)
+
+// var imageProcess = function (req, res, next) {
+//   req.requestTime = Date.now();
+//   next();
+// };
+//
+// app.use(imageProcess);
+
+router.get('/', limiterPost.middleware({
+    innerLimit: 15,
+    outerLimit: 200,
+    headers: false
+}), (req, res) => {
+
+    const category = req.query.category
+    const query = {}
+    let skipClause = 0
+    let limitClause = 20
+    if (req.query.skip) skipClause = parseInt(req.query.skip)
+    if (req.query.limit) limitClause = parseInt(req.query.limit)
+
+    if (category && category != "all") {
+        query = {
+            category: category
         }
-        console.log(data)
-        res.json(data)
+    }
+    User.paginate(query, {
+        select: 'id nickname imageURL time introduction',
+        offset: skipClause,
+        limit: limitClause
+    }, function(err, data) {
+        if (err) return next(err);
+        res.json(data.docs)
+    });
+})
+
+router.get('/:id', limiterPost.middleware({
+    innerLimit: 15,
+    outerLimit: 200,
+    headers: false
+}), (req, res) => {
+    const id = req.params.id
+
+    if (!id) {
+        return res.status(500)
+            .send("Id not exist");
+    }
+
+    User.findOne({
+        id: id
+    }, '-password').exec((err, result) => {
+        if (err) {
+            throw err;
+        } else if (result == null) {
+            res.status(500).send("use not found")
+        } else {
+            console.log("result")
+            console.log(result)
+            res.status(200)
+                .json(result);
+        }
+    })
+})
+
+router.put("/:id", (req, res) => {
+    if (!ObjectId.isValid(req.params.id)) {
+        return res.status(400)
+            .send({
+                error: "INVALID ID",
+                code: 1
+            });
+    }
+    if (!req.body.id || !req.body.password) {
+        return res.status(500)
+            .send("No id or password")
+    }
+    const _id = req.params.id;
+    const userType = "user"
+    const id = req.body.id;
+    const password = req.body.password;
+    const nickname = req.body.nickname;
+    const country = req.body.country;
+    const city = req.body.city;
+    const province = req.body.province;
+    const language = req.body.language;
+    const sex = req.body.sex;
+    const age = req.body.age;
+    const introduction = req.body.introduction;
+    const contact = req.body.contact;
+    const currentTime = new Date();
+    let imageURL = req.body.imageURL
+
+
+    User.findById(_id, (err, userData) => {
+        if (err) {
+            console.log(err)
+            throw err;
+        }
+        if (!userData) {
+            return res.status(404)
+                .send({
+                    error: "NO RESOURCE",
+                    code: 3
+                });
+        } else if (password === userData.password) {
+            if (userType) userData.userType = userType
+            if (id) userData.id = id
+            if (password) userData.password = password
+            if (nickname) userData.nickname = nickname
+            if (country) userData.country = country
+            if (city) userData.city = city
+            if (province) userData.province = province
+            if (language) userData.language = language
+            if (sex) userData.sex = sex
+            if (age) userData.age = age
+            if (introduction) userData.introduction = introduction
+            if (imageURL) userData.imageURL = imageURL
+            if (currentTime) userData.updated = currentTime
+
+            if (!imageURL) {
+                delete userData.imageURL
+            } else if (imageURL.indexOf("http://") < 0) {
+                var base64Data, binaryData;
+                base64Data = imageURL.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/png;base64,/, "");
+                base64Data += base64Data.replace('+', ' ');
+                binaryData = new Buffer(base64Data, 'base64').toString('binary');
+                fs.writeFile("images/" + id + ".userImage.png", binaryData, "binary", function(err) {
+                    console.log(err); // writes out file without error, but it's not a valid image
+                });
+                userData.imageURL = fileURL + id + ".userImage.png";
+            }
+
+            user = new User(userData)
+            console.log(userData)
+            user.save(err => {
+                if (err) {
+                    throw err;
+                }
+                return res.status(200)
+                    .json(user);
+            });
+        } else {
+            res.status(500).send("Wrong password")
+        }
+    })
+})
+
+router.post("/", (req, res) => {
+
+    if (!req.body.id || !req.body.password || !req.body.imageURL || !req.body.nickname) {
+        return res.status(500)
+            .send("No id or password or image or nickname")
+    }
+
+    const userType = "user"
+    const id = req.body.id;
+    const password = req.body.password;
+    const nickname = req.body.nickname;
+    const country = req.body.country;
+    const city = req.body.city;
+    const province = req.body.province;
+    const language = req.body.language;
+    const sex = req.body.sex;
+    const age = req.body.age;
+    const introduction = req.body.introduction;
+    const contact = req.body.contact;
+    const currentTime = new Date();
+    let imageURL = req.body.imageURL;
+    const userData = {}
+
+    User.findOne({
+        "id": req.body.id
+    }, (err, result) => {
+        if (err) {
+            throw err;
+        } else if (result === null) {
+            if (userType) userData.userType = userType
+            if (id) userData.id = id
+            if (password) userData.password = password
+            if (nickname) userData.nickname = nickname
+            if (country) userData.country = country
+            if (city) userData.city = city
+            if (province) userData.province = province
+            if (language) userData.language = language
+            if (sex) userData.sex = sex
+            if (age) userData.age = age
+            if (introduction) userData.introduction = introduction
+            if (imageURL) userData.imageURL = imageURL
+            if (currentTime) userData.created = currentTime
+            if (currentTime) userData.updated = currentTime
+
+            if (!imageURL) {
+                delete userData.imageURL
+            } else if (imageURL.indexOf("http://") < 0) {
+                var base64Data, binaryData;
+                base64Data = imageURL.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/png;base64,/, "");
+                base64Data += base64Data.replace('+', ' ');
+                binaryData = new Buffer(base64Data, 'base64').toString('binary');
+                fs.writeFile("images/" + id + ".userImage.png", binaryData, "binary", function(err) {
+                    console.log(err); // writes out file without error, but it's not a valid image
+                });
+                userData.imageURL = fileURL + id + ".userImage.png";
+            }
+            const user = new User(userData)
+            user.save((err, result) => {
+                if (err) {
+                    throw err;
+                } else {
+                    return res.status(200)
+                        .json(userData);
+                }
+            })
+        } else res.status(500).send("Username already registered")
+    })
+})
+
+router.post("/login", limiterPost.middleware({
+    innerLimit: 15,
+    outerLimit: 200,
+    headers: false
+}), (req, res) => {
+    if (!req.body.id && !req.body.password) {
+        return res.status(500)
+            .send("No id or password")
+    }
+
+    const id = req.body.id
+    const password = req.body.password
+
+    User.findOne({
+        id: id,
+        password: password
+    }, (err, result) => {
+        if (err) {
+            throw err
+        } else if (result == null) {
+            res.status(500).send("use not found")
+        } else res.status(200).json(result)
+
     })
 })
 
@@ -105,7 +335,7 @@ router.post('/wechatLogin', limiterGet.middleware({
                             console.log(returnData)
 
                             var newUser = {};
-                            if (returnData.openid) newUser.username = "wechat" + returnData.openid
+                            if (returnData.openid) newUser.id = "wechat" + returnData.openid
                             if (returnData.nickname) newUser.nickname = returnData.nickname
                             if (returnData.sex) newUser.sex = returnData.sex
                             if (returnData.launguage) newUser.launguage = returnData.launguage
@@ -117,7 +347,7 @@ router.post('/wechatLogin', limiterGet.middleware({
                             console.log(newUser)
 
                             User.update({
-                                username: newUser.username
+                                id: newUser.id
                             }, newUser, {
                                 upsert: true
                             }, function(err, data2) {
@@ -126,17 +356,24 @@ router.post('/wechatLogin', limiterGet.middleware({
                                 } else if (data2) {
                                     console.log("inserted")
                                     User.findOne({
-                                        username: newUser.username
-                                    }, function(err, data3) {
+                                        id: newUser.id
+                                    }, (err, result) => {
                                         if (err) {
-                                            console.log("err")
-                                            return next(err)
-                                        } else {
-                                            console.log(data3)
-                                            res.json(data3);
-
-                                        }
+                                            throw err
+                                        } else if (result == null) {
+                                            res.status(500).send("use not found")
+                                        } else res.status(200).json(result)
                                     })
+                                    // function(err, data3) {
+                                    //     if (err) {
+                                    //         console.log("err")
+                                    //         return next(err)
+                                    //     } else {
+                                    //         console.log(data3)
+                                    //         res.json(data3);
+                                    //
+                                    //     }
+                                    // })
                                 }
                             })
 
@@ -154,296 +391,6 @@ router.post('/wechatLogin', limiterGet.middleware({
         console.log('problem with request: ' + e.message);
     });
 
-})
-
-
-
-router.post('/register', limiterPost.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), function(req, res, next) {
-    console.log(req.body.username)
-    if (req.body.username && req.body.password) {
-
-        User.findOne({
-            "username": req.body.username
-        }, function(err, data) {
-            if (err) {
-                console.log("err");
-                return next(err)
-            } else if (data == null) {
-
-                console.log("user name not exist, you can use it: " + req.body.username)
-                // var token = jwt.encode({
-                //     username: req.body.username
-                // }, secretKey)
-                // console.log(token)
-
-
-                if (!req.body.imageURL) {
-                    delete req.body.imageURL
-                } else if (req.body.imageURL.indexOf("http://") < 0) {
-
-
-                    var imageURL = fileURL + req.body.username + ".userImage.png";
-                    var theData = req.body.imageURL;
-                    req.body.imageURL = imageURL;
-
-                    var base64Data, binaryData;
-                    base64Data = theData.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/png;base64,/, "");
-                    base64Data += base64Data.replace('+', ' ');
-                    binaryData = new Buffer(base64Data, 'base64').toString('binary');
-
-
-                    fs.writeFile("images/" + req.body.username + ".userImage.png", binaryData, "binary", function(err) {
-
-                        console.log(err); // writes out file without error, but it's not a valid image
-                    });
-                }
-
-                User.update({
-                    username: req.body.username
-                }, req.body, {
-                    upsert: true
-                }, function(err, data2) {
-                    if (err) {
-                        return next(err)
-                    } else if (data2) {
-                        res.json({
-                            data: 'OK'
-                        })
-                    }
-                })
-            } else if (data.password == req.body.password) {
-                console.log("password right, your username is " + req.body.username)
-                // var token = jwt.encode({
-                //     username: req.body.username
-                // }, secretKey)
-                // console.log(token)
-
-
-                if (!req.body.imageURL) {
-                    delete req.body.imageURL
-                } else if (req.body.imageURL.indexOf("http://") < 0) {
-
-                    var imageURL = fileURL + req.body.username + ".userImage.png";
-                    var theData = req.body.imageURL;
-                    req.body.imageURL = imageURL;
-
-                    var base64Data, binaryData;
-                    base64Data = theData.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/png;base64,/, "");
-                    base64Data += base64Data.replace('+', ' ');
-                    binaryData = new Buffer(base64Data, 'base64').toString('binary');
-
-
-                    fs.writeFile("images/" + req.body.username + ".userImage.png", binaryData, "binary", function(err) {
-
-                        console.log(err); // writes out file without error, but it's not a valid image
-                    });
-                }
-
-                User.update({
-                    username: req.body.username
-                }, req.body, {
-                    upsert: true
-                }, function(err, data2) {
-                    if (err) {
-                        return next(err)
-                    } else if (data2) {
-                        console.log("inserted")
-                        res.json({
-                            data: 'OK'
-                        })
-                    }
-                })
-
-            } else {
-                res.json({
-                    data: "alreadyExist"
-                })
-            }
-        })
-    }
-})
-
-
-router.post('/login', limiterPost.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), function(req, res, next) {
-    console.log(req.body.username)
-    if (req.body.username && req.body.password) {
-
-        User.findOne({
-            "username": req.body.username
-        }, function(err, data) {
-            if (err) {
-                console.log("err");
-                return next(err)
-            } else if (data == null) {
-                res.json({
-                    data: "NO2"
-                })
-            } else {
-                if (req.body.password == data.password) {
-                    var returnData = JSON.parse(JSON.stringify(data))
-                    returnData["data"] = "OK"
-                    res.json(returnData)
-                } else {
-                    res.json({
-                        data: "NO"
-                    })
-                }
-            }
-        })
-    }
-})
-
-
-
-router.post('/likedProduct', limiterGet.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), function(req, res, next) {
-    console.log(req.body)
-    if (req.body.username && req.body.password) {
-        User.findOne({
-            "username": req.body.username
-        }, function(err, data) {
-            if (err) {
-                console.log("err");
-                return next(err)
-            } else if (req.body.password == data.password) {
-                Product.paginate({
-                    _id: {
-                        $in: req.body.likedProduct
-                    }
-                }, {
-                    select: 'productName imageURL likedBy serviceProviderName serviceProviderImageURL time',
-                    offset: parseInt(req.body.skip),
-                    limit: parseInt(req.body.limit)
-                }, function(err, products) {
-                    if (err) return next(err);
-                    console.log(products.docs)
-                    res.json(products.docs)
-                });
-
-            }
-        })
-    }
-})
-
-
-router.get('/getMyReservation', limiterPost.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), function(req, res, next) {
-    var url_parts = url.parse(req.url, true);
-    var query = url_parts.query;
-
-    /* category filter exists */
-    if (req.query.username) {
-        User.findOne({
-            username: req.query.username,
-            password: req.query.password
-        }, function(err, data) {
-            if (err) {
-                return next(err)
-            } else {
-                if (data == null) {
-                    res.send("did not find serviceProvider")
-                } else {
-                    console.log("found serviceProvider and return data")
-                    Offer.find({
-                        username: {
-                            $all: [req.query.username]
-                        }
-                    }, function(err, data) {
-                        res.json(data)
-                    })
-                }
-            }
-        })
-    }
-})
-
-router.get('/getMyFavorites', limiterPost.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), function(req, res, next) {
-    var url_parts = url.parse(req.url, true);
-    var query = url_parts.query;
-
-    /* category filter exists */
-    if (req.query.username) {
-        User.findOne({
-            username: req.query.username,
-            password: req.query.password
-        }, function(err, data) {
-            if (err) {
-                return next(err)
-            } else {
-                if (data == null) {
-                    res.send("did not find user")
-                } else {
-                    console.log("found user and return data")
-                    Product.find({
-                        likedBy: {
-                            $all: [req.query.username]
-                        }
-                    }, function(err, data) {
-                        console.log(data)
-                        res.json(data)
-                    })
-                }
-            }
-        })
-    }
-})
-
-router.get('/getMyFavoriteArtists', limiterPost.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), function(req, res, next) {
-    var url_parts = url.parse(req.url, true);
-    var query = url_parts.query;
-    /* category filter exists */
-    if (req.query.username) {
-        User.findOne({
-            username: req.query.username,
-            password: req.query.password
-        }, function(err, data) {
-            if (err) {
-                return next(err)
-            } else {
-                if (data == null) {
-                    res.send("did not find user")
-                } else {
-                    console.log("found user and return data")
-                    ServiceProvider.find({
-                        likedBy: {
-                            $all: [req.query.username]
-                        }
-                    }, function(err, data) {
-                        if (err) {
-                            res.json({
-                                data: "NO"
-                            })
-                        }
-                        console.log(data)
-                        data["data"] = "OK"
-                        res.json(data)
-                    })
-                }
-            }
-        })
-    }
 })
 
 module.exports = router;

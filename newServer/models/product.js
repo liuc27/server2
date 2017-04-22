@@ -6,54 +6,17 @@ mongoose.Promise = require('bluebird');
 var mongoosePaginate = require('mongoose-paginate');
 
 var productSchema = new mongoose.Schema({
-    id: {
-        type: String,
-        required: false
-    },
     productName: {
         type: String,
-        required: false
-    },
-    password: {
-        type: String,
-        required: false
+        required: true
     },
     category: {
         type: String,
         required: false
     },
-    characters: [],
-    location: [],
-    productLevel: {
-        type: String,
-        required: false
-    },
-    serviceRecords: [],
-    serviceProviderName: {
-        type: String,
-        required: true
-    },
-    serviceProviderNickname: {
-        type: String,
-        required: true
-    },
     time: {
         type: String,
         required: false
-    },
-    guideAvailableTime: [],
-    chatAvailableTime: [],
-    pricing: {
-        CN: {
-            guide: {
-                type: String,
-                required: false
-            },
-            chat: {
-                type: String,
-                required: false
-            }
-        },
     },
     retail: {
         type: Number,
@@ -61,10 +24,6 @@ var productSchema = new mongoose.Schema({
     },
     list: {
         type: Number,
-        required: false
-    },
-    score: {
-        type: String,
         required: false
     },
     introduction: {
@@ -75,18 +34,20 @@ var productSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    occupation: [],
-    follower: [],
     imageURL: {
         type: String,
         required: true
     },
     faceImageURL: {
         type: String,
-        required: true
+        required: false
     },
     faceImagePoints: [],
     serviceProviderId: {
+        type: String,
+        required: true
+    },
+    nickname: {
         type: String,
         required: true
     },
@@ -96,16 +57,23 @@ var productSchema = new mongoose.Schema({
     },
     certificateURL: {
         type: String,
-        required: true
+        required: false
     },
     videoURL: {
         type: String,
-        required: true
+        required: false
     },
-    comment: [],
+    review: [],
     likedBy: [String],
-    purchasedBy: [String]
-
+    purchasedBy: [String],
+    created: {
+        type: Date,
+        default: Date.now
+    },
+    updated: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 productSchema.plugin(mongoosePaginate);

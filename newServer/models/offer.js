@@ -9,8 +9,8 @@ var offerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    serviceProviderName: [String],
-    username: [String],
+    serviceProviderId: [String],
+    id: [String],
     startTime: {
         type: String,
         required: true
@@ -21,7 +21,7 @@ var offerSchema = new mongoose.Schema({
     },
     serviceType: {
         type: String,
-        required: true
+        required: false
     },
     title: {
         type: String,
@@ -43,7 +43,11 @@ var offerSchema = new mongoose.Schema({
         type: Number,
         required: false
     },
-    pricePerHour: {
+    repeat: {
+        type: Number,
+        required: false
+    },
+    price: {
         type: Number,
         required: false
     }

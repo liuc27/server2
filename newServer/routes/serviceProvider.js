@@ -19,9 +19,10 @@ var ServiceProvider = require('../models/serviceProvider')
 var User = require('../models/user')
 var Offer = require('../models/offer')
 var Product = require('../models/product')
+var Review = require('../models/review')
 
 var fs = require('fs')
-var fileURL = 'http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/images/'
+var fileURL = 'http://10.201.219.13:3000/images/'
 
 // /api/serviceProviders
 router.get('/', limiterGet.middleware({
@@ -32,11 +33,11 @@ router.get('/', limiterGet.middleware({
     var url_parts = url.parse(req.url, true);
     var query = url_parts.query;
 
-    if (req.query.serviceProviderName != "null" && req.query.serviceProviderName != "undefined") {
-        console.log("req.query.serviceProviderName")
-        console.log(req.query.serviceProviderName)
+    if (req.query.id != "null" && req.query.id != "undefined") {
+        console.log("req.query.id")
+        console.log(req.query.id)
         ServiceProvider.findOne({
-            serviceProviderName: req.query.serviceProviderName
+            id: req.query.id
         }, function(err, data) {
             if (err) return next(err);
             res.json(data)
@@ -197,224 +198,8 @@ router.get('/getMenu', function(req, res, next) {
 })
 
 
-router.post('/likeServiceProvider', limiterPost.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), function(req, res, next) {
-    console.log(req.body.username)
-    if (req.body.username && req.body.serviceProviderName && req.body.password) {
-        User.findOne({
-            "username": req.body.username,
-            "password": req.body.password
-        }, function(err, data) {
-            if (err) {
-                console.log("err");
-                return next(err)
-            } else {
-                console.log("username exists");
-                if (data.likedServiceProvider.indexOf(req.body.serviceProviderName) >= 0) {
-                    console.log(data)
-                    console.log(data.length)
-
-                    User.update({
-                        username: req.body.username
-                    }, {
-                        $pull: {
-                            likedServiceProvider: req.body.serviceProviderName
-                        }
-                    }, function(err, data) {
-                        if (err) {
-                            console.log("err");
-                            return next(err)
-                        } else {
-                            console.log(data)
-                            ServiceProvider.update({
-                                serviceProviderName: req.body.serviceProviderName
-                            }, {
-                                $pull: {
-                                    likedBy: req.body.username
-                                }
-                            }, function(err, data) {
-                                console.log("pull out likedServiceProvider")
-                                if (err) {
-                                    console.log("err")
-                                    return next(err)
-                                } else {
-                                    console.log(data)
-                                    res.json({
-                                        data: "pull"
-                                    });
-
-                                }
-                            })
-                        }
-                    })
-
-                } else {
-                    console.log(data.likedServiceProvider.indexOf(req.body.serviceProviderName))
-                    User.update({
-                        username: req.body.username
-                    }, {
-                        $addToSet: {
-                            likedServiceProvider: req.body.serviceProviderName
-                        }
-                    }, function(err, data) {
-                        if (err) {
-                            console.log("err");
-                            return next(err)
-                        } else {
-                            console.log(data)
-                            console.log("inserted likedServiceProvider")
-                            ServiceProvider.update({
-                                serviceProviderName: req.body.serviceProviderName
-                            }, {
-                                $addToSet: {
-                                    likedBy: req.body.username
-                                }
-                            }, function(err, data) {
-                                if (err) {
-                                    console.log("err")
-                                    return next(err)
-                                } else {
-                                    console.log(data)
-                                    res.json({
-                                        data: "push"
-                                    });
-
-                                }
-                            })
-                        }
-                    })
-                }
-            }
-        })
-    }
-})
 
 
-router.post('/addServiceProviderComment', limiterPost.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), function(req, res, next) {
-    console.log(req.body.username)
-    if (req.body.username && req.body.password) {
-
-        User.findOne({
-            "username": req.body.username,
-            "password": req.body.password
-        }, function(err, data) {
-            if (err) {
-                console.log("err");
-                return next(err)
-            } else if (data == null) {
-
-                console.log("user name not exist, you can use it: " + req.body.username)
-                res.json({
-                    data: "NO"
-                })
-            } else {
-
-                insertCommentData = {
-                    discussion_id: req.body.discussion_id,
-                    parent_id: req.body.parent_id,
-                    posted: req.body.posted,
-                    username: req.body.username,
-                    text: req.body.text,
-                    notice: false,
-                    rate: req.body.rate
-                }
-
-
-                console.log("username exists");
-                if (err) {
-                    console.log("err");
-                    return next(err)
-                } else {
-                    console.log(data)
-                    ServiceProvider.update({
-                        _id: req.body.discussion_id
-                    }, {
-                        $push: {
-                            comment: {
-                                $each: [insertCommentData],
-                                $position: 0
-                            }
-                        }
-                    }, function(err, data) {
-                        if (err) {
-                            console.log("err")
-                            return next(err)
-                        } else {
-                            console.log(data)
-                            User.update({
-                                username: req.body.username
-                            }, {
-                                $push: {
-                                    comment: {
-                                        discussion_id: req.body.discussion_id,
-                                        posted: req.body.posted
-                                    }
-                                }
-                            }, function(err, data) {
-                                if (err) {
-                                    console.log("err")
-                                    return next(err)
-                                } else {
-                                    console.log(data)
-                                    res.json({
-                                        data: "OK"
-                                    })
-                                }
-                            })
-                        }
-                    })
-                }
-
-            }
-        })
-    } else {
-        res.json({
-            data: "NO"
-        })
-    }
-})
-
-router.get('/getServiceProviderCalendar', limiterPost.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), function(req, res, next) {
-    var url_parts = url.parse(req.url, true);
-    var query = url_parts.query;
-
-    /* category filter exists */
-    if (req.query.serviceProviderName) {
-        ServiceProvider.findOne({
-            serviceProviderName: req.query.serviceProviderName
-        }, function(err, data) {
-            if (err) {
-                return next(err)
-            } else {
-                if (data == null) {
-                    res.send("did not find serviceProvider")
-                } else {
-
-                    Offer.find({
-                        serviceProviderName: {
-                            $all: [req.query.serviceProviderName]
-                        }
-                    }, function(err, data) {
-                        console.log(data)
-                        res.json(data)
-                    })
-
-                }
-            }
-        })
-    }
-})
 
 
 router.post('/serviceProviderRegister', limiterGet.middleware({
@@ -422,9 +207,9 @@ router.post('/serviceProviderRegister', limiterGet.middleware({
     outerLimit: 200,
     headers: false
 }), function(req, res, next) {
-    if (req.body.serviceProviderName && req.body.serviceProviderNickname) {
+    if (req.body.id && req.body.nickname) {
         ServiceProvider.findOne({
-            "serviceProviderName": req.body.serviceProviderName
+            id: req.body.id
         }, function(err, data) {
             if (err) {
                 console.log("err");
@@ -445,9 +230,9 @@ router.post('/serviceProviderRegister', limiterGet.middleware({
                         delete req.body.imageURL
                     } else if (req.body.imageURL.indexOf("http://") < 0) {
                         console.log("is not valid url")
-                        var imageURL = fileURL + req.body.serviceProviderName + ".serviceProviderImage.png";
+                        var imageURL = fileURL + req.body.id + ".userImage.png";
                         var theData = req.body.imageURL;
-                        req.body.serviceProviderImageURL = imageURL;
+                        req.body.imageURL = imageURL;
 
                         var base64Data, binaryData;
                         base64Data = theData.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/png;base64,/, "");
@@ -455,7 +240,7 @@ router.post('/serviceProviderRegister', limiterGet.middleware({
                         binaryData = new Buffer(base64Data, 'base64').toString('binary');
 
 
-                        fs.writeFile("images/" + req.body.serviceProviderName + ".serviceProviderImage.png", binaryData, "binary", function(err) {
+                        fs.writeFile("images/" + req.body.id + ".userImage.png", binaryData, "binary", function(err) {
 
                             console.log(err); // writes out file without error, but it's not a valid image
                         });
@@ -464,7 +249,7 @@ router.post('/serviceProviderRegister', limiterGet.middleware({
                     console.log(req.body)
 
                     ServiceProvider.update({
-                        serviceProviderName: req.body.serviceProviderName
+                        id: req.body.id
                     }, req.body, {
                         upsert: true
                     }, function(err, data2) {
@@ -493,21 +278,21 @@ router.post('/serviceProviderLogin', limiterPost.middleware({
     outerLimit: 200,
     headers: false
 }), function(req, res, next) {
-    console.log(req.body.serviceProviderName)
+    console.log(req.body.id)
     console.log(req.body.password)
 
-    if (req.body.serviceProviderName && req.body.password) {
+    if (req.body.id && req.body.password) {
 
         ServiceProvider.findOne({
-            "serviceProviderName": req.body.serviceProviderName,
-            "password": req.body.password
+            id: req.body.id,
+            password: req.body.password
         }, function(err, data) {
             if (err) {
                 console.log("err");
                 return next(err)
             } else if (data == null) {
 
-                console.log("user name not exist, you can use it: " + req.body.username)
+                console.log("user name not exist, you can use it: " + req.body.id)
 
                 res.json({
                     data: "notExist"
@@ -592,21 +377,21 @@ router.post('/serviceProviderWechatLogin', limiterGet.middleware({
                             console.log(returnData)
 
                             var newUser = {};
-                            if (returnData.openid) newUser.serviceProviderName = "wechat" + returnData.openid
-                            if (returnData.nickname) newUser.serviceProviderNickname = returnData.nickname
+                            if (returnData.openid) newUser.serviceProviderId = "wechat" + returnData.openid
+                            if (returnData.nickname) newUser.nickname = returnData.nickname
                             if (returnData.sex) newUser.sex = returnData.sex
                             if (returnData.launguage) newUser.launguage = returnData.launguage
                             if (returnData.city) newUser.city = returnData.city
                             if (returnData.province) newUser.province = returnData.province
                             if (returnData.country) newUser.country = returnData.country
                             if (returnData.headimgurl) {
-                                newUser.serviceProviderImageURL = returnData.headimgurl
+                                newUser.imageURL = returnData.headimgurl
                             }
                             newUser.password = "wechat" + Math.random().toString(36).slice(-8)
                             console.log(newUser)
 
                             ServiceProvider.update({
-                                serviceProviderName: newUser.serviceProviderName
+                                id: newUser.serviceProviderId
                             }, newUser, {
                                 upsert: true
                             }, function(err, data2) {

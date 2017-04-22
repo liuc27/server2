@@ -21,6 +21,10 @@ var chargeSchema = new mongoose.Schema({
     note: {
         type: String,
         required: true
+    },
+    paid: {
+        type: Boolean,
+        required: true
     }
 
 })

@@ -9,7 +9,11 @@ var userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    username: {
+    id: {
+        type: String,
+        required: true
+    },
+    password: {
         type: String,
         required: true
     },
@@ -17,11 +21,7 @@ var userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    sex: {
-        type: String,
-        required: false
-    },
-    imageURL: {
+    country: {
         type: String,
         required: false
     },
@@ -33,23 +33,27 @@ var userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    country: {
-        type: String,
-        required: false
-    },
     launguage: {
         type: String,
         required: false
-    },
-    password: {
-        type: String,
-        required: true
     },
     introduction: {
         type: String,
         required: false
     },
     contact: {
+        type: String,
+        required: false
+    },
+    sex: {
+        type: String,
+        required: false
+    },
+    age: {
+        type: String,
+        required: false
+    },
+    imageURL: {
         type: String,
         required: false
     },
@@ -60,9 +64,27 @@ var userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
-    product: [String],
+    product: [],
     preProduct: [String],
-    comment: []
+    likedBy: [String],
+    category: [],
+    created: {
+        type: Date,
+        default: Date.now
+    },
+    updated: {
+        type: Date,
+        default: Date.now
+    },
+    suspend: {
+        type: Date,
+        default: Date.now
+    },
+    review: [],
+    pricePerHour: {
+        type: Number,
+        required: false
+    }
 })
 userSchema.plugin(mongoosePaginate);
 
