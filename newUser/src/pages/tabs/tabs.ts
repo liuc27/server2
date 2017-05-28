@@ -13,12 +13,10 @@ export class TabsPage {
    tab2Root: any;
    tab3Root: any;
 
-
   constructor() {
-    // this tells the tabs component which Pages
-    // should be each tab's root Page
-    this.tab1Root = ProductPage;
-    this.tab2Root = ServiceProviderPage;
+    this.tab1Root = ServiceProviderPage;
+    this.tab2Root = ProductPage;
     this.tab3Root = SettingsPage;
   }
+
 }

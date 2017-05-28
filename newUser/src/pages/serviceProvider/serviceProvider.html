@@ -3,7 +3,9 @@
         <!--<ion-buttons start>
         </ion-buttons>-->
 
-        <ion-title>Teacher</ion-title>
+        <ion-title (tap)="goTop()">
+            {{ 'Pros' | translate }}
+        </ion-title>
         <!--
         <ion-buttons end class="rightNavButton">
             <button ion-button>
@@ -19,20 +21,20 @@
 <ion-content #popoverContent class="serviceProvider">
 
     <ion-refresher (ionRefresh)="doRefresh($event)">
-        <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+        <ion-refresher-content>
         </ion-refresher-content>
     </ion-refresher>
 
-    <ion-slides class="ion-slides-class">
-        <ion-slide>
+    <ion-slides class="ion-slides-class" *ngIf="grid.length>0">
+        <ion-slide no-padding no-margin>
             <ion-grid>
                 <ion-row class="menuClass1" *ngFor="let row of grid">
-                    <ion-col width-20 class="ion-col-class" *ngFor="let menuItem of row">
-                        <button class="roundButton" primary (tap)="openServiceProviderListsPage(menuItem)" [ngStyle]="{'backgroundColor': menuItem.color}">
-                  <ion-icon class="ion-icon-class" [name]="menuItem.icon"></ion-icon>
-                </button>
-                        <div style="font-size:4vw;">
-                            {{menuItem.name}}
+                    <ion-col width-19 class="ion-col-class" *ngFor="let menuItem of row">
+                        <div style="margin-left: 4vw;">
+                            <text-avatar class="roundButton" [text]="translateMenu(menuItem.name)" [color]="menuItem.color" (tap)="openServiceProviderListsPage(menuItem)"></text-avatar>
+                        </div>
+                        <div class="menuText">
+                            {{translateMenu(menuItem.name)}}
                         </div>
                     </ion-col>
                 </ion-row>
@@ -40,37 +42,55 @@
         </ion-slide>
     </ion-slides>
 
-    <!--<ion-toolbar class="listsToolbar">
-        <div class="buttonInMenu">
-            <button ion-button clear (tap)="presentServiceProviderPop1Popover($event)">
-        serviceProviderPop1
-        <ion-icon name="arrow-down-outline"></ion-icon>
-      </button>
-        </div>
-        <div class="buttonInMenu">
-            <button ion-button clear (tap)="presentServiceProviderPop2Popover($event)">
-        location
-        <ion-icon name="arrow-down-outline"></ion-icon>
-      </button>
-        </div>
 
-        <div class="buttonInMenu">
-            <button ion-button clear (tap)="presentServiceProviderPop3Popover($event)">
-        order
-        <ion-icon name="arrow-down-outline"></ion-icon>
-      </button>
+    <ion-list *ngFor="let serviceProvider of serviceProviders" no-lines no-paddings>
+        <div style="position: relative;">
+            <a (tap)="openServiceProviderDetailsPage(serviceProvider)">
+                <img class="bigImage" [src]="serviceProvider.imageURL">
+                <div class="fab-bot-middle">{{serviceProvider.certificateArray}}</div>
+            </a>
+            <a class="fab-favorite" (tap)="favoriteServiceProvider(serviceProvider)">
+                <ion-icon name='heart-outline' *ngIf="alreadyLikedServiceProvider(serviceProvider) == false"></ion-icon>
+                <ion-icon name='heart' *ngIf="alreadyLikedServiceProvider(serviceProvider) == true" style="color:pink"></ion-icon>
+            </a>
+
+            <div class="fab-bot-left">
+                <span class="fab-bot-text">{{serviceProvider.reviewNumber}}</span>
+                <ion-icon name='chatboxes'></ion-icon>
+            </div>
+
+            <div class="fab-bot-right">
+                <span class="fab-bot-text">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
+            </div>
+
         </div>
-    </ion-toolbar>-->
-    <ion-list [virtualScroll]="serviceProviders" approxItemHeight="60px">
-        <ion-item *virtualItem="let serviceProvider" (tap)="openServiceProviderDetailsPage(serviceProvider)">
-            <ion-thumbnail item-left>
-                <img style="object-fit:cover; border-radius:5%;" src="{{serviceProvider.serviceProviderImageURL}}">
-            </ion-thumbnail>
-            <h2 [hidden]="serviceProvider.serviceProviderNickname">{{serviceProvider.serviceProviderName}}</h2>
-            <h2 [hidden]="!serviceProvider.serviceProviderNickname">{{serviceProvider.serviceProviderNickname}}</h2>
-            <p>{{serviceProvider.serviceProviderIntroduction}}</p>
-        </ion-item>
     </ion-list>
+
+    <!-- <ion-list [virtualScroll]="serviceProviders" [approxItemHeight]="'220px'" [bufferRatio]="3" no-lines no-paddings>
+
+        <div *virtualItem="let serviceProvider">
+            <div style="position: relative;">
+                <a (tap)="openServiceProviderDetailsPage(serviceProvider)">
+                    <ion-img class="bigImage" [src]="serviceProvider.imageURL"></ion-img>
+                    <div class="fab-bot-middle">{{serviceProvider.certificateArray}}</div>
+                </a>
+                <a class="fab-favorite" (tap)="favoriteServiceProvider(serviceProvider)">
+                    <ion-icon name='heart-outline' *ngIf="alreadyLikedServiceProvider(serviceProvider) == false"></ion-icon>
+                    <ion-icon name='heart' *ngIf="alreadyLikedServiceProvider(serviceProvider) == true" style="color:pink"></ion-icon>
+                </a>
+
+                <div class="fab-bot-left">
+                    <span class="fab-bot-text">{{serviceProvider.reviewNumber}}</span>
+                    <ion-icon name='chatboxes'></ion-icon>
+                </div>
+
+                <div class="fab-bot-right">
+                    <span class="fab-bot-text">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
+                </div>
+
+            </div>
+        </div>
+    </ion-list> -->
 
     <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
         <ion-infinite-scroll-content></ion-infinite-scroll-content>

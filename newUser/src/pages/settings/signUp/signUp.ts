@@ -3,8 +3,7 @@
  */
  import { Component, ViewChild, ElementRef } from '@angular/core';
  import { Events, NavController, NavParams, PopoverController, AlertController, ToastController } from 'ionic-angular';
- import { CheckLogin } from '../../../providers/check-login'
- import { TranslateService } from 'ng2-translate/ng2-translate';
+ import { UserProvider } from '../../../providers/userProvider'
  import { Storage } from '@ionic/storage'
  import { Http } from '@angular/http';
  import 'rxjs/add/operator/map';
@@ -23,30 +22,25 @@
 @Component({
   selector: 'page-signUp',
   templateUrl: 'signUp.html',
-  providers: [CheckLogin]
+  providers: [UserProvider]
 })
 export class SignUp {
-  username: String;
+  id: String;
   password: String;
   param: string = "world";
-  alreadyLoggedIn = { data: false };
+  alreadyLoggedIn = false;
   validation : any = {};
 
   constructor(private nav: NavController,
     private events: Events,
     private toastCtrl: ToastController,
-    translate: TranslateService,
     public storage: Storage,
-    public checkLogin: CheckLogin,
+    public userProvider: UserProvider,
     private http: Http) {
-    translate.setDefaultLang('en');
-    translate.use('en');
-
-
-    this.checkLogin.load()
+    this.userProvider.loadLocalStorage()
       .then(data => {
         this.validation = data
-        this.alreadyLoggedIn.data = true;
+        this.alreadyLoggedIn = true;
       });
 
   }
@@ -90,25 +84,35 @@ export class SignUp {
   }
 
   register() {
-    //console.log(this.validation)
-    this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/register', this.validation)
+    if(!this.validation){
+      console.log(this.validation)
+    }else if(!this.validation.id||!this.validation.nickname||!this.validation.password||!this.validation.imageURL){
+    alert("id, password, nickname, imageURL are needed")
+    }else if(this.validation.id.length<6||this.validation.password<6){
+      alert("id and password need more than 6 characters!")
+    } else{
+    this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/', this.validation)
       .map(res => res.json())
-      .subscribe(data => {
-        // we've got back the raw data, now generate the core schedule data
-        // and save the data for later reference
-        if (data != null) {
-          if (data.data == "OK") {
-          alert("registered")
-          this.checkLogin.load()
-            .then(data => {
+      .subscribe(
+            data => {
+
+            this.storage.ready().then(() => {
+            this.storage.set('validation', data).then((data2) => {
+              if (data2 == null) console.log("error");
+              else {
+              console.log("3")
+              this.alreadyLoggedIn = true;
               this.validation = data
-              this.alreadyLoggedIn.data = true;
-              this.nav.pop();
+                alert("successfully registered")
+                this.nav.pop()
+              }
             });
-          } else if (data.data == "NO") {
-            alert("account already exists,please choose another account name")
-          }
-        }
-      });
+            })
+
+            },
+            (err) => {
+                alert(err._body)
+            })
+            }
   }
 }

@@ -1,16 +1,16 @@
 import { Component } from '@angular/core';
-import { NavController, Events, Platform } from 'ionic-angular';
-import { TranslateService } from 'ng2-translate/ng2-translate';
+import { NavController, Events, Platform,AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage'
 import {SignUp} from './signUp/signUp'
 import { MyInformation } from './myInformation/myInformation'
 import { MyFavorites } from './myFavorites/myFavorites';
 import { MyFavoriteArtists } from './myFavoriteArtists/myFavoriteArtists';
 import { MyReservations } from './myReservations/myReservations';
-import { MyCoupons } from './myCoupons/myCoupons';
-import { MyFriends } from './myFriends/myFriends';
 
-import { CheckLogin } from '../../providers/check-login'
+import { MyOffers } from './myOffers/myOffers';
+import { MyServices } from './myServices/myServices';
+
+import { UserProvider } from '../../providers/userProvider'
 
 
 import { Http } from '@angular/http';
@@ -21,11 +21,11 @@ declare var Wechat:any;
 @Component({
   selector: 'page-settings',
   templateUrl: 'settings.html',
-  providers: [CheckLogin]
+  providers: [UserProvider]
 })
 export class SettingsPage {
 
-  username: String;
+  id: String;
   password: String;
   param: string = "world";
   alreadyLoggedIn = false;
@@ -34,53 +34,40 @@ export class SettingsPage {
 
   constructor(private nav: NavController,
     private events: Events,
-    translate: TranslateService,
     public storage: Storage,
-    public checkLogin: CheckLogin,
+    public userProvider: UserProvider,
     public platform: Platform,
+    private alertCtrl: AlertController,
     private http: Http) {
-    translate.setDefaultLang('en');
-    translate.use('en');
-    this.checkLogin.load()
+
+    this.userProvider.loadLocalStorage()
       .then(data => {
-        console.log(data)
         this.validation = data
-        this.alreadyLoggedIn = true;
-        if(this.validation.nickname){
-          this.nicknameOrUsername = this.validation.nickname
-        }else if(this.validation.username){
-          this.nicknameOrUsername = this.validation.username
-        }
+        this.login()
       });
-
-
-
   }
 
   ionViewWillEnter() {
-    // console.log("send showTabs event")
-    // this.events.publish('showTabs');
-    this.checkLogin.load()
-      .then(data => {
-        console.log(data)
-        this.validation = data
-        this.alreadyLoggedIn = true;
-        if(this.validation.nickname){
-          this.nicknameOrUsername = this.validation.nickname
-        }else if(this.validation.username){
-          this.nicknameOrUsername = this.validation.username
-        }
-      });
+  this.userProvider.loadLocalStorage()
+    .then(data => {
+      this.validation = data
+      this.alreadyLoggedIn = true
+    });
   }
 
   login() {
     console.log(this.validation)
     console.log("start login")
-    this.checkLogin.login(this.validation)
+    this.userProvider.post(this.validation)
       .then(data => {
+      if(!data){
+        this.validation = {}
+        this.alreadyLoggedIn = false
+      }else{
         console.log(data)
         this.validation = data
         this.alreadyLoggedIn = true;
+        }
       });
   }
 
@@ -100,12 +87,38 @@ export class SettingsPage {
   myFavoriteArtists(){
     this.nav.push(MyFavoriteArtists);
   }
-  myCoupons(){
-    this.nav.push(MyCoupons);
+
+
+  myOffers(){
+    this.nav.push(MyOffers);
   }
-  myFriends(){
-    this.nav.push(MyFriends);
+
+  myServices(){
+    this.nav.push(MyServices);
   }
+
+  applyForPro(){
+    if(this.validation){
+      if(this.validation.id&&this.validation.password){
+        this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/applyForPro', this.validation)
+        .map(res => res.json())
+          .subscribe(data => {
+            this.storage.ready().then(() => {
+              if (data) {
+                  this.storage.ready().then(() => {
+                      this.storage.set('validation', data)
+                      this.validation = data
+                      this.presentAlert("Successfully applied!")
+                  })
+              }
+            })
+          },err => {
+            console.log(err)
+          })
+      }
+    }
+  }
+
 
 
   logout() {
@@ -121,6 +134,18 @@ export class SettingsPage {
     })
   }
 
+  presentAlert(data) {
+  let alert = this.alertCtrl.create({
+    title: data,
+    subTitle: '',
+    buttons: ['OK']
+  });
+  setTimeout(() => {
+    this.alreadyLoggedIn = true;
+  }, 50);
+  alert.present();
+}
+
   openOauth(oauthName) {
     if(oauthName == "wechat"){
       if(this.platform.is('ios')||this.platform.is('android')) {
@@ -133,7 +158,7 @@ export class SettingsPage {
           that.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/wechatLogin', response)
             .map(res => res.json())
             .subscribe(data => {
-              if(data.username && data.nickname){
+              if(data.id && data.nickname){
               that.storage.ready().then(() => {
               console.log("1")
 
@@ -144,10 +169,11 @@ export class SettingsPage {
                 else {
                 console.log("3")
 
-                that.alreadyLoggedIn = true;
+                //that.alreadyLoggedIn = true;
                 that.validation = data
-                alert("successfully login with wechat")
-                that.nav.parent.select(0);
+                that.presentAlert("successfully login!")
+
+                //that.nav.parent.select(0);
                   //window.location.reload()
                 }
               });

@@ -1,51 +1,53 @@
 <ion-header>
-  <ion-navbar>
+    <ion-navbar>
 
-    <ion-title>My Favorite</ion-title>
+        <ion-title>
+            {{ 'Favorite Events' | translate }}
+        </ion-title>
 
-  </ion-navbar>
+    </ion-navbar>
 </ion-header>
 
 <ion-content>
 
-  <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
-    </ion-refresher-content>
-  </ion-refresher>
+    <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+        </ion-refresher-content>
+    </ion-refresher> -->
 
-  <ion-list [virtualScroll]="products" [approxItemHeight]="'260px'" no-lines no-paddings>
-    <div *virtualItem="let product">
-      <div style="position: relative;">
-        <a (tap)="openProductDetailsPage(product)">
-          <ion-img class="bigImage" [src]="product.imageURL"></ion-img>
-        </a>
-        <a class="fab-favorite" (tap)="likeProduct(product)">
-          <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
-          <ion-icon name='heart' *ngIf="alreadyLiked(product) == true" style="color:pink"></ion-icon>
-        </a>
+    <ion-list [virtualScroll]="products" [approxItemHeight]="'260px'" no-lines no-paddings [bufferRatio]="3">
+        <div *virtualItem="let product">
+            <div style="position: relative;">
+                <a (tap)="openProductDetailsPage(product)">
+                    <ion-img class="bigImage" [src]="product.imageURL"></ion-img>
+                </a>
+                <a class="fab-favorite" (tap)="favoriteProduct(product)">
+                    <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
+                    <ion-icon name='heart' *ngIf="alreadyLiked(product) == true" style="color:pink"></ion-icon>
+                </a>
 
-        <div class="fab-time">
-          <ion-icon name='time-outline'></ion-icon>
-          <span class="fab-time-text">{{product.time}}分</span>
+                <div class="fab-time">
+                    <ion-icon name='time-outline'></ion-icon>
+                    <span class="fab-time-text">{{product.time}}分</span>
+                </div>
+
+                <a class="fab-serviceProvider" (tap)="openServiceProviderDetailsPage(product)">
+                    <ion-avatar>
+                        <ion-img class="roundServiceProviderButton" [src]="product.serviceProvider.imageURL"></ion-img>
+                    </ion-avatar>
+                </a>
+
+                <div class="cardIntroduction">
+                    <span item-left>{{product.productName}}</span>
+                    <span>{{product.serviceProviderId}}</span>
+                    <span>{{product.pricing}}</span>
+                </div>
+            </div>
         </div>
+        <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+            <ion-infinite-scroll-content></ion-infinite-scroll-content>
+        </ion-infinite-scroll>
 
-        <a class="fab-serviceProvider" (tap)="openServiceProviderDetailsPage(product)">
-          <ion-avatar>
-            <ion-img class="roundServiceProviderButton" [src]="product.serviceProviderImageURL"></ion-img>
-          </ion-avatar>
-        </a>
-
-        <div class="cardIntroduction">
-          <span item-left>{{product.productName}}</span>
-          <span>{{product.serviceProviderName}}</span>
-          <span>{{product.pricing}}</span>
-        </div>
-      </div>
-    </div>
-    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
-      <ion-infinite-scroll-content></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
-
-  </ion-list>
+    </ion-list>
 
 </ion-content>

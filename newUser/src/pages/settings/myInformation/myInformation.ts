@@ -3,8 +3,7 @@
  */
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Events, NavController, NavParams, PopoverController, AlertController, ToastController } from 'ionic-angular';
-import { CheckLogin } from '../../../providers/check-login'
-import { TranslateService } from 'ng2-translate/ng2-translate';
+import { UserProvider } from '../../../providers/userProvider'
 import { MyInformationChange } from './myInformationChange/myInformationChange'
 import { Storage } from '@ionic/storage'
 import { Http } from '@angular/http';
@@ -25,43 +24,55 @@ import 'moment-timezone';
 @Component({
   selector: 'page-myInformation',
   templateUrl: 'myInformation.html',
-  providers: [CheckLogin]
+  providers: [UserProvider]
 })
 export class MyInformation {
 
-  username: String;
+  id: String;
   password: String;
   param: string = "world";
   alreadyLoggedIn = { data: false };
   private validation:any = {};
+  certificates = []
+  categoryName = []
 
   uploadedImg = {data: undefined};
 
-  constructor(private navController: NavController,
-    private nav: NavController,
+  constructor(private nav: NavController,
     private events: Events,
     private toastCtrl: ToastController,
-    translate: TranslateService,
     public storage: Storage,
-    public checkLogin: CheckLogin,
+    public userProvider: UserProvider,
     private http: Http) {
-    translate.setDefaultLang('en');
-    translate.use('en');
-    this.checkLogin.load()
+    this.userProvider.loadLocalStorage()
       .then(data => {
         this.validation = data
         this.alreadyLoggedIn.data = true;
+        if(this.validation.category){
+          this.validation.category.forEach((element)=>{
+            console.log(element.name)
+            if(this.categoryName.indexOf(element.name)<0) this.categoryName.push(element.name)
+          })
+        }
       });
   }
 
   ionViewWillEnter() {
     // console.log("send showTabs event")
     // this.events.publish('showTabs');
-    this.checkLogin.load()
+    this.userProvider.loadLocalStorage()
       .then(data => {
         this.validation = data
         this.alreadyLoggedIn.data = true;
-      });
+        if(this.validation.certificates){
+        if(this.validation.certificates.length>0){
+        this.certificates = []
+        this.validation.certificates.forEach((element,index) => {
+          this.certificates.push(element.id)
+        })
+        }
+        }
+      })
   }
 
   uploadImage(event) {
@@ -117,41 +128,5 @@ export class MyInformation {
       value:undefined
     })
   }
-  login() {
-    console.log(this.validation)
-    this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/login', this.validation)
-      .map(res => res.json())
-      .subscribe(data => {
-        // we've got back the raw data, now generate the core schedule data
-        // and save the data for later reference
-        if (data != null) {
-          if (data.data == "OK") {
-            console.log(data)
-            this.storage.ready().then(() => {
 
-            this.storage.set('validation', this.validation).then((data) => {
-
-              if (data == null) console.log("error");
-              else {
-                this.alreadyLoggedIn.data = true;
-                location.reload();
-              }
-            });
-            })
-          } else if (data.data == "NO") {
-            alert("account already exists and the password was wrong")
-          } else {
-            alert("registered")
-            this.storage.set('validation', this.validation).then((data) => {
-              console.log(data)
-              if (data == null) console.log("error");
-              else {
-                this.alreadyLoggedIn.data = true;
-                location.reload();
-              }
-            });
-          }
-        }
-      });
-  }
 }

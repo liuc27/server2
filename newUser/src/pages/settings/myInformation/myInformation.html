@@ -1,7 +1,7 @@
 <ion-header>
     <ion-navbar>
         <ion-title>
-            {{ 'Settings' | translate }}
+            {{ 'My Information' | translate }}
         </ion-title>
     </ion-navbar>
 </ion-header>
@@ -10,48 +10,60 @@
 
 
     <ion-list>
-
+        <ion-list-header>
+            {{ 'User Information' | translate }}
+        </ion-list-header>
         <button ion-item (tap)="changeInformation('imageURL')">
-      <ion-label >head image</ion-label>
-      <ion-thumbnail item-right color='dark'>
+      <ion-label >{{ 'Head Image' | translate }}</ion-label>
+      <ion-thumbnail item-right>
         <img style="object-fit:cover; border-radius:5%;" src="{{validation.imageURL}}">
       </ion-thumbnail>
     </button>
 
         <ion-item>
-            <ion-label>Username</ion-label>
-            <ion-note item-right color='dark'>{{validation.username}}</ion-note>
+            <ion-label>{{ 'Id' | translate }}</ion-label>
+            <ion-note item-right color='dark' class="maxWidth">{{validation.id}}</ion-note>
         </ion-item>
 
         <button ion-item (tap)="changeInformation('nickname')">
-      <ion-label >Nick Name</ion-label>
-      <ion-note item-right color='dark'>{{validation.nickname}}</ion-note>
-    </button>
-
-        <button ion-item (tap)="changeInformation('sex')">
-        <ion-label>Sex</ion-label>
-        <ion-note item-right color='dark'>{{validation.sex | translate}}</ion-note>
-        </button>
-
-        <button ion-item (tap)="changeInformation('province')">
-      <ion-label>Province</ion-label>
-      <ion-note item-right color='dark'>{{validation.province}}</ion-note>
-    </button>
-
-        <button ion-item (tap)="changeInformation('country')">
-          <ion-label>Country</ion-label>
-          <ion-note item-right color='dark'>{{validation.country}}</ion-note>
-    </button>
-
-        <button ion-item (tap)="changeInformation('introduction')">
-          <ion-label>Introduction</ion-label>
-          <ion-note item-right color='dark'>{{validation.introduction}}</ion-note>
+      <ion-label >{{ 'Nickname' | translate }}</ion-label>
+      <ion-note item-right color='dark' class="maxWidth">{{validation.nickname}}</ion-note>
     </button>
 
         <button ion-item (tap)="changeInformation('contact')">
-          <ion-label>Contact Info</ion-label>
-          <ion-note item-right color='dark'>{{validation.contact}}</ion-note>
+      <ion-label>{{ 'Contact Info' | translate }}</ion-label>
+      <ion-note item-right color='dark' class="maxWidth">{{validation.contact}}</ion-note>
+</button>
+    </ion-list>
+
+
+    <ion-list>
+        <ion-list-header>
+            {{ 'Pro Information' | translate }}
+        </ion-list-header>
+        <button ion-item (tap)="changeInformation('category')">
+  <ion-label >{{ 'Service Type' | translate }}</ion-label>
+  <ion-note item-right color='dark' class="maxWidth" *ngFor="let categoryElement of categoryName">
+    {{categoryElement | translate}}
+  </ion-note>
+</button>
+
+        <button ion-item (tap)="changeInformation('introduction')">
+          <ion-label>{{ 'Introduction' | translate }}</ion-label>
+          <ion-note item-right color='dark' class="maxWidth">{{validation.introduction}}</ion-note>
     </button>
+
+        <button ion-item (tap)="changeInformation('pricePerHour')">
+      <ion-label>{{ 'Price Per Hour' | translate }}</ion-label>
+      <ion-note item-right color='dark' class="maxWidth">{{validation.pricePerHour}}</ion-note>
+</button>
+
+        <button ion-item (tap)="changeInformation('certificates')">
+      <ion-label >{{ 'Certificates' | translate }}</ion-label>
+      <ion-note item-right color='dark' class="maxWidth">{{certificates}}</ion-note>
+    </button>
+
+
         <!--
     <button ion-item>
       <label >head image</label>
@@ -60,13 +72,42 @@
 
         <!-- <button ion-item>
       <ion-label >Password</ion-label>
-      <ion-note item-right color='dark'type="password " (tap)="changeInformation(password)>}}</ion-note>
+      <ion-note item-right color='dark' class="maxWidth"type="password " (tap)="changeInformation(password)>}}</ion-note>
       </button>
 
       <button ion-item>
       <ion-label >Password</ion-label>
-      <ion-note item-right color='dark'type="password" (tap)="changeInformation(password)>}}</ion-note>
+      <ion-note item-right color='dark' class="maxWidth"type="password" (tap)="changeInformation(password)>}}</ion-note>
     </button> -->
+    </ion-list>
+
+    <ion-list>
+        <ion-list-header>
+            {{ 'User Information(Optional)' | translate }}
+        </ion-list-header>
+
+        <button ion-item (tap)="changeInformation('sex')">
+    <ion-label>{{ 'Sex' | translate }}</ion-label>
+    <ion-note item-right color='dark' class="maxWidth">
+      <div [hidden]="validation.sex!=1">{{ 'Male' | translate}}</div>
+      <div [hidden]="validation.sex!=2">{{ 'Female' | translate}}</div>
+  </ion-note>
+    </button>
+
+        <button ion-item (tap)="changeInformation('age')">
+    <ion-label>{{ 'Age' | translate }}</ion-label>
+    <ion-note item-right color='dark' class="maxWidth">{{validation.age | translate}}</ion-note>
+    </button>
+
+        <button ion-item (tap)="changeInformation('province')">
+  <ion-label>{{ 'Province' | translate }}</ion-label>
+  <ion-note item-right color='dark' class="maxWidth">{{validation.province}}</ion-note>
+</button>
+
+        <button ion-item (tap)="changeInformation('country')">
+      <ion-label>{{ 'Country' | translate }}</ion-label>
+      <ion-note item-right color='dark' class="maxWidth">{{validation.country}}</ion-note>
+</button>
     </ion-list>
 
 </ion-content>

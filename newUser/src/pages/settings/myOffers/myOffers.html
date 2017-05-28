@@ -1,0 +1,59 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            {{ 'My Schedule' | translate }}
+        </ion-title>
+
+        <ion-buttons end>
+            <button ion-button (tap)="newOffer()">{{ 'Update Schedule' | translate }}</button>
+        </ion-buttons>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content class="settings">
+
+    <div *ngFor="let event of myReservation; let i = index " padding>
+        <ion-list>
+            <ion-list-header no-padding>
+                <!-- <ion-icon item-left name="add" (tap)="addReservation(i)"></ion-icon> -->
+                {{ 'Schedule' | translate }}
+                <!-- <span clear primary class="reservationCost">
+                    {{event.pricePerHour}}/h
+                  </span> -->
+                <!-- <a item-right clear primary (tap)="cancellReservation(i)">
+                    cancell<ion-icon  name="close"></ion-icon>
+                  </a> -->
+            </ion-list-header>
+            <ion-item>
+                <ion-label>{{ 'Start Time' | translate }}</ion-label>
+                <ion-datetime min=2016 max="2020" disabled=true displayFormat="YYYY/MM/DD HH:mm" [(ngModel)]="event.startTime" (ionChange)="recaculateTotal()"></ion-datetime>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>{{ 'End Time' | translate }}</ion-label>
+                <ion-datetime min=2016 max=2020 displayFormat="YYYY/MM/DD HH:mm" disabled=true [(ngModel)]="event.endTime" (ionChange)="recaculateTotal()"></ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label>{{ 'Price' | translate }}</ion-label>
+                <ion-note item-right style="color:black">{{event.price}}</ion-note>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>{{ 'User Number Limit' | translate }}</ion-label>
+                <ion-note item-right style="color:black">{{event.title}}</ion-note>
+            </ion-item>
+
+            <div *ngFor="let user of event.user">
+                <ion-item>
+                    <ion-label>{{ 'User' | translate }}</ion-label>
+                    <ion-note item-right style="color:blue;">
+                        <a (tap)="showUsernameInfo(event,user)">{{user.nickname}}</a>
+                    </ion-note>
+                </ion-item>
+            </div>
+        </ion-list>
+
+    </div>
+
+</ion-content>

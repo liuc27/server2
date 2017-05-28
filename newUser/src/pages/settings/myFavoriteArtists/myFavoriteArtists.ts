@@ -5,9 +5,8 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Events, NavController, NavParams, PopoverController, AlertController } from 'ionic-angular';
 import { ProductDetails } from '../../product/productLists/productDetails/productDetails';
 import { ServiceProviderDetails } from '../../serviceProvider/serviceProviderDetails/serviceProviderDetails';
-import { CheckLogin } from '../../../providers/check-login'
-import { GetMyFavoriteArtists } from '../../../providers/getMyFavoriteArtists'
-import { TranslateService } from 'ng2-translate/ng2-translate';
+import { UserProvider } from '../../../providers/userProvider'
+import { FavoriteProvider } from '../../../providers/favoriteProvider'
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import moment from 'moment';
@@ -25,10 +24,10 @@ import 'moment-timezone';
 @Component({
   selector: 'page-myFavoriteArtists',
   templateUrl: 'myFavoriteArtists.html',
-  providers: [CheckLogin, GetMyFavoriteArtists]
+  providers: [UserProvider, FavoriteProvider]
 })
 export class MyFavoriteArtists {
-  username: String;
+  id: String;
   password: String;
   alreadyLoggedIn = false;
   serviceProviders: any = [];
@@ -39,14 +38,9 @@ export class MyFavoriteArtists {
 
   constructor(private nav: NavController,
     private events: Events,
-    translate: TranslateService,
-    public checkLogin: CheckLogin,
-    public getMyFavoriteArtists: GetMyFavoriteArtists,
+    public userProvider: UserProvider,
+    public favoriteProvider: FavoriteProvider,
     private http: Http) {
-    translate.setDefaultLang('en');
-    translate.use('en');
-
-
     this.loadServiceProviders()
   }
 
@@ -60,7 +54,7 @@ export class MyFavoriteArtists {
   return new Promise(resolve => {
 
 
-    this.checkLogin.load()
+    this.userProvider.loadLocalStorage()
       .then(data => {
         this.validation = data
         this.alreadyLoggedIn = true;
@@ -72,8 +66,8 @@ export class MyFavoriteArtists {
         likedProduct.skip = this.start;
         likedProduct.limit = this.limit
 
-        this.getMyFavoriteArtists.load(this.validation.username, this.validation.password).then(data => {
-          this.serviceProviders = data;
+        this.favoriteProvider.getServiceProviders(this.validation.id).then(data => {
+         this.serviceProviders = data;
         })
         console.log(this.serviceProviders)
 
@@ -99,7 +93,6 @@ export class MyFavoriteArtists {
           console.log('Async operation has ended');
           infiniteScroll.complete();
           if (Object.keys(data).length == 0) {
-            console.log("true")
             this.infiniteScrollEnd = true
           }
         }, 1000);

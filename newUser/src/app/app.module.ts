@@ -1,6 +1,8 @@
-import { NgModule } from '@angular/core';
-import { IonicApp, IonicModule, PopoverController } from 'ionic-angular';
+import { NgModule, ErrorHandler } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
+
 import { TabsPage } from '../pages/tabs/tabs';
 import { IonicStorageModule } from '@ionic/storage';
 
@@ -11,20 +13,31 @@ import { ProductPage } from '../pages/product/product';
 import { ServiceProviderPage } from '../pages/serviceProvider/serviceProvider';
 import { SettingsPage } from '../pages/settings/settings';
 import { SignUp } from '../pages/settings/signUp/signUp';
-import { MyCoupons } from '../pages/settings/myCoupons/myCoupons';
+import { MyReservations } from '../pages/settings/myReservations/myReservations';
 import { MyFavorites } from '../pages/settings/myFavorites/myFavorites';
 import { MyFavoriteArtists } from '../pages/settings/myFavoriteArtists/myFavoriteArtists';
-import { MyReservations } from '../pages/settings/myReservations/myReservations';
 import { MyInformation } from '../pages/settings/myInformation/myInformation';
 import { MyInformationChange } from '../pages/settings/myInformation/myInformationChange/myInformationChange';
-import { MyFriends } from '../pages/settings/myFriends/myFriends';
+import { MyOffers } from '../pages/settings/myOffers/myOffers';
+import { ContactInfo } from '../pages/settings/myOffers/contactInfo/contactInfo';
+import { NewServicePage } from '../pages/settings/myServices/newService/newService';
+import { NewOffer } from '../pages/settings/myOffers/newOffer/newOffer';
+import { NewOfferDetails } from '../pages/settings/myOffers/newOffer/newOfferDetails/newOfferDetails';
+import { MyServices } from '../pages/settings/myServices/myServices';
+import { ModifyMyServices } from'../pages/settings/myServices/modifyMyServices/modifyMyServices'
 
 import { ProductLists } from '../pages/product/productLists/productLists';
+import { ProductSublists } from '../pages/product/productLists/productSublists/productSublists';
 import { ProductDetails } from '../pages/product/productLists/productDetails/productDetails';
+import { ProductPayment } from '../pages/product/productLists/productDetails/productPayment/productPayment';
 import { Video } from '../pages/product/productLists/productDetails/video/video';
 import { MorphingPage } from '../pages/product/productLists/productDetails/morphingPage/morphingPage';
+import { ProductReview } from '../pages/product/productLists/productDetails/productReview/productReview';
 import { ServiceProviderLists } from '../pages/serviceProvider/serviceProviderLists/serviceProviderLists';
+import { ServiceProviderSublists } from '../pages/serviceProvider/serviceProviderLists/serviceProviderSublists/serviceProviderSublists';
 import { ServiceProviderDetails } from '../pages/serviceProvider/serviceProviderDetails/serviceProviderDetails';
+import { ServiceProviderReview } from '../pages/serviceProvider/serviceProviderDetails/serviceProviderReview/serviceProviderReview';
+import { ServiceProviderCertificate } from '../pages/serviceProvider/serviceProviderDetails/serviceProviderCertificate/serviceProviderCertificate';
 import { Reservation } from '../pages/serviceProvider/serviceProviderDetails/reservation/reservation';
 import { ReservationDetails } from '../pages/serviceProvider/serviceProviderDetails/reservation/reservationDetails/reservationDetails';
 
@@ -43,13 +56,16 @@ import { ProductListsPop3 } from "../pages/product/productLists/popoverPages/pro
 import { ModalContentPage } from "../pages/product/productLists/modalPages/modalContent";
 
 
-import { ProductService } from '../pages/providers/product-getAllProducts-service/product-getAllProducts-service';
-import { ServiceProviderGetAllServiceProvidersService } from '../pages/providers/serviceProvider-get-all-serviceProviders-service/serviceProvider-get-all-serviceProviders-service';
-import { getSelectedProductDetails } from '../pages/providers/productDetails-GetSelectedProductDetails-service/productDetails-GetSelectedProductDetails-service';
-import { CheckLogin } from '../providers/check-login'
+//import { ProductProvider } from '../providers/productProvider';
+//import { UserProvider } from '../providers/userProvider'
 
 import { Ionic2RatingModule } from 'ionic2-rating/module';
 import { NgCalendarModule } from 'ionic2-calendar';
+
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
+import { TextAvatarDirective } from '../directives/text-avatar/text-avatar';
+//import { Globalization } from '@ionic-native/globalization';
 
 
 @NgModule({
@@ -59,8 +75,6 @@ import { NgCalendarModule } from 'ionic2-calendar';
     ServiceProviderPage,
     SettingsPage,
     SignUp,
-    MyCoupons,
-    MyFriends,
     MyInformation,
     MyInformationChange,
     MyFavorites,
@@ -68,10 +82,16 @@ import { NgCalendarModule } from 'ionic2-calendar';
     MyReservations,
     TabsPage,
     ProductLists,
+    ProductSublists,
     ProductDetails,
+    ProductPayment,
     Video,
     MorphingPage,
+    ProductReview,
+    ServiceProviderReview,
+    ServiceProviderCertificate,
     ServiceProviderLists,
+    ServiceProviderSublists,
     ServiceProviderDetails,
     Reservation,
     ReservationDetails,
@@ -84,9 +104,18 @@ import { NgCalendarModule } from 'ionic2-calendar';
     ProductListsPop1,
     ProductListsPop2,
     ProductListsPop3,
-    ModalContentPage
+    ModalContentPage,
+    MyOffers,
+    ContactInfo,
+    NewServicePage,
+    NewOffer,
+    NewOfferDetails,
+    MyServices,
+    ModifyMyServices,
+    TextAvatarDirective
   ],
   imports: [
+  BrowserModule,
     HttpModule,
     NgCalendarModule,
     IonicModule.forRoot(MyApp, { tabsHideOnSubPages: "true" }),
@@ -105,8 +134,6 @@ import { NgCalendarModule } from 'ionic2-calendar';
     ServiceProviderPage,
     SettingsPage,
     SignUp,
-    MyCoupons,
-    MyFriends,
     MyInformation,
     MyInformationChange,
     MyFavorites,
@@ -114,10 +141,16 @@ import { NgCalendarModule } from 'ionic2-calendar';
     MyReservations,
     TabsPage,
     ProductLists,
+    ProductSublists,
     ProductDetails,
+    ProductPayment,
     Video,
     MorphingPage,
+    ProductReview,
+    ServiceProviderReview,
+    ServiceProviderCertificate,
     ServiceProviderLists,
+    ServiceProviderSublists,
     ServiceProviderDetails,
     Reservation,
     ReservationDetails,
@@ -130,14 +163,19 @@ import { NgCalendarModule } from 'ionic2-calendar';
     ProductListsPop1,
     ProductListsPop2,
     ProductListsPop3,
-    ModalContentPage
+    ModalContentPage,
+    MyOffers,
+    ContactInfo,
+    NewServicePage,
+    NewOffer,
+    NewOfferDetails,
+    MyServices,
+    ModifyMyServices
   ],
   providers: [
-    PopoverController,
-    ProductService,
-    ServiceProviderGetAllServiceProvidersService,
-    getSelectedProductDetails,
-    CheckLogin
+    StatusBar,
+    SplashScreen,
+    {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
 export class AppModule { }

@@ -1,25 +1,29 @@
-import { Component } from '@angular/core';
-import { Platform, Events, ActionSheetController, NavController } from 'ionic-angular';
-import { ProductService } from '../providers/product-getAllProducts-service/product-getAllProducts-service';
+import { Component, ViewChild } from '@angular/core';
+import { Platform, Events, ActionSheetController, NavController, Content,ToastController, AlertController } from 'ionic-angular';
+import { ProductProvider } from '../../providers/productProvider';
 import { ProductLists } from './productLists/productLists';
 import { ProductDetails } from './productLists/productDetails/productDetails';
 import { ServiceProviderDetails } from '../serviceProvider/serviceProviderDetails/serviceProviderDetails';
+import { FavoriteProvider } from '../../providers/favoriteProvider'
+import { TranslateService } from 'ng2-translate/ng2-translate';
 
 
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { CheckLogin } from '../../providers/check-login'
+import { UserProvider } from '../../providers/userProvider'
 import { Storage } from '@ionic/storage'
 
 
 @Component({
   selector: 'page-product',
   templateUrl: 'product.html',
-  providers: [ProductService, CheckLogin]
+  providers: [ProductProvider, UserProvider, FavoriteProvider]
 })
 export class ProductPage {
+@ViewChild(Content) content: Content;
+
   public products: any = [];
-  public product: any;
+  //public product: any;
   public menu1: any = [];
   public menu2: any = [];
   public menu3 = [];
@@ -34,25 +38,33 @@ export class ProductPage {
   BC;
   constructor(private nav: NavController,
     private actionSheet: ActionSheetController,
-    public productService: ProductService,
+    public productProvider: ProductProvider,
     private events: Events,
     public platform: Platform,
     public storage: Storage,
-    public checkLogin: CheckLogin,
+    public userProvider: UserProvider,
+    public favoriteProvider: FavoriteProvider,
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController,
+    private translate: TranslateService,
     private http: Http) {
-
-    this.loadProducts();
     this.actionSheet = actionSheet;
-    this.checkLogin.load()
+    this.userProvider.loadLocalStorage()
       .then(data => {
         this.validation = data
         this.alreadyLoggedIn = true;
       });
     this.getMenu();
+
+    setTimeout(() => {
+          this.loadProducts();
+    }, 50);
+
+
   }
 
   ionViewWillEnter() {
-  this.checkLogin.load()
+  this.userProvider.loadLocalStorage()
     .then(data => {
       this.validation = data
       this.alreadyLoggedIn = true;
@@ -65,7 +77,7 @@ export class ProductPage {
 
     return new Promise(resolve => {
 
-      this.productService.load(this.start, this.category, null)
+      this.productProvider.get(this.start, this.category, "all", null)
         .then(data => {
           console.log("data")
           console.log(data)
@@ -84,6 +96,14 @@ export class ProductPage {
 
   }
 
+  translateMenu(menuItemName){
+    let returnData = menuItemName ;
+    this.translate.get(menuItemName).subscribe(response => {
+      returnData = response
+    })
+    return returnData
+  }
+
   getMenu() {
     this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/product/getMenu')
       .map(res => res.json())
@@ -95,6 +115,14 @@ export class ProductPage {
         console.log(data)
         //var flag = data[_body]
 
+
+
+        data.forEach((element, index) => {
+          this.translate.get(element.name).subscribe(response => {
+            data[index].name = response
+           });
+          console.log(data[index].name)
+        });
         if (data.length > 9) {
           for (var i = 0; i < 5; i++) {
             this.menu1.push(data[i])
@@ -110,7 +138,6 @@ export class ProductPage {
         }
       })
   }
-
 
   openMenu() {
     let actionSheet = this.actionSheet.create({
@@ -166,60 +193,61 @@ export class ProductPage {
   }
 
   alreadyLiked(product) {
-    if (this.validation && this.validation.username) {
+    if (this.validation  ) {
+    if(product._id && this.validation.likedProduct){
       if (this.validation.likedProduct.indexOf(product._id) >= 0) {
-        console.log(product._id)
-        console.log("posessed")
         return true
+      }
       }
     }
     return false
   }
 
-  likeProduct(product) {
-    if (this.validation.username) {
+  presentAlert() {
+  let alert = this.alertCtrl.create({
+    title: 'Please login first!',
+    subTitle: '',
+    buttons: ['OK']
+  });
+  setTimeout(() => {
+    this.alreadyLoggedIn = true;
+  }, 50);
+  alert.present();
+}
+
+  favoriteProduct(product) {
+    if (this.validation.id) {
       console.log(product)
-      var likedProduct = {
+      var theProduct = {
         _id: product._id,
-        username: this.validation.username,
+        id: this.validation.id,
         password: this.validation.password
       }
       console.log(product.likedBy);
 
-      this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/product/likeProduct', likedProduct)
-        .map(res => res.json())
-        .subscribe(data => {
-          // we've got back the raw data, now generate the core schedule data
-          // and save the data for later reference
-          // alert(data);
+      this.favoriteProvider.postProduct(theProduct).then(data => {
+      var flag = data
+      if (flag == "push") {
+        product.likedBy.push(this.validation.id);
+        this.validation.likedProduct.push(product._id)
+      } else if (flag == "pull") {
 
-          console.log(data)
-          //var flag = data[_body]
+        var index = product.likedBy.indexOf(this.validation.id);
+        if (index > -1) {
+          product.likedBy.splice(index, 1);
+        }
 
-          var flag = data.data
-          if (flag == "push") {
-            product.likedBy.push(this.validation.username);
-            this.validation.likedProduct.push(product._id)
-            this.checkLogin.updateLikedProduct(this.validation.likedProduct)
-          } else if (flag == "pull") {
-
-            var index = product.likedBy.indexOf(this.validation.username);
-            if (index > -1) {
-              product.likedBy.splice(index, 1);
-            }
-
-            var index2 = this.validation.likedProduct.indexOf(product._id);
-            if (index2 > -1) {
-              this.validation.likedProduct.splice(index2, 1);
-            }
-            console.log(this.validation)
-            this.checkLogin.updateLikedProduct(this.validation.likedProduct)
-          }
-          console.log(product.likedBy);
-
-        });
+        var index2 = this.validation.likedProduct.indexOf(product._id);
+        if (index2 > -1) {
+          this.validation.likedProduct.splice(index2, 1);
+        }
+        console.log(this.validation)
+      }
+      this.userProvider.saveLocalStorage(this.validation)
+      console.log(product.likedBy);
+      })
     } else {
-      alert("login before use,dude")
+      this.presentAlert()
 
     }
   }
@@ -230,12 +258,12 @@ export class ProductPage {
   }
 
   openProductDetailsPage(product) {
-    this.nav.push(ProductDetails, { product: product });
+    this.nav.push(ProductDetails, product);
   }
 
   openServiceProviderDetailsPage(product) {
     product.from = "productPage"
-    this.nav.push(ServiceProviderDetails, product);
+    this.nav.push(ServiceProviderDetails, product.serviceProvider);
 
   }
 
@@ -274,7 +302,44 @@ export class ProductPage {
       this. menu4 = [];
       this.getMenu()
       refresher.complete();
-    }, 1000);
+    }, 2000);
+  }
+
+  scrollToTop() {
+    this.content.scrollToTop();
+  }
+
+  goTop() {
+
+      this.scrollToTop()
+/*      this.presentToast()
+
+      setTimeout(() => {
+          this.products = []
+          this.start = 0
+          this.loadProducts();
+          this.grid = []
+          this.menu1 = [];
+          this.menu2 = [];
+          this.menu3 = [];
+          this.menu4 = [];
+          this.getMenu();
+      }, 500);
+  */
+  }
+
+  presentToast() {
+    let toast = this.toastCtrl.create({
+      message: 'Refreshing...',
+      duration: 1000,
+      position: 'middle'
+    });
+
+    toast.onDidDismiss(() => {
+      console.log(' ');
+    });
+
+    toast.present();
   }
 
 }

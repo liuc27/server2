@@ -14,8 +14,8 @@
   </ion-navbar> -->
 
     <ion-navbar>
-        <ion-title>
-            serviceProviderDetails
+        <ion-title (tap)="goTop()">
+            {{serviceProvider.nickname}}
         </ion-title>
     </ion-navbar>
 
@@ -29,54 +29,57 @@
     </ion-refresher>
 
     <ion-card class="adv-map">
-        <img [src]=serviceProvider.serviceProviderImageURL>
+        <img [src]=serviceProvider.imageURL>
 
-        <a class="fab-favorite" (tap)="likeServiceProvider(serviceProvider)">
+        <a class="fab-favorite" (tap)="favoriteServiceProvider(serviceProvider)">
             <ion-icon name='heart-outline' [hidden]='alreadyLikedServiceProvider(serviceProvider)'></ion-icon>
             <ion-icon name='heart' [hidden]='!alreadyLikedServiceProvider(serviceProvider)' style="color:pink"></ion-icon>
-
         </a>
 
+
+        <ion-item>
+            <h3>{{ 'Sex' | translate }}:{{serviceProvider.sex | translate }} {{ 'Age' | translate }}:{{serviceProvider.age}}</h3>
+            <h3>{{serviceProvider.likedBy.length}}{{ 'Likes' | translate }}　{{serviceProvider.reviewNumber}}{{ 'Reviews' | translate }}</h3>
+
+        </ion-item>
+
         <ion-card-content>
-            <ion-card-title [hidden]="serviceProvider.serviceProviderNickname">{{serviceProvider.serviceProviderName}}</ion-card-title>
-            <ion-card-title [hidden]="!serviceProvider.serviceProviderNickname">{{serviceProvider.serviceProviderNickname}}</ion-card-title>
-            <p>{{serviceProvider.serviceProviderIntroduction}}</p>
+            <h3>{{serviceProvider.introduction}}</h3>
         </ion-card-content>
 
         <ion-row style="padding: 0 0.5em">
             <ion-col>
-                <button ion-button clear style="padding: 0 0 0 0.3em" (tap)="likeServiceProvider(serviceProvider)">
+                <button ion-button clear style="padding: 0 0 0 0.3em" (tap)="favoriteServiceProvider(serviceProvider)">
           <ion-icon name='thumbs-up'></ion-icon>
-          Like
+          {{ 'Like' | translate }}
         </button>
             </ion-col>
             <ion-col text-center>
-                <button ion-button clear (tap)="showCommentBox=!showCommentBox">
+                <button ion-button clear style="padding: 0 0 0 0.3em" (tap)="openServiceProviderReviewPage()">
           <ion-icon name='text'></ion-icon>
-          Comment
+          {{ 'Review' | translate }}
         </button>
             </ion-col>
             <ion-col text-right>
-                <button ion-button clear style="padding: 0 0.3em 0 0">
+                <!-- <button ion-button clear style="padding: 0 0.3em 0 0">
           <ion-icon name='share-alt'></ion-icon>
-          Check blog
-        </button>
+          {{ 'Blog' | translate }}
+        </button> -->
             </ion-col>
         </ion-row>
 
     </ion-card>
 
-    <div [hidden]="!showCommentBox" style="padding: 0.5em">
-        <div no-padding>
-            <rating [(ngModel)]="rate"></rating>
+    <ion-list>
+        <div *ngFor="let certificate of certificates">
+            <ion-item (tap)="openServiceProviderCertificate(certificate)">
+                <ion-label>{{certificate.id}}</ion-label>
+                <ion-thumbnail item-right color='dark'>
+                    <img style="object-fit:cover; border-radius:5%;" src="{{certificate.imageURL}}">
+                </ion-thumbnail>
+            </ion-item>
         </div>
-        <div>
-            <ion-textarea placeholder="Input comment here" [(ngModel)]="comment" style="border-bottom-width: 1px"></ion-textarea>
-        </div>
-
-        <button ion-button style="float: right" (tap)="sendComment()">Comment</button>
-
-    </div>
+    </ion-list>
 
     <!-- <ion-toolbar class="listsToolbar">
         <div class="buttonInMenu">
@@ -100,22 +103,19 @@
         </div>
     </ion-toolbar> -->
 
-    <ion-card class="highLightsCard">
+    <!-- <ion-card class="highLightsCard">
         <div class="spaceLine"></div>
-        <!--<ion-card-header>
-            Comments
-        </ion-card-header>-->
-        <ion-list *ngFor="let commentContent of serviceProvider.comment">
+        <ion-card-header>
+            Reviews
+        </ion-card-header>
+        <ion-list *ngFor="let reviewContent of serviceProvider.review">
             <ion-item>
-                <!--<ion-avatar item-left>
-                    <img src="{{'images/' + commentContent.username + '.userImage.jpg'}}">
-                </ion-avatar>-->
-                <p style="float:right">{{commentContent.posted | date:'yyyy/MM/dd hh:mm:ss'}}</p>
-                <p>{{commentContent.username}}</p>
-                <h3>{{commentContent.text}}</h3>
+                <p style="float:right">{{reviewContent.created | date:'yyyy/MM/dd hh:mm:ss'}}</p>
+                <p>{{reviewContent.id}}</p>
+                <h3>{{reviewContent.text}}</h3>
             </ion-item>
         </ion-list>
-    </ion-card>
+    </ion-card> -->
 
 
     <ion-list *ngFor="let product of serviceProviderDetails" approxItemHeight="220px">
@@ -123,26 +123,25 @@
             <div>
                 <!-- <ion-slides [options]="mySlideOptions"> -->
                 <div style="position: relative">
-                    <a (tap)="openProductDetailsPage(product)">
-                        <img class="bigImage" [src]="product.imageURL">
-                        <div class="card-title2">{{product.productName}}</div>
-                    </a>
-                    <a class="fab-favorite" (tap)="likeProduct(product)">
-                        <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
-                        <ion-icon name='heart' *ngIf="alreadyLiked(product) == true" style="color:pink"></ion-icon>
-                    </a>
-
-
-                    <!--<div class="feature"></div>-->
-                    <ion-row>
-                        <!--<ion-col width-25 *ngFor="let menuItem of grid">-->
-                        <div class="fab-time">
-                            <ion-icon name='time-outline'></ion-icon>
-                            <span class="fab-time-text">{{product.time}}分</span>
+                    <a>
+                        <img class="bigImage" [src]="product.imageURL" (tap)="openProductDetailsPage(product)">
+                        <div class="fab-bot-left">
+                            <span class="fab-bot-text">{{product.reviewNumber}}</span>
+                            <ion-icon name='chatboxes'></ion-icon>
                         </div>
-                        <!--</ion-col>-->
-                    </ion-row>
+                        <div class="fab-bot-right">
+                            <span class="fab-bot-text">{{product.userNumber}}/{{product.userNumberLimit}}</span>
+                            <ion-icon name='person'></ion-icon>
+                        </div>
 
+                        <a class="fab-favorite" (tap)="favoriteProduct(product)">
+                            <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
+                            <ion-icon name='heart' *ngIf="alreadyLiked(product) == true" style="color:pink"></ion-icon>
+                        </a>
+                        <div class="fab-bot-middle">
+                            {{product.productName}} {{product.serviceProvider.nickname}} {{product.pricing}}
+                        </div>
+                    </a>
                 </div>
             </div>
         </ion-card>
@@ -214,6 +213,6 @@
 
 <ion-footer class="nextStep">
     <ion-toolbar (tap)="enterReservation()">
-        <ion-title>Make Reservation</ion-title>
+        <ion-title>{{ 'Make Reservation' | translate }}</ion-title>
     </ion-toolbar>
 </ion-footer>

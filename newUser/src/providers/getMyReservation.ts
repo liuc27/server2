@@ -3,13 +3,13 @@ import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 
 /*
-  Generated class for the CheckLogin provider.
+  Generated class for the UserProvider provider.
 
   See https://angular.io/docs/ts/latest/guide/dependency-injection.html
   for more info on providers and Angular 2 DI.
 */
 @Injectable()
-export class GetMyReservation {
+export class OfferProvider {
 
   data: any;
 
@@ -17,7 +17,7 @@ export class GetMyReservation {
     this.data = null;
   }
 
-  load(name,password) {
+  load(id) {
     //if (this.data) {
     //  // already loaded data
     //  return Promise.resolve(this.data);
@@ -25,22 +25,18 @@ export class GetMyReservation {
 
     // don't have the data yet
     return new Promise(resolve => {
-          console.log("getMyReservation start")
+          console.log("offerProvider start")
           console.log(name)
-            this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/getMyReservation?username='+name+'&password='+password)
+            this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/offer/offerProviders?id='+id)
               .map(res => res.json())
-              .subscribe(data2 => {
-              console.log(data2)
-
-                if (data2 ) {
-                  console.log(data2)
-                  this.data = data2
-                  resolve(this.data)
-                }else{
-                  resolve(this.data)
-                }
-              });
-
-    })
+              .subscribe(
+              data2 => {
+                      this.data = data2
+                      resolve(this.data)
+              },
+              (err) => {
+                  console.log(err._body)
+              })
+      })
   }
 }

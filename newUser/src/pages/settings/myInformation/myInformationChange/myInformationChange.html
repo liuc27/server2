@@ -1,7 +1,7 @@
 <ion-header>
     <ion-navbar>
         <ion-title>
-            {{ 'Settings' | translate }}
+            {{ 'My Information' | translate }}
         </ion-title>
         <ion-buttons end>
             <button ion-button (tap)="changeInformationValue()">保存</button>
@@ -16,7 +16,7 @@
 
         <div *ngIf="informationName == 'imageURL'">
             <ion-item>
-                <ion-label>head image</ion-label>
+                <ion-label>{{ 'Head Image' | translate }}</ion-label>
                 <!-- <img style="object-fit:cover; border-radius:5%;" src="{{informationValue}}"> -->
                 <button ion-button item-right (tap)="uploadImageTrigger()">Upload</button>
             </ion-item>
@@ -27,32 +27,37 @@
         </div>
 
 
-        <ion-item *ngIf="informationName == 'nickname'" ion-item>
-            <ion-label>Nick Name</ion-label>
-            <ion-input type='text' item-right [(ngModel)]="informationValue"></ion-input>
+        <ion-item *ngIf="informationName == 'nickname'">
+            <ion-label>{{ 'Nickname' | translate }}</ion-label>
+            <ion-input class="textAlignRight" type='text' item-right [(ngModel)]="informationValue"></ion-input>
         </ion-item>
 
-        <ion-item *ngIf="informationName == 'sex'" ion-item>
-            <ion-label>Sex</ion-label>
-            <ion-select [(ngModel)]="informationValue" placeholder="{{informationValue}}">
-                <ion-option value="1">Male</ion-option>
-                <ion-option value="2">Female</ion-option>
+        <!-- <ion-item *ngIf="informationName == 'category'">
+            <ion-label>{{ 'Service Type' | translate }}</ion-label>
+            <ion-select [(ngModel)]="informationValue" placeholder="" multiple="true">
+                <ion-option value="guide">{{ 'Guide' | translate }}</ion-option>
+                <ion-option value="teach">{{ 'Teach' | translate }}</ion-option>
+                <ion-option value="housework">{{ 'Housework' | translate }}</ion-option>
+                <ion-option value="fix">{{ 'Fix' | translate }}</ion-option>
+                <ion-option value="beauty">{{ 'Beauty' | translate }}</ion-option>
+                <ion-option value="jobHunt">{{ 'Job Hunt' | translate }}</ion-option>
+                <ion-option value="schoolFind">{{ 'School Find' | translate }}</ion-option>
+                <ion-option value="bizAdvise">{{ 'Biz Advise' | translate }}</ion-option>
+                <ion-option value="law">{{ 'Law' | translate }}</ion-option>
+                <ion-option value="others">{{ 'Others' | translate }}</ion-option>
             </ion-select>
-        </ion-item>
+        </ion-item> -->
 
-        <ion-item *ngIf="informationName == 'province'" ion-item>
-            <ion-label>Province</ion-label>
-            <ion-input type='text' item-right [(ngModel)]="informationValue"></ion-input>
-        </ion-item>
-
-        <ion-item *ngIf="informationName == 'country'" ion-item>
-            <ion-label>Country</ion-label>
-            <ion-input type='text' item-right [(ngModel)]="informationValue"></ion-input>
+        <ion-item *ngIf="informationName == 'category'">
+            <ion-label>*{{ 'Service Type' | translate }}</ion-label>
+            <ion-select multiple="true" (ionChange)="selectObjectById(options, $event, 'informationValue')" [(ngModel)]="informationValue" placeholder="{{selectedCategories}}" required>
+                <ion-option *ngFor="let item of options" [value]="item.val">{{item.name | translate}}</ion-option>
+            </ion-select>
         </ion-item>
 
         <div *ngIf="informationName == 'introduction'">
             <ion-item>
-                <ion-label>Introduction</ion-label>
+                <ion-label>{{ 'Introduction' | translate }}</ion-label>
             </ion-item>
             <ion-item>
                 <ion-textarea rows="6" [(ngModel)]="informationValue"></ion-textarea>
@@ -61,28 +66,118 @@
 
         <div *ngIf="informationName == 'contact'">
             <ion-item>
-                <ion-label>Contact Info</ion-label>
+                <ion-label>{{ 'Contact Info' | translate }}</ion-label>
             </ion-item>
             <ion-item>
                 <ion-textarea rows="6" [(ngModel)]="informationValue"></ion-textarea>
             </ion-item>
         </div>
 
+        <div *ngIf="informationName == 'pricePerHour'">
+            <ion-item>
+                <ion-label>{{ 'Price Per Hour' | translate }}</ion-label>
+                <ion-input class="textAlignRight" type='number' item-right [(ngModel)]="informationValue"></ion-input>
+            </ion-item>
+        </div>
+
+        <ion-item *ngIf="informationName == 'sex'">
+            <ion-label>{{ 'Sex' | translate }}</ion-label>
+            <ion-select [(ngModel)]="informationValue" placeholder="{{informationValue}}">
+                <ion-option value="1">{{ 'Male' | translate}}</ion-option>
+                <ion-option value="2">{{ 'Female' | translate}}</ion-option>
+            </ion-select>
+        </ion-item>
+
+        <ion-item *ngIf="informationName == 'age'">
+            <ion-label>{{ 'Age' | translate }}</ion-label>
+            <ion-input class="textAlignRight" type='text' item-right [(ngModel)]="informationValue"></ion-input>
+        </ion-item>
+
+        <ion-item *ngIf="informationName == 'province'">
+            <ion-label>{{ 'Province' | translate }}</ion-label>
+            <ion-input class="textAlignRight" type='text' item-right [(ngModel)]="informationValue"></ion-input>
+        </ion-item>
+
+        <ion-item *ngIf="informationName == 'country'">
+            <ion-label>{{ 'Country' | translate }}</ion-label>
+            <ion-input class="textAlignRight" type='text' item-right [(ngModel)]="informationValue"></ion-input>
+        </ion-item>
         <!--
-    <ion-item  *ngIf="informationName == true" ion-item>
+    <ion-item  *ngIf="informationName == true" >
       <label >head image</label>
       <input #label3 type=" file " accept="image/* " (change)="uploadImage($event) ">
     </ion-item> -->
 
-        <!-- <ion-item  *ngIf="informationName == true" ion-item>
+        <!-- <ion-item  *ngIf="informationName == true" >
       <ion-label >Password</ion-label>
-      <ion-input type='text' item-righttype="password " (tap)="changeValue(password)>}}</ion-input>
+      <ion-input class="textAlignRight" type='text' item-righttype="password " (tap)="changeValue(password)>}}</ion-input>
       </ion-item>
 
-      <ion-item  *ngIf="informationName == true" ion-item>
+      <ion-item  *ngIf="informationName == true" >
       <ion-label >Password</ion-label>
-      <ion-input type='text' item-righttype="password" (tap)="changeValue(password)>}}</ion-input>
+      <ion-input class="textAlignRight" type='text' item-righttype="password" (tap)="changeValue(password)>}}</ion-input>
     </ion-item> -->
+
+        <div *ngIf="informationName == 'certificates'">
+            <ion-list>
+                <div *ngFor="let certificate of certificates">
+                    <ion-item>
+                        <ion-label>{{ 'Service Type' | translate }}</ion-label>
+                        <ion-select [(ngModel)]="newCertificate.category" placeholder="" multiple="false">
+                            <ion-option value="guide">{{ 'Guide' | translate }}</ion-option>
+                            <ion-option value="teach">{{ 'Teach' | translate }}</ion-option>
+                            <ion-option value="housework">{{ 'Housework' | translate }}</ion-option>
+                            <ion-option value="fix">{{ 'Fix' | translate }}</ion-option>
+                            <ion-option value="beauty">{{ 'Beauty' | translate }}</ion-option>
+                            <ion-option value="jobHunt">{{ 'Job Hunt' | translate }}</ion-option>
+                            <ion-option value="schoolFind">{{ 'School Find' | translate }}</ion-option>
+                            <ion-option value="bizAdvise">{{ 'Biz Advise' | translate }}</ion-option>
+                            <ion-option value="law">{{ 'Law' | translate }}</ion-option>
+                            <ion-option value="others">{{ 'Others' | translate }}</ion-option>
+                        </ion-select>
+                    </ion-item>
+                    <ion-item>
+                        <ion-label>{{ 'Certificate Name' | translate }}</ion-label>
+                        <ion-input class="textAlignRight" [(ngModel)]="certificate.id"></ion-input>
+                    </ion-item>
+                    <ion-item>
+                        <button ion-button item-right (tap)="uploadCertificateImageTrigger()">{{ 'Upload Certificate' | translate }}</button>
+                        <input #Select2 [hidden]=true type="file" accept="image/*" (change)="uploadCertificateImage($event,certificate)">
+                        <ion-thumbnail item-left color='dark'>
+                            <img style="object-fit:cover; border-radius:5%;" src="{{certificate.imageURL}}">
+                        </ion-thumbnail>
+                    </ion-item>
+                </div>
+            </ion-list>
+
+            <ion-item>
+                <ion-label>{{ 'Service Type' | translate }}</ion-label>
+                <ion-select [(ngModel)]="newCertificate.category" placeholder="" multiple="false">
+                    <ion-option value="guide">{{ 'Guide' | translate }}</ion-option>
+                    <ion-option value="teach">{{ 'Teach' | translate }}</ion-option>
+                    <ion-option value="housework">{{ 'Housework' | translate }}</ion-option>
+                    <ion-option value="fix">{{ 'Fix' | translate }}</ion-option>
+                    <ion-option value="beauty">{{ 'Beauty' | translate }}</ion-option>
+                    <ion-option value="jobHunt">{{ 'Job Hunt' | translate }}</ion-option>
+                    <ion-option value="schoolFind">{{ 'School Find' | translate }}</ion-option>
+                    <ion-option value="bizAdvise">{{ 'Biz Advise' | translate }}</ion-option>
+                    <ion-option value="law">{{ 'Law' | translate }}</ion-option>
+                    <ion-option value="others">{{ 'Others' | translate }}</ion-option>
+                </ion-select>
+            </ion-item>
+            <ion-item>
+                <ion-label>{{ 'Certificate Name' | translate }}</ion-label>
+                <ion-input class="textAlignRight" item-right [(ngModel)]="newCertificate.id"></ion-input>
+            </ion-item>
+
+            <ion-item>
+                <button ion-button item-right (tap)="uploadNewCertificateImageTrigger()">{{ 'Upload Certificate' | translate }}</button>
+                <input #Select3 [hidden]=true type="file" accept="image/*" (change)="uploadNewCertificateImage($event,certificate)">
+                <ion-thumbnail item-left color='dark'>
+                    <img style="object-fit:cover; border-radius:5%;" src="{{newCertificate.imageURL}}">
+                </ion-thumbnail>
+            </ion-item>
+        </div>
     </ion-list>
 
 </ion-content>

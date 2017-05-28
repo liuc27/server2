@@ -1,52 +1,55 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>
-      {{ 'Settings' | translate }}
-    </ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>
+            {{ 'Reservation' | translate }}
+        </ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content class="settings">
 
-  <div *ngFor="let event of myReservation; let i = index " padding>
-    <ion-list>
-      <ion-list-header no-padding>
-        <ion-icon item-left name="add" (tap)="addReservation(i)"></ion-icon>
-        {{event.title}}{{i+1}}
-        <span clear primary class="reservationCost">
+    <div *ngFor="let event of myReservation; let i = index " padding>
+        <ion-list>
+            <ion-list-header no-padding>
+                <ion-icon item-left name="add" (tap)="addReservation(i)"></ion-icon>
+                {{event.title}}{{i+1}}
+                <span clear primary class="reservationCost">
                     {{event.price}}
                   </span>
-        <!-- <a item-right clear primary (tap)="cancellReservation(i)">
+                <!-- <a item-right clear primary (tap)="cancellReservation(i)">
                     cancell<ion-icon  name="close"></ion-icon>
                   </a> -->
-      </ion-list-header>
-      <ion-item>
-        <ion-label>Start Time</ion-label>
-        <ion-datetime style="color:black;" min=2016 max="2020" displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.startTime" (ionChange)="recaculateTotal()"></ion-datetime>
-      </ion-item>
+            </ion-list-header>
+            <ion-item>
+                <ion-label>{{ 'Start Time' | translate }}</ion-label>
+                <ion-datetime style="color:black;" min=2016 max="2020" displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.startTime" (ionChange)="recaculateTotal()"></ion-datetime>
+            </ion-item>
 
-      <ion-item>
-        <ion-label>End Time</ion-label>
-        <ion-datetime min=2016 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.endTime" (ionChange)="recaculateTotal()"></ion-datetime>
-      </ion-item>
+            <ion-item>
+                <ion-label>{{ 'End Time' | translate }}</ion-label>
+                <ion-datetime min=2016 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.endTime" (ionChange)="recaculateTotal()"></ion-datetime>
+            </ion-item>
 
-      <ion-item *ngFor="let serviceProviderName of event.serviceProviderName">
-        <ion-label>Service Provider</ion-label>
-        <ion-note color="dark">{{serviceProviderName}}</ion-note>
-      </ion-item>
+            <ion-item *ngFor="let serviceProvider of event.serviceProvider">
+                <ion-label>{{ 'Pro' | translate }}</ion-label>
+                <ion-note item-right style="color:blue;">
+                    <a (tap)="openServiceProviderDetailsPage(serviceProvider)">{{serviceProvider.nickname}}</a>
+                </ion-note>
+            </ion-item>
 
-      <ion-item>
-        <ion-label>Price per hour</ion-label>
-        <ion-note item-right style="color:black" (tap)=changeReservationPrice(event)>{{event.pricePerHour}}</ion-note>
-      </ion-item>
 
-      <ion-item>
-        <ion-label>Capacity</ion-label>
-        <ion-note item-right style="color:black" (tap)=changeCustomerNumber(event)>{{event.title}}</ion-note>
-      </ion-item>
+            <ion-item>
+                <ion-label>{{ 'Price' | translate }}</ion-label>
+                <ion-note item-right style="color:black" (tap)=changeReservationPrice(event)>{{event.price}}</ion-note>
+            </ion-item>
 
-    </ion-list>
+            <ion-item>
+                <ion-label>{{ 'User Number Limit' | translate }}</ion-label>
+                <ion-note item-right style="color:black" (tap)=changeCustomerNumber(event)>{{event.title}}</ion-note>
+            </ion-item>
 
-  </div>
+        </ion-list>
+
+    </div>
 
 </ion-content>

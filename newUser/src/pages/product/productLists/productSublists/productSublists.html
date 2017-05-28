@@ -1,0 +1,47 @@
+<ion-header>
+    <ion-navbar>
+
+        <ion-title (tap)="goTop()">{{title}}</ion-title>
+
+        <!--<ion-buttons end class="rightNavButton">
+            <button ion-button>
+        <ion-icon name="search"></ion-icon>
+      </button>
+        </ion-buttons>-->
+    </ion-navbar>
+</ion-header>
+
+<ion-content class="product">
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content>
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-list *ngFor="let product of products; let i=index" no-lines no-paddings>
+        <div style="position:relative">
+            <img class="bigImage" [src]="product.imageURL" (tap)="openProductDetailsPage(product)">
+            <div class="fab-bot-left">
+                <span class="fab-bot-text">{{product.reviewNumber}}</span>
+                <ion-icon name='chatboxes'></ion-icon>
+            </div>
+
+            <div class="fab-bot-right">
+                <span class="fab-bot-text">{{product.userNumber}}/{{product.userNumberLimit}}</span>
+                <ion-icon name='person'></ion-icon>
+            </div>
+
+            <a class="fab-favorite" (tap)="favoriteProduct(product)">
+                <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
+                <ion-icon name='heart' *ngIf="alreadyLiked(product) == true" style="color:pink"></ion-icon>
+            </a>
+            <div class="fab-bot-middle">
+                {{product.productName}} {{product.serviceProvider.nickname}} {{product.pricing}}
+            </div>
+        </div>
+    </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+</ion-content>

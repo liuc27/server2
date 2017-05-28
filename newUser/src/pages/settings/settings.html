@@ -9,21 +9,21 @@
 <ion-content class="settings">
 
 
-    <div *ngIf="alreadyLoggedIn == false">
+    <div [hidden]="alreadyLoggedIn">
         <ion-list>
 
             <ion-item>
-                <ion-label floating>Username</ion-label>
-                <ion-input type="text" [(ngModel)]="validation.username"></ion-input>
+                <ion-label floating>{{ 'Username' | translate }}</ion-label>
+                <ion-input type="text" [(ngModel)]="validation.id"></ion-input>
             </ion-item>
 
             <ion-item>
-                <ion-label floating>Password</ion-label>
+                <ion-label floating>{{ 'Password' | translate }}</ion-label>
                 <ion-input type="password" [(ngModel)]="validation.password"></ion-input>
             </ion-item>
 
             <div padding>
-                <button ion-button clear block (tap)="login()">Login</button>
+                <button ion-button clear block (tap)="login()">{{ 'Login' | translate }}</button>
             </div>
 
         </ion-list>
@@ -43,12 +43,12 @@
             </a>
         </ion-list>
         <div padding>
-            <button ion-button clear primary block (tap)="register()">register</button>
+            <button ion-button clear primary block (tap)="register()">{{ 'Register' | translate }}</button>
         </div>
     </div>
 
 
-    <div *ngIf="alreadyLoggedIn == true">
+    <div [hidden]="!alreadyLoggedIn">
         <div padding>
             <!-- <div class="welcomeMessage">
         Welcome, {{nicknameOrUsername}}!
@@ -64,15 +64,16 @@
 
             <ion-list>
                 <ion-list-header>
+                    {{ 'User Function' | translate }}
                 </ion-list-header>
                 <a ion-item (tap)="myReservations()">
-                    <ion-icon color="primary" name="cart">&nbsp;My Reservations</ion-icon>
+                    <ion-icon color="primary" name="cart">&nbsp;{{ 'Reservation' | translate }}</ion-icon>
                 </a>
                 <a ion-item (tap)="myFavorites()">
-                    <ion-icon color="primary" name="heart">&nbsp;My Favorite Products</ion-icon>
+                    <ion-icon color="primary" name="heart">&nbsp;{{ 'Favorite Events' | translate }}</ion-icon>
                 </a>
                 <a ion-item (tap)="myFavoriteArtists()">
-                    <ion-icon color="primary" name="heart">&nbsp;My Favorite Artists</ion-icon>
+                    <ion-icon color="primary" name="heart">&nbsp;{{ 'Favorite Pros' | translate }}</ion-icon>
                 </a>
                 <!-- <a ion-item (tap)="myCoupons()">
           <ion-icon color="primary" name="color-wand">&nbsp;My Coupons</ion-icon>
@@ -81,8 +82,28 @@
           <ion-icon color="primary" name="people">&nbsp;My Friends</ion-icon>
         </a> -->
             </ion-list>
+
+            <ion-list>
+                <ion-list-header>
+                    {{ 'Pro Function' | translate }}
+                </ion-list-header>
+                <a ion-item (tap)="myOffers()">
+                    <ion-icon color="primary" name="cart">&nbsp;{{ 'My Schedule' | translate }}</ion-icon>
+                </a>
+                <a ion-item (tap)="myServices()">
+                    <ion-icon color="primary" name="cart">&nbsp;{{ 'My Events' | translate }}</ion-icon>
+                </a>
+
+
+            </ion-list>
+            <div padding *ngIf="this.validation.userType == 'user'">
+                <button ion-button full clear (tap)="applyForPro()">{{ 'Apply for Pro possition' | translate }}</button>
+            </div>
+            <div padding *ngIf="this.validation.userType == 'candidatePro'" text-center>
+                {{ 'Request is under review' | translate }}
+            </div>
             <div padding>
-                <button ion-button full clear (tap)="logout()">Logout</button>
+                <button ion-button full clear (tap)="logout() ">{{ 'Logout' | translate }}</button>
             </div>
         </div>
     </div>

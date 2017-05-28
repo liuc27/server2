@@ -2,17 +2,24 @@
  * Created by liuchao on 6/25/16.
  */
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { ActionSheetController, Events, NavController, NavParams, AlertController, Platform} from 'ionic-angular';
-import { getSelectedProductDetails } from '../../../providers/productDetails-GetSelectedProductDetails-service/productDetails-GetSelectedProductDetails-service';
+import { ActionSheetController, Events, NavController, NavParams, AlertController, Platform, Content,ToastController} from 'ionic-angular';
+import { ProductProvider } from '../../../../providers/productProvider';
 import { ServiceProviderDetails } from '../../../serviceProvider/serviceProviderDetails/serviceProviderDetails';
 import { Video } from './video/video';
+import { ProductReview } from './productReview/productReview';
+
+import { ReservationDetails } from '../../../serviceProvider/serviceProviderDetails/reservation/reservationDetails/reservationDetails';
+
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { CheckLogin } from '../../../../providers/check-login'
+import { UserProvider } from '../../../../providers/userProvider'
+import { FavoriteProvider } from '../../../../providers/favoriteProvider'
+
 import { Storage } from '@ionic/storage'
 import { Ionic2RatingModule } from 'ionic2-rating';
 import {MorphingPage} from './morphingPage/morphingPage';
+import {ProductPayment} from './productPayment/productPayment';
 
 declare var Wechat: any;
 
@@ -21,15 +28,17 @@ declare var Wechat: any;
 @Component({
   selector: 'page-productDetails',
   templateUrl: 'productDetails.html',
-  providers: [getSelectedProductDetails, CheckLogin]
+  providers: [ProductProvider, UserProvider, FavoriteProvider]
 })
 export class ProductDetails {
-  @ViewChild('popoverContent', { read: ElementRef }) content: ElementRef;
+  @ViewChild('popoverContent', { read: ElementRef }) popContent: ElementRef;
   @ViewChild('popoverText', { read: ElementRef }) text: ElementRef;
+  @ViewChild(Content) content: Content;
+
   product;
   productOrServiceProvider;
   productDetails: any = {
-    comment: [],
+    review: [],
     introduction: '',
     videoURL: '',
     likedBy: []
@@ -38,10 +47,9 @@ export class ProductDetails {
 
   url: SafeResourceUrl;
   rate = 4;
-  comment;
-  commentCounts = 0;
-  likeCounts = 0;
-  showCommentBox = false;
+  review;
+  reviewCounts = 0;
+  showReviewBox = false;
   alreadyLoggedIn = false;
   validation: any = {};
 
@@ -54,24 +62,27 @@ export class ProductDetails {
     private actionSheet: ActionSheetController,
     private events: Events,
     private platform: Platform,
-    public productDetailsService: getSelectedProductDetails,
+    public productProvider: ProductProvider,
     public storage: Storage,
-    public checkLogin: CheckLogin,
+    public userProvider: UserProvider,
+    public favoriteProvider: FavoriteProvider,
     private http: Http,
-    public alertCtrl: AlertController) {
-    this.product = params.data.product;
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController) {
+    this.product = params.data;
     this.productOrServiceProvider = "product";
-    console.log("params.data.product");
-    console.log(params.data.product)
+    console.log("params.data");
+    console.log(params.data)
     this.loadSelectedproductDetails(this.product._id).then(productDetailData => {
 
       this.url = sanitizer.bypassSecurityTrustResourceUrl(this.productDetails.videoURL);
-      this.likeCounts = this.productDetails.likedBy.length
-      this.commentCounts = this.productDetails.comment.length
+      if(!this.productDetails.likedBy) this.productDetails.likedBy=[]
+      if(this.productDetails.review)
+      this.reviewCounts = this.productDetails.review.length
 
     });
     //this.actionSheet = actionSheet;
-    this.checkLogin.load().then(data => {
+    this.userProvider.loadLocalStorage().then(data => {
       this.validation = data
       this.alreadyLoggedIn = true;
     });
@@ -81,7 +92,7 @@ export class ProductDetails {
   ionViewWillEnter() {
     // console.log("send hideTabs event")
     //   this.events.publish('hideTabs');
-    this.checkLogin.load().then(data => {
+    this.userProvider.loadLocalStorage().then(data => {
       this.validation = data
       this.alreadyLoggedIn = true;
     });
@@ -116,9 +127,10 @@ export class ProductDetails {
                 },
                 scene: Wechat.Scene.TIMELINE
               }, function() {
-                alert("Success");
+                this.presentAlert("Success")
               }, function(reason) {
-                alert("Failed: " + reason);
+                this.presentAlert("Failed"+ reason)
+
               });
 
             }
@@ -235,9 +247,8 @@ export class ProductDetails {
   loadSelectedproductDetails(id) {
 
     return new Promise(resolve => {
-      this.productDetailsService.load(id)
+      this.productProvider.getProductDetails(id)
         .then(data => {
-
           this.productDetails = data;
           console.log("this.productDetails");
           console.log(data)
@@ -271,73 +282,70 @@ export class ProductDetails {
   }
 
 
-    alreadyLiked(product) {
-      if (this.validation && this.validation.username) {
-        if (this.validation.likedProduct.indexOf(product._id) >= 0) {
-          console.log(product._id)
-          console.log("posessed")
-          return true
-        }
+  alreadyLiked(product) {
+    if (this.validation  ) {
+    if(product._id && this.validation.likedProduct){
+      if (this.validation.likedProduct.indexOf(product._id) >= 0) {
+        return true
       }
-      return false
+      }
     }
+    return false
+  }
 
-  likeProduct(product) {
-    if (this.validation.username == undefined) {
-      alert("login before use,dude")
-      this.storage.ready().then(() => {
+presentAlert(data) {
+let alert = this.alertCtrl.create({
+  title: data,
+  subTitle: '',
+  buttons: ['OK']
+});
+setTimeout(() => {
+  this.alreadyLoggedIn = true;
+}, 50);
+alert.present();
+}
 
-      this.storage.remove('validation').then((data1) => {
-        console.log(data1)
-        console.log("data1")
-})
-      })
-    } else {
-      var likedProduct = {
+
+  favoriteProduct(product) {
+    if (this.validation.id) {
+      console.log(product)
+      var theProduct = {
         _id: product._id,
-        username: this.validation.username,
+        id: this.validation.id,
         password: this.validation.password
       }
       console.log(product.likedBy);
 
-      this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/product/likeProduct', likedProduct)
-        .map(res => res.json())
-        .subscribe(data => {
-          // we've got back the raw data, now generate the core schedule data
-          // and save the data for later reference
-          // alert(data);
+      this.favoriteProvider.postProduct(theProduct).then(data => {
+      var flag = data
+      if (flag == "push") {
+        product.likedBy.push(this.validation.id);
+        this.validation.likedProduct.push(product._id)
+      } else if (flag == "pull") {
 
-          console.log(data)
-          //var flag = data[_body]
+        var index = product.likedBy.indexOf(this.validation.id);
+        if (index > -1) {
+          product.likedBy.splice(index, 1);
+        }
 
-          var flag = data.data
-          if (flag == "push") {
-            product.likedBy.push(this.validation.username);
-            this.validation.likedProduct.push(product._id)
-            this.checkLogin.updateLikedProduct(this.validation.likedProduct)
-          } else if (flag == "pull") {
+        var index2 = this.validation.likedProduct.indexOf(product._id);
+        if (index2 > -1) {
+          this.validation.likedProduct.splice(index2, 1);
+        }
+        console.log(this.validation)
+      }
+      this.userProvider.saveLocalStorage(this.validation)
+      console.log(product.likedBy);
+      })
+    } else {
+      this.presentAlert("Please login first!")
 
-            var index = product.likedBy.indexOf(this.validation.username);
-            if (index > -1) {
-              product.likedBy.splice(index, 1);
-            }
-
-            var index2 = this.validation.likedProduct.indexOf(product._id);
-            if (index2 > -1) {
-              this.validation.likedProduct.splice(index2, 1);
-            }
-            console.log(this.validation)
-            this.checkLogin.updateLikedProduct(this.validation.likedProduct)
-          }
-          console.log(product.likedBy);
-
-        });
     }
   }
 
   openServiceProviderDetailsPage(product) {
     product.from = "productDetailsPage"
-    this.nav.push(ServiceProviderDetails, product);
+    this.nav.push(ServiceProviderDetails, product.serviceProvider);
   }
 
   purchaseProduct() {
@@ -346,29 +354,22 @@ export class ProductDetails {
   }
 
 
-  sendComment() {
-    console.log(this.product)
-    var commentData: any = {}
-    var now = new Date()
-    commentData.discussion_id = this.product._id
-    commentData.parent_id = null
-    commentData.posted = now.toUTCString()
-    commentData.username = this.validation.username
-    commentData.password = this.validation.password
-    commentData.text = this.comment
-    commentData.rate = this.rate
-    console.log(commentData)
-    this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/product/addProductComment', commentData)
-      //.map(res => res.json())
-      .subscribe(data => {
-        // we've got back the raw data, now generate the core schedule data
-        // and save the data for later reference
-        console.log(data)
-        this.productDetails.comment.unshift(commentData);
-        this.comment = null
-        this.showCommentBox = !this.showCommentBox
-      });
+  openProductReviewPage() {
+  if(this.validation){
+    if(this.validation.id&&this.validation.password&&this.validation.nickname){
+      this.nav.push(ProductReview, {
+      _id:this.productDetails._id,
+      productName:this.productDetails.productName,
+      serviceProvider:this.productDetails.serviceProvider,
+      updated:this.productDetails.updated});
+    }else{
+      this.presentAlert("Login first please!")
+    }
+  }else{
+  this.presentAlert("Login first please!")
   }
+    }
+
 
   learn(productDetails) {
     this.payActionSheet();
@@ -388,6 +389,33 @@ export class ProductDetails {
     this.nav.push(Video, { videoDetails: this.productDetails });
   }
 
+  joinEvent(){
+
+  if(this.validation){
+    if(this.validation.id&&this.validation.password&&this.validation.nickname){
+    this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/offer/productId?productId='+this.productDetails._id)
+      .map(res => res.json())
+      .subscribe(
+      data2 => {
+              console.log(data2)
+              if(data2[0])
+              data2[0].action = "put"
+              this.nav.push(ReservationDetails, data2);
+      },
+      (err) => {
+          console.log(err._body)
+      })
+
+    }else{
+      this.presentAlert("Login first please!")
+    }
+  }else{
+  this.presentAlert("Login first please!")
+  }
+
+
+  }
+
   doRefresh(refresher) {
     console.log('Begin load', refresher);
 
@@ -396,12 +424,48 @@ export class ProductDetails {
       this.loadSelectedproductDetails(this.product._id).then(productDetailData => {
 
         this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.productDetails.videoURL);
-        this.likeCounts = this.productDetails.likedBy.length
-        this.commentCounts = this.productDetails.comment.length
+        if(!this.productDetails.likedBy) this.productDetails.likedBy = []
+        if(this.productDetails.reviewCounts)
+        this.reviewCounts = this.productDetails.review.length
 
       });
 
       refresher.complete();
     }, 1000);
   }
+
+  scrollToTop() {
+    this.content.scrollToTop();
+  }
+
+  goTop() {
+      this.scrollToTop()
+      this.presentToast()
+
+      setTimeout(() => {
+      this.loadSelectedproductDetails(this.product._id).then(productDetailData => {
+
+        this.url = this.sanitizer.bypassSecurityTrustResourceUrl(this.productDetails.videoURL);
+        if(!this.productDetails.likedBy) this.productDetails.likedBy=[]
+        if(this.productDetails.reviewCounts)
+        this.reviewCounts = this.productDetails.review.length
+
+      });
+      }, 500);
+  }
+
+  presentToast() {
+    let toast = this.toastCtrl.create({
+      message: 'Refreshing...',
+      duration: 1000,
+      position: 'middle'
+    });
+
+    toast.onDidDismiss(() => {
+      console.log(' ');
+    });
+
+    toast.present();
+  }
+
 }

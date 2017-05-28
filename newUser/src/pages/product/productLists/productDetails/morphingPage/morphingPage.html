@@ -1,17 +1,17 @@
 <ion-header>
-  <ion-navbar>
+    <ion-navbar>
 
-    <ion-title>productDetails Page</ion-title>
+        <ion-title (tap)="goTop()">productDetails Page</ion-title>
 
-    <ion-buttons end class="rightNavButton">
-      <button ion-button>
+        <ion-buttons end class="rightNavButton">
+            <button ion-button>
         <ion-icon name="share-alt"></ion-icon>
       </button>
-    </ion-buttons>
-  </ion-navbar>
+        </ion-buttons>
+    </ion-navbar>
 </ion-header>
 <ion-content class="morphingPageDetails">
-  <!--
+    <!--
   <div>
     <canvas #myCanvas1 style="width:100%;"></canvas>
   </div>
@@ -36,32 +36,32 @@
   </div>
   <div>end</div>
   -->
-  <input #label type="file" (change)="inputModelImage($event)">
-  <!--
+    <input #label type="file" (change)="inputModelImage($event)">
+    <!--
   <img [src]="uploadedImg.data">
   -->
-  <div>
-    <canvas #result3 style="width:100%;"></canvas>
-  </div>
+    <div>
+        <canvas #result3 style="width:100%;"></canvas>
+    </div>
 
-  <input #label2 type="file" (change)="inputUserImage($event)">
-  <div>
-    <canvas #result4 style="width:100%;"></canvas>
-  </div>
+    <input #label2 type="file" (change)="inputUserImage($event)">
+    <div>
+        <canvas #result4 style="width:100%;"></canvas>
+    </div>
 
-  <div padding>
-    <button ion-button primary block (tap)="makeup()">Try makeup</button>
-  </div>
+    <div padding>
+        <button ion-button primary block (tap)="makeup()">Try makeup</button>
+    </div>
 
-  <div>
-    <canvas #result5 style="width:100%;"></canvas>
-  </div>
+    <div>
+        <canvas #result5 style="width:100%;"></canvas>
+    </div>
 
-  <div>
-    <canvas #result6 style="width:100%;"></canvas>
-  </div>
+    <div>
+        <canvas #result6 style="width:100%;"></canvas>
+    </div>
 
-  <!--
+    <!--
   <div>
     <img-cropper [image]="data" [settings]="cropperSettings"></img-cropper><br>
 

@@ -1,0 +1,121 @@
+{
+  "Settings": "設定",
+  "Pros": "プロ",
+  "Pro": "プロ",
+  "Events": "イベント",
+
+  "h": "時",
+  "m": "分",
+  "Like": "ライク",
+  "Review": "評価",
+  "Likes": "ライク",
+  "Reviews": "評価",
+  "Purchase": "購入",
+  "Make Reservation": "予約",
+
+  "Month": "月",
+  "Week": "周",
+
+
+  "Login": "ログイン",
+  "VR Try": "VR化粧",
+  "Join Event": "イベント参加",
+
+  "Id": "ユーザ名",
+  "Username": "ユーザ名",
+  "Password": "パスワード",
+  "Register": "登録",
+  "Logout": "ログアウト",
+
+  "User Function": "ユーザ機能",
+  "Reservation": "予約情報",
+  "Reservation Details": "予約詳細",
+  "Favorite Events": "イベント箱",
+  "Favorite Pros": "プロ箱",
+
+
+  "Pro Function": "プロ機能",
+  "My Schedule": "私のスケジュール",
+  "My Events": "私のイベント",
+  "Create Event": "イベント作成",
+  "Update Schedule": "予定作成",
+  "Schedule": "日程",
+  "User": "ユーザ",
+
+  "My Information": "個人情報",
+  "User Information(Optional)":"個人情報(任意)",
+  "Head Image": "写真",
+  "Nickname": "名前",
+  "Service Types": "サービス種類",
+  "Introduction": "紹介",
+  "Contact Info": "連絡方式",
+  "Price Per Hour": "費用/時間",
+  "Certificates": "証明書",
+  "Sex": "性別",
+  "Age": "年齢",
+  "Province": "県",
+  "Country": "国籍",
+  "Save": "保存",
+  "Male": "男",
+  "Female": "女",
+  "1": "男",
+  "2": "女",
+
+  "User Information": "個人情報",
+  "Pro Information": "プロ情報",
+  "Certificate Name": "証明書名(5字以内)",
+  "Upload Certificate": "証明書アップロード",
+  "Service Type": "サービス種類",
+  "Upload": "アップロード",
+
+  "Start Time": "スタート",
+  "End Time": "終わり",
+  "Price": "価格",
+  "Total Price": "トータル価格",
+
+  "Message": "メッセジ",
+  "Wechat Pay": "Wechatペイ",
+  "Alipay": "Aliペイ",
+  "Apple Pay": "アップルペイ",
+
+  "Shop Link": "購入リンク",
+  "Event Name": "イベント名",
+  "Event Introduction": "イベント詳細",
+  "Video URL": "紹介ビデオリンク",
+  "User Number Limit": "ユーザ数制限",
+  "Video Time(m)": "ビデオ時間(分)",
+  "List Price": "原価",
+  "Retail Price": "価格",
+  "Face Image": "顔写真",
+  "Submit": "提出",
+
+  "Guide": "ガイド",
+  "Teach": "教師",
+  "Housework": "家政",
+  "Fix": "修理",
+  "Beauty": "美容健康",
+
+  "Job Hunt": "求職",
+  "School Find": "学校紹介",
+  "Biz Advise": "ビジネス",
+  "Law": "法務",
+  "Others": "その他",
+
+  "guide": "ガイド",
+  "teach": "教師",
+  "housework": "家政",
+  "fix": "修理",
+  "beauty": "美容健康",
+
+  "jobHunt": "求職",
+  "schoolFind": "学校紹介",
+  "bizAdvise": "ビジネス",
+  "law": "法務",
+  "others": "その他",
+
+  "My Events": "私のイベント",
+  "Event Update": "イベント更新"
+
+
+
+}

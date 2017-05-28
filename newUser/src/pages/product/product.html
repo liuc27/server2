@@ -1,5 +1,5 @@
 <ion-header>
-  <!--<ion-navbar hideBackButton>
+    <!--<ion-navbar hideBackButton>
         <ion-buttons left>
             <button ion-button (tap)="openMenu()">
         tokyo<ion-icon name="arrow-down"></ion-icon>
@@ -12,87 +12,97 @@
       </button>
         </ion-buttons>
     </ion-navbar>-->
-  <ion-navbar>
-    <ion-title>
-      Class
-    </ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title (tap)="goTop()">
+            {{ 'Events' | translate }}
+        </ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content class="product">
-  <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
-    </ion-refresher-content>
-  </ion-refresher>
-  <ion-slides class="ion-slides-class">
-    <ion-slide>
-      <ion-grid>
-        <ion-row class="menuClass1" *ngFor="let row of grid">
-          <ion-col width-20 class="ion-col-class" *ngFor="let menuItem of row">
-            <button class="roundButton" primary (tap)="openProductListsPage(menuItem)" [ngStyle]="{'backgroundColor': menuItem.color}">
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content>
+        </ion-refresher-content>
+    </ion-refresher>
+    <ion-slides class="ion-slides-class">
+        <ion-slide>
+            <ion-grid>
+                <ion-row class="menuClass1" *ngFor="let row of grid">
+                    <ion-col width-19 class="ion-col-class" *ngFor="let menuItem of row">
+                        <!-- <button class="roundButton" primary (tap)="openProductListsPage(menuItem)" [ngStyle]="{'backgroundColor': menuItem.color}">
                   <ion-icon class="ion-icon-class" [name]="menuItem.icon"></ion-icon>
                 </button>
-            <div style="font-size:4vw;">
-              {{menuItem.name}}
+                        <div class="menuText">
+                            {{menuItem.name}}
+                        </div> -->
+                        <div style="margin-left: 4vw;">
+                            <text-avatar class="roundButton" [text]="translateMenu(menuItem.name)" [color]="menuItem.color" (tap)="openProductListsPage(menuItem)"></text-avatar>
+                        </div>
+                        <div class="menuText">
+                            {{translateMenu(menuItem.name)}}
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-slide>
+    </ion-slides>
+
+
+    <ion-list *ngFor="let product of products; let i=index" no-lines no-paddings>
+        <div style="position:relative">
+            <img class="bigImage" [src]="product.imageURL" (tap)="openProductDetailsPage(product)">
+            <div class="fab-bot-left">
+                <span class="fab-bot-text">{{product.reviewNumber}}</span>
+                <ion-icon name='chatboxes'></ion-icon>
             </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-slide>
-  </ion-slides>
 
+            <div class="fab-bot-right">
+                <span class="fab-bot-text">{{product.userNumber}}/{{product.userNumberLimit}}</span>
+                <ion-icon name='person'></ion-icon>
+            </div>
 
-  <ion-list [virtualScroll]="products" [approxItemHeight]="'260px'" no-lines no-paddings>
-    <div *virtualItem="let product">
-      <!-- <ion-slides [options]="mySlideOptions"> -->
-      <div style="position: relative;">
-        <a (tap)="openProductDetailsPage(product)">
-          <ion-img class="bigImage" [src]="product.imageURL"></ion-img>
-        </a>
-        <a class="fab-favorite" (tap)="likeProduct(product)">
-          <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
-          <ion-icon name='heart' *ngIf="alreadyLiked(product) == true" style="color:pink"></ion-icon>
-        </a>
-
-        <div class="fab-time">
-          <ion-icon name='time-outline'></ion-icon>
-          <span class="fab-time-text">{{product.time}}分</span>
+            <a class="fab-favorite" (tap)="favoriteProduct(product)">
+                <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
+                <ion-icon name='heart' *ngIf="alreadyLiked(product) == true" style="color:pink"></ion-icon>
+            </a>
+            <div class="fab-bot-middle">
+                {{product.productName}} {{product.serviceProvider.nickname}} {{product.pricing}}
+            </div>
         </div>
+    </ion-list>
 
-        <a class="fab-serviceProvider" (tap)="openServiceProviderDetailsPage(product)">
-          <ion-avatar>
-            <ion-img class="roundServiceProviderButton" [src]="product.serviceProviderImageURL"></ion-img>
-          </ion-avatar>
-        </a>
-
-        <div class="cardIntroduction">
-          <span item-left>{{product.productName}}</span>
-          <span [hidden]="product.serviceProviderNickname">{{product.serviceProviderName}}</span>
-          <span [hidden]="!product.serviceProviderNickname">{{product.serviceProviderNickname}}</span>
-          <span>{{product.pricing}}</span>
-        </div>
-      </div>
-    </div>
     <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
-      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
     </ion-infinite-scroll>
-    <!--<ion-item>
 
-      <ion-thumbnail item-left (tap)="openProductDetailsPage(product)">
-        <img [src]="product.imageURL">
-      </ion-thumbnail>
+    <!-- <ion-list [virtualScroll]="products" [approxItemHeight]="'240px'" [bufferRatio]="3" no-lines no-paddings>
+        <div *virtualItem="let product">
+            <a>
+                <ion-img class="bigImage" [src]="product.imageURL" (tap)="openProductDetailsPage(product)"></ion-img>
+                <div class="fab-bot-left">
+                    <span class="fab-bot-text">{{product.reviewNumber}}</span>
+                    <ion-icon name='chatboxes'></ion-icon>
+                </div>
 
-      <h2 (tap)="openProductDetailsPage(product)">
-        {{product.productName}} {{product.serviceProviderName}}
-      </h2>
-      <p (tap)="openProductDetailsPage(product)">{{product.introduction}}</p>
-      <button ion-button clear item-right>
-                <a class="fab-favorite" (tap)="likeProduct(product)">
-                  <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
-                  <ion-icon name='heart' color='positive' *ngIf="alreadyLiked(product) == true" style="color:pink" ></ion-icon>
-    </a>
-      </button>
-    </ion-item>-->
+                <div class="fab-bot-right">
+                    <span class="fab-bot-text">{{product.userNumber}}/{{product.userNumberLimit}}</span>
+                    <ion-icon name='person'></ion-icon>
+                </div>
 
-  </ion-list>
+                <a class="fab-favorite" (tap)="favoriteProduct(product)">
+                    <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
+                    <ion-icon name='heart' *ngIf="alreadyLiked(product) == true" style="color:pink"></ion-icon>
+                </a>
+                <div class="fab-bot-middle">
+                    {{product.productName}} {{product.serviceProvider.nickname}} {{product.pricing}}
+                </div>
+            </a>
+        </div>
+    </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll> -->
+
+
 </ion-content>

@@ -2,38 +2,44 @@
  * Created by liuchao on 6/25/16.
  */
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { Events, NavController, NavParams, PopoverController, ModalController } from 'ionic-angular';
+import { Events, NavController, NavParams, PopoverController, ModalController, Content,ToastController, AlertController } from 'ionic-angular';
 import { ProductListsPop1 } from "./popoverPages/productListsPop1";
 import { ProductListsPop2 } from "./popoverPages/productListsPop2";
 import { ProductListsPop3 } from "./popoverPages/productListsPop3";
+import { ProductSublists } from './productSublists/productSublists';
 import { ProductDetails } from './productDetails/productDetails';
 import { ServiceProviderDetails } from '../../serviceProvider/serviceProviderDetails/serviceProviderDetails';
 import { ModalContentPage } from "./modalPages/modalContent";
-import { ProductService } from '../../providers/product-getAllProducts-service/product-getAllProducts-service';
-import { CheckLogin } from '../../../providers/check-login'
+import { ProductProvider } from '../../../providers/productProvider';
+import { UserProvider } from '../../../providers/userProvider'
+import { FavoriteProvider } from '../../../providers/favoriteProvider'
 import { Storage } from '@ionic/storage'
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
+import { TranslateService } from 'ng2-translate/ng2-translate';
 
 @Component({
   selector: 'page-productLists',
   templateUrl: 'productLists.html',
-  providers: [ProductService, CheckLogin]
+  providers: [ProductProvider, UserProvider,FavoriteProvider]
 })
 export class ProductLists {
-  @ViewChild('popoverContent', { read: ElementRef }) content: ElementRef;
+  @ViewChild('popoverContent', { read: ElementRef }) popContent: ElementRef;
   @ViewChild('popoverText', { read: ElementRef }) text: ElementRef;
+  @ViewChild(Content) content: Content;
+
   serviceProvider;
   category;
   title
   productOrServiceProvider;
   products:any = [];
+  public menu1: any = [];
+  public menu2: any = [];
+  public menu3 = [];
+  public menu4 = [];
+  public grid = [];
   product:any;
   start = 0
-  grid = [
-    {},
-    {},
-  ];
   mySlideOptions = {
     autoplay: 3500,
     loop: true,
@@ -59,17 +65,27 @@ export class ProductLists {
     private events: Events,
     private http: Http,
     public storage: Storage,
-    public checkLogin: CheckLogin,
-    public productService: ProductService) {
+    public userProvider: UserProvider,
+    public productProvider: ProductProvider,
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController,
+    private translate: TranslateService,
+    public favoriteProvider: FavoriteProvider) {
     this.category = params.data.category;
     this.productOrServiceProvider = "product";
     console.log("params.data");
         console.log(params.data);
         console.log(this.category)
     this.title = params.data.name
+
+    if(this.params.data.sub){
+      if(this.params.data.sub.length>0)
+      this.getMenu(this.params.data.sub)
+    }
+    console.log(this.grid)
     this.loadProducts();
     this.popover = popover;
-    this.checkLogin.load()
+    this.userProvider.loadLocalStorage()
       .then(data => {
         this.validation = data
         this.alreadyLoggedIn = true;
@@ -79,11 +95,25 @@ export class ProductLists {
   ionViewWillEnter() {
     // console.log("send hideTabs event")
     // this.events.publish('hideTabs');
-    this.checkLogin.load()
+    this.userProvider.loadLocalStorage()
       .then(data => {
         this.validation = data
         this.alreadyLoggedIn = true;
       });
+  }
+
+  translateMenu(menuItemName){
+    let returnData = menuItemName ;
+    this.translate.get(menuItemName).subscribe(response => {
+      returnData = response
+    })
+    return returnData
+  }
+  getMenu(data) {
+                  for (var i = 0; i < 5; i++) {
+                      this.menu1.push(data[i])
+                  }
+                  this.grid.push(this.menu1);
   }
 
   openModal(characterNum) {
@@ -99,7 +129,7 @@ export class ProductLists {
 
   loadProducts() {
   return new Promise(resolve => {
-      this.productService.load(this.start,this.category,null)
+      this.productProvider.get(this.start,this.category,"all",null)
       .then(data => {
         console.log("data")
         console.log(data)
@@ -114,7 +144,7 @@ export class ProductLists {
 
   presentProductListsPop1Popover(ev) {
     let productListsPop1 = this.popover.create(ProductListsPop1, {
-      contentEle: this.content.nativeElement,
+      popContentEle: this.popContent.nativeElement,
       textEle: this.text.nativeElement
     });
 
@@ -126,7 +156,7 @@ export class ProductLists {
 
   presentProductListsPop2Popover(ev) {
     let productListsPop2 = this.popover.create(ProductListsPop2, {
-      contentEle: this.content.nativeElement,
+      popContentEle: this.popContent.nativeElement,
       textEle: this.text.nativeElement
     });
 
@@ -138,7 +168,7 @@ export class ProductLists {
 
   presentProductListsPop3Popover(ev) {
     let productListsPop3 = this.popover.create(ProductListsPop3, {
-      contentEle: this.content.nativeElement,
+      popContentEle: this.popContent.nativeElement,
       textEle: this.text.nativeElement
     });
 
@@ -148,83 +178,81 @@ export class ProductLists {
     });
   }
 
+  openProductSublistsPage(menuItem){
+  console.log("menuItem")
+
+   console.log(menuItem)
+   this.nav.push(ProductSublists, {name:this.params.data.category,sub:menuItem.category});
+  }
+
   openProductDetailsPage(product) {
     console.log("detail open");
-    this.nav.push(ProductDetails, { product: product });
+    this.nav.push(ProductDetails, product);
   }
-
 
   alreadyLiked(product) {
-        if(this.validation == undefined){
-      return false;
-    }else {
-    if (this.validation.username == undefined) {
-      return false
-    } else if (product.likedBy.indexOf(this.validation.username) >= 0) {
-       console.log("posessed")
-      // console.log(product.likedBy.indexOf(validation.username))
-      return true
-    } else {
-      //console.log("not exist")
-      return false
+    if (this.validation  ) {
+    if(product._id && this.validation.likedProduct){
+      if (this.validation.likedProduct.indexOf(product._id) >= 0) {
+        return true
+      }
+      }
     }
-    }
+    return false
   }
 
-  likeProduct(product) {
-    if (this.validation.username == undefined) {
-      alert("login before use,dude")
-      this.storage.remove('validation').then((data1) => {
-        console.log(data1)
-        console.log("data1")
+  presentAlert() {
+  let alert = this.alertCtrl.create({
+    title: 'Please login first!',
+    subTitle: '',
+    buttons: ['OK']
+  });
+  setTimeout(() => {
+    this.alreadyLoggedIn = true;
+  }, 50);
+  alert.present();
+}
 
-      })
-    } else {
-      var likedProduct = {
+  favoriteProduct(product) {
+    if (this.validation.id) {
+      console.log(product)
+      var theProduct = {
         _id: product._id,
-        username: this.validation.username,
+        id: this.validation.id,
         password: this.validation.password
       }
       console.log(product.likedBy);
 
-      this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/product/likeProduct', likedProduct)
-        .map(res => res.json())
-        .subscribe(data => {
-          // we've got back the raw data, now generate the core schedule data
-          // and save the data for later reference
-          // alert(data);
+      this.favoriteProvider.postProduct(theProduct).then(data => {
+      var flag = data
+      if (flag == "push") {
+        product.likedBy.push(this.validation.id);
+        this.validation.likedProduct.push(product._id)
+      } else if (flag == "pull") {
 
-          console.log(data)
-          //var flag = data[_body]
+        var index = product.likedBy.indexOf(this.validation.id);
+        if (index > -1) {
+          product.likedBy.splice(index, 1);
+        }
 
-          var flag = data.data
-          if (flag == "push") {
-            product.likedBy.push(this.validation.username);
-            this.validation.likedProduct.push(product._id)
-            this.checkLogin.updateLikedProduct(this.validation.likedProduct)
-            } else if (flag == "pull") {
+        var index2 = this.validation.likedProduct.indexOf(product._id);
+        if (index2 > -1) {
+          this.validation.likedProduct.splice(index2, 1);
+        }
+        console.log(this.validation)
+      }
+      this.userProvider.saveLocalStorage(this.validation)
+      console.log(product.likedBy);
+      })
+    } else {
+      this.presentAlert()
 
-            var index = product.likedBy.indexOf(this.validation.username);
-            if (index > -1) {
-              product.likedBy.splice(index, 1);
-            }
-
-            var index2 = this.validation.likedProduct.indexOf(product._id);
-            if (index2 > -1) {
-              this.validation.likedProduct.splice(index2, 1);
-            }
-            console.log(this.validation)
-            this.checkLogin.updateLikedProduct(this.validation.likedProduct)
-            }
-          console.log(product.likedBy);
-
-        });
     }
   }
 
   openServiceProviderDetailsPage(product) {
             product.from = "productListPage"
-            this.nav.push(ServiceProviderDetails, product);
+            this.nav.push(ServiceProviderDetails, product.serviceProvider);
   }
 
   doInfinite(infiniteScroll: any) {
@@ -259,4 +287,34 @@ export class ProductLists {
        refresher.complete();
      }, 1000);
    }
+
+   scrollToTop() {
+     this.content.scrollToTop();
+   }
+
+   goTop() {
+       this.scrollToTop()
+       this.presentToast()
+
+       setTimeout(() => {
+           this.products = []
+           this.start = 0
+           this.loadProducts()
+       }, 500);
+   }
+
+   presentToast() {
+     let toast = this.toastCtrl.create({
+       message: 'Refreshing...',
+       duration: 1000,
+       position: 'middle'
+     });
+
+     toast.onDidDismiss(() => {
+       console.log(' ');
+     });
+
+     toast.present();
+   }
+
 }

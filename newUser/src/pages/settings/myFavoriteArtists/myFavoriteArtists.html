@@ -1,26 +1,28 @@
 <ion-header>
-  <ion-navbar>
+    <ion-navbar>
 
-    <ion-title>My Favorite Artists</ion-title>
+        <ion-title>
+            {{ 'Favorite Pros' | translate }}
+        </ion-title>
 
-  </ion-navbar>
+    </ion-navbar>
 </ion-header>
 
 <ion-content>
 
-  <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
-    </ion-refresher-content>
-  </ion-refresher>
+    <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+        </ion-refresher-content>
+    </ion-refresher> -->
 
-  <ion-list [virtualScroll]="serviceProviders" approxItemHeight="60px">
-    <ion-item *virtualItem="let serviceProvider" (tap)="openServiceProviderDetailsPage(serviceProvider)">
-      <ion-thumbnail item-left>
-        <img style="object-fit:cover; border-radius:5%;" src="{{serviceProvider.serviceProviderImageURL}}">
-      </ion-thumbnail>
-      <h2>{{serviceProvider.serviceProviderName}} </h2>
-      <p>{{serviceProvider.serviceProviderIntroduction}}</p>
-    </ion-item>
-  </ion-list>
+    <ion-list [virtualScroll]="serviceProviders" approxItemHeight="60px" [bufferRatio]="3">
+        <ion-item *virtualItem="let serviceProvider" (tap)="openServiceProviderDetailsPage(serviceProvider)">
+            <ion-thumbnail item-left>
+                <img style="object-fit:cover; border-radius:5%;" src="{{serviceProvider.imageURL}}">
+            </ion-thumbnail>
+            <h2>{{serviceProvider.nickname}} </h2>
+            <p>{{serviceProvider.introduction}}</p>
+        </ion-item>
+    </ion-list>
 
 </ion-content>

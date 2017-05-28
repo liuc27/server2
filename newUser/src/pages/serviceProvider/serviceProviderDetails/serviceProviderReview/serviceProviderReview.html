@@ -1,0 +1,48 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            {{serviceProvider.nickname}}
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content class="settings">
+
+    <!-- <div [hidden]="!showReviewBox" style="padding: 0.5em">
+        <div no-padding>
+            <rating [(ngModel)]="rating"></rating>
+        </div>
+        <div>
+            <ion-textarea placeholder="Input review here" [(ngModel)]="reviewText" style="border-bottom-width: 1px"></ion-textarea>
+        </div>
+
+        <button ion-button style="float: right" (tap)="review()">Review</button>
+
+    </div> -->
+        <div class="spaceLine"></div>
+        <ion-item>
+            {{ 'Reviews' | translate }}
+        </ion-item>
+        <ion-list [virtualScroll]="reviews" [approxItemHeight]="'260px'" no-lines no-paddings>
+            <div *virtualItem="let review">
+                <div style="position: relative;">
+
+                    <h2 class="alignLeft">{{review.text}}</h2>
+                    <h3 class="alignRight">{{review.author.nickname}}</h3>
+                    <h3 class="alignRight">{{review.created | date:'yyyy/MM/dd hh:mm:ss'}}</h3>
+                </div>
+            </div>
+
+        </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+</ion-content>
+
+<ion-footer class="Review">
+    <ion-toolbar (tap)="showReviewBox=!showReviewBox">
+        <ion-title> {{ 'Review' | translate }}
+        </ion-title>
+    </ion-toolbar>
+</ion-footer>

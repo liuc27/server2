@@ -2,12 +2,12 @@
  * Created by liuchao on 6/25/16.
  */
 import {Component, ViewChild, ElementRef} from '@angular/core';
-import { ActionSheetController, Events, NavController, NavParams} from 'ionic-angular';
+import { ActionSheetController, Events, NavController, NavParams, Content,ToastController} from 'ionic-angular';
 import {Storage} from '@ionic/storage'
 import {SafeResourceUrl,} from '@angular/platform-browser';
-import {ProductService} from '../../../../providers/product-getAllProducts-service/product-getAllProducts-service';
+import {ProductProvider} from '../../../../../providers/productProvider';
 import { Http } from '@angular/http';
-import {CheckLogin} from '../../../../../providers/check-login'
+import {UserProvider} from '../../../../../providers/userProvider'
 
 import 'rxjs/add/operator/map';
 
@@ -18,15 +18,16 @@ declare var ImgWarper: any;
 @Component({
   selector: 'page-morphingPage',
   templateUrl: 'morphingPage.html',
-  providers:[ProductService,CheckLogin]
+  providers:[ProductProvider,UserProvider]
 })
 export class MorphingPage {
-  @ViewChild('popoverContent', {read: ElementRef}) content: ElementRef;
+  @ViewChild('popoverContent', {read: ElementRef}) popContent: ElementRef;
   @ViewChild('popoverText', {read: ElementRef}) text: ElementRef;
   @ViewChild('result3', {read: ElementRef}) result3: ElementRef;
   @ViewChild('result4', {read: ElementRef}) result4: ElementRef;
   @ViewChild('result5', {read: ElementRef}) result5: ElementRef;
   @ViewChild('result6', {read: ElementRef}) result6: ElementRef;
+  @ViewChild(Content) content: Content;
 
 
   uploadedImg = {data:undefined};
@@ -59,9 +60,10 @@ export class MorphingPage {
               private nav:NavController,
               private actionSheet:ActionSheetController,
               private events: Events,
-              public morphingPageService:ProductService,
+              public morphingPageService:ProductProvider,
               public storage:Storage,
-              public checkLogin:CheckLogin,
+              public userProvider:UserProvider,
+              private toastCtrl: ToastController,
               private http: Http) {
     this.data = {};
     // this.cropperSettings = new CropperSettings();
@@ -100,7 +102,7 @@ export class MorphingPage {
     // });
 
     //console.log("start");
-    this.checkLogin.load()
+    this.userProvider.loadLocalStorage()
       .then(data => {
         this.validation = data
         this.alreadyLoggedIn = true;
@@ -361,4 +363,31 @@ export class MorphingPage {
 
   }
 
+
+
+    scrollToTop() {
+      this.content.scrollToTop();
+    }
+
+    goTop() {
+        this.scrollToTop()
+      //  this.presentToast()
+
+
+    }
+
+/*    presentToast() {
+      let toast = this.toastCtrl.create({
+        message: 'Refreshing...',
+        duration: 1000,
+        position: 'middle'
+      });
+
+      toast.onDidDismiss(() => {
+        console.log(' ');
+      });
+
+      toast.present();
+    }
+*/
 }

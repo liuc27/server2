@@ -2,14 +2,14 @@
  * Created by liuchao on 6/25/16.
  */
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { Events, NavController, NavParams, PopoverController, AlertController } from 'ionic-angular';
+import { Events, NavController, NavParams, PopoverController, AlertController, Content,ToastController } from 'ionic-angular';
 import { ProductDetails } from '../../../product/productLists/productDetails/productDetails';
-import { CheckLogin } from '../../../../providers/check-login'
-import {GetServiceProviderCalendar } from '../../../../providers/getServiceProviderCalendar'
+import { UserProvider } from '../../../../providers/userProvider'
+import {OfferProvider } from '../../../../providers/offerProvider'
 import { Storage } from '@ionic/storage'
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { ProductService } from '../../../providers/product-getAllProducts-service/product-getAllProducts-service';
+import { ProductProvider } from '../../../../providers/productProvider';
 import { ReservationDetails } from './reservationDetails/reservationDetails';
 import moment from 'moment';
 
@@ -28,9 +28,11 @@ import 'moment-timezone';
 @Component({
   selector: 'page-reservation',
   templateUrl: 'reservation.html',
-  providers: [ProductService, CheckLogin, GetServiceProviderCalendar]
+  providers: [ProductProvider, UserProvider, OfferProvider]
 })
 export class Reservation {
+@ViewChild(Content) content: Content;
+
   serviceProvider: any = {};
   serviceProviderDetails: any = [];
   alreadyLoggedIn = false;
@@ -63,12 +65,13 @@ export class Reservation {
     private popover: PopoverController,
     private events: Events,
     public storage: Storage,
-    public checkLogin: CheckLogin,
-    public getServiceProviderCalendar: GetServiceProviderCalendar,
+    public userProvider: UserProvider,
+    public offerProvider: OfferProvider,
     private http: Http,
-    public productService: ProductService,
-    public reservationService: ProductService,
-    public alertCtrl: AlertController) {
+    public productProvider: ProductProvider,
+    public reservationService: ProductProvider,
+    private toastCtrl: ToastController,
+    private alertCtrl: AlertController) {
     console.log("params.data is")
     console.log(params.data)
     this.serviceProvider = params.data.serviceProvider
@@ -82,13 +85,13 @@ export class Reservation {
 
     events.subscribe('guide', (data) => {
 
-      this.checkLogin.load()
+      this.userProvider.loadLocalStorage()
         .then(data => {
           this.validation = data
           this.alreadyLoggedIn = true;
-
       })
     })
+
 }
 
 ionViewWillEnter() {
@@ -100,54 +103,45 @@ ionViewWillEnter() {
   this.guideEventSource = []
   this.chatEventSource = []
 
-  this.checkLogin.load()
+
+  this.userProvider.loadLocalStorage()
     .then(data => {
+      console.log("userProvider done")
       this.validation = data
       this.alreadyLoggedIn = true;
       });
 
-      this.getServiceProviderCalendar.load(this.serviceProvider.serviceProviderName, this.serviceProvider.serviceProviderPassword)
+      console.log(this.serviceProvider)
+      this.offerProvider.serviceProviderOffer(this.serviceProvider.id)
         .then(data2 => {
-          var data3 = []
           console.log(data2)
-          data3 = this.changeISOtoDate(data2)
-          if (data3[0]) {
-            data3.forEach((element, index) => {
-              element.title = element.username.length.toString() + "/" + element.userNumberLimit.toString()
-            })
-            if (data3[0].serviceType === "guide") {
-              this.eventSource = [].concat(data3)
-              this.guideEventSource = this.eventSource
-            } else if (data3[0].serviceType === "chat") {
-              this.eventSource = [].concat(data3)
-              this.chatEventSource = this.eventSource
-            }
-          }
-        })
+          data2.forEach((element, index) => {
+            element.startTime = moment(element.startTime).toDate()
+            element.endTime = moment(element.endTime).toDate()
+            data2[index].title = element.user.length+'/'+element.userNumberLimit
 
+            if(element.user)
+            element.user.forEach((elementUser,userIndex) =>{
+              if(elementUser.id === this.validation.id){
+                data2[index].title = this.validation.nickname
+              }
+              })
+
+          })
+          this.eventSource = data2
+          //if(serviceType== "guide")
+          this.guideEventSource = data2
+        })
 }
 
 changeISOtoDate(data2){
   var data3 = [];
+
   data2.forEach((element, index) => {
-    data3.push({
-      _id: element._id,
-      title: element.title,
-      serviceType: element.serviceType,
-      startTime: moment(element.startTime).toDate(),
-      endTime: moment(element.endTime).toDate(),
-      allDay: element.allDay,
-      creatorName: element.creatorName,
-      serviceProviderName: element.serviceProviderName,
-      username: element.username,
-      serviceProviderNumberLimit: element.serviceProviderNumberLimit,
-      userNumberLimit: element.userNumberLimit,
-      repeat: element.repeat,
-      pricePerHour: element.pricePerHour,
-      action: element.action,
-      price: element.price
-    });
+    element.startTime = moment(element.startTime).toDate()
+    element.endTime = moment(element.endTime).toDate()
   })
+
   return data3;
 }
 
@@ -155,7 +149,7 @@ loadSelectedServiceProviderDetails(paramsData) {
 
 
   return new Promise(resolve => {
-    this.productService.load(this.start, null, paramsData.serviceProviderName)
+    this.productProvider.get(this.start, null,"all", paramsData.serviceProviderId)
       .then(data => {
         console.log("data")
         console.log(data)
@@ -180,10 +174,6 @@ today() {
   this.calendar.currentDate = new Date();
 }
 
-loadEvents() {
-  this.eventSource = this.createRandomEvents();
-}
-
 onViewTitleChanged(title) {
   this.viewTitle = title;
 }
@@ -192,12 +182,22 @@ onEventSelected(event) {
   console.log('Event selected:' + event.startTime + '-' + event.endTime + ',' + event.title);
 }
 
-
+presentAlert(data) {
+let alert = this.alertCtrl.create({
+  title: data,
+  subTitle: '',
+  buttons: ['OK']
+});
+setTimeout(() => {
+  this.alreadyLoggedIn = true;
+}, 50);
+alert.present();
+}
 
 onTimeSelected(ev) {
   console.log('Selected time: ' + ev.selectedTime + ', hasEvents: ' + (ev.events !== undefined && ev.events.length !== 0));
-  console.log(ev);
-  console.log("sesesese")
+  console.log(this.calendar.mode)
+  console.log(this.serviceType)
 
   if (this.calendar.mode == "month" && this.serviceType == "guide") {
     let confirm1 = this.alertCtrl.create({
@@ -218,9 +218,9 @@ onTimeSelected(ev) {
         }
       ]
     });
-    if(this.validation.username)
+    if(this.validation.id)
     confirm1.present();
-    else alert("Please login")
+    else this.presentAlert("Please login!")
   } else if (this.calendar.mode == "month" && this.serviceType == "chat") {
     let confirm2 = this.alertCtrl.create({
       title: 'Make chat reservation?',
@@ -251,14 +251,18 @@ onTimeSelected(ev) {
         }
       ]
     });
-    if(this.validation.username)
+    if(this.validation.id)
     confirm2.present();
-    else alert("Please login")
+    else this.presentAlert("Please login!")
   } else if (this.calendar.mode == "week" && this.serviceType == "guide") {
     var alertType = 0;
+    var alertType2 = 0;
     var theIndex;
+    console.log(this.guideEventSource)
 
     for (var i = 0; i < this.guideEventSource.length && alertType == 0; i++) {
+    console.log(ev.selectedTime.getTime())
+    console.log(this.guideEventSource[i].startTime.getTime())
       if (ev.selectedTime.getTime() == this.guideEventSource[i].startTime.getTime()) {
         alertType = 1;
         theIndex = i
@@ -266,12 +270,20 @@ onTimeSelected(ev) {
     }
 
 
-    if (alertType === 0) {
+    if (alertType === 1) {
 
-    } else if (this.guideEventSource[theIndex].username.indexOf(this.validation.username) > -1) {
+
+    this.guideEventSource[theIndex].user.forEach((elementUser,index) =>{
+      if(elementUser.id === this.validation.id){
+        alertType =2
+      }
+      })
+      }
+
+    if(alertType == 2) {
       let confirm = this.alertCtrl.create({
         title: 'Make reservation?',
-        message: 'How many hours do you need?',
+        message: 'Cancell reservation?',
         buttons: [
           {
             text: 'delete',
@@ -287,16 +299,17 @@ onTimeSelected(ev) {
           }
         ]
       });
-      if(this.validation.username)
+      if(this.validation.id)
       confirm.present();
-      else alert("Please login")
-    } else {
+      else this.presentAlert("Please login")
+    } else if(alertType == 1){
 
       console.log("ev")
       console.log(ev)
-      console.log(this.validation.username)
+      console.log(this.validation.id)
       console.log(this.guideEventSource)
-      console.log(this.guideEventSource[theIndex].username)
+      if(this.guideEventSource[theIndex].user.length>=this.guideEventSource[theIndex].userNumberLimit){
+      }else {
       let confirm2 = this.alertCtrl.create({
         title: 'Make reservation?',
         message: 'Make reservation?',
@@ -314,12 +327,12 @@ onTimeSelected(ev) {
           }
         ]
       });
-      if(this.validation.username)
+      if(this.validation.id)
       confirm2.present();
-      else alert("Please login")
+      else this.presentAlert("Please login")
+      }
     }
-  }
-
+}
 }
 
 createEvents(ev, h: Number) {
@@ -331,19 +344,22 @@ createEvents(ev, h: Number) {
       console.log(ev.selectedTime.getTime())
       if (ev.selectedTime.getTime() == elementEvent.startTime.getTime()) {
         console.log(index)
-        elementEvent.title = this.validation.username;
-        elementEvent.username.push(this.validation.username)
+        elementEvent.title = "✔";
+        elementEvent.user.push({_id:this.validation._id,id:this.validation.id,nickname:this.validation.nickname})
         this.eventSource = [].concat(this.guideEventSource);
         this.addedEventSource.push({
           _id: elementEvent._id,
-          creatorName: elementEvent.creatorName,
-          serviceProviderName: elementEvent.serviceProviderName,
-          username: this.validation.username,
+          creatorId: elementEvent.creatorId,
+          serviceProvider: elementEvent.serviceProvider,
+          user: {
+            id:this.validation.id,
+            nickname:this.validation.nickname
+          },
           serviceType: "guide",
           action: "put",
           startTime: elementEvent.startTime,
           endTime: elementEvent.endTime,
-          pricePerHour: elementEvent.pricePerHour
+          price: elementEvent.price
         })
         console.log(this.addedEventSource)
         console.log(this.eventSource)
@@ -355,10 +371,9 @@ createEvents(ev, h: Number) {
       console.log(ev.selectedTime.getTime())
       if (ev.selectedTime.getTime() == elementEvent.startTime.getTime()) {
         console.log(index)
-;
-        elementEvent.username.forEach((elementUsername, usernameIndex) => {
-          if (elementUsername == this.validation.username) {
-            elementEvent.username.splice(usernameIndex,1)
+        elementEvent.user.forEach((elementUser, idIndex) => {
+          if (elementUser.id == this.validation.id) {
+            this.guideEventSource[index].user.splice(idIndex,1)
 
           }
         })
@@ -375,19 +390,22 @@ createEvents(ev, h: Number) {
         this.deletedEventSource.push({
           _id: elementEvent._id,
           serviceType: "guide",
-          creatorName: elementEvent.creatorName,
-          serviceProviderName: elementEvent.serviceProviderName,
-          username: this.validation.username,
+          creatorId: elementEvent.creatorId,
+          serviceProvider: elementEvent.serviceProvider,
+          user: {
+            id:this.validation.id,
+            nickname:this.validation.nickname
+          },
           action: "delete",
           startTime: elementEvent.startTime,
           endTime: elementEvent.endTime,
-          pricePerHour: elementEvent.pricePerHour
+          price: elementEvent.price
         })
-        elementEvent.title = elementEvent.username.length.toString() + "/" + elementEvent.userNumberLimit.toString()
+        elementEvent.title = elementEvent.user.length.toString() + "/" + elementEvent.userNumberLimit.toString()
         this.addedEventSource = []
         this.enterReservationDetails()
         }else {
-        elementEvent.title = elementEvent.username.length.toString() + "/" + elementEvent.userNumberLimit.toString()
+        elementEvent.title = elementEvent.user.length.toString() + "/" + elementEvent.userNumberLimit.toString()
         }
       }
     });
@@ -432,8 +450,11 @@ createCallReservation(ev, option: String) {
     startTime: startTime,
     endTime: endTime,
     allDay: false,
-    serviceProviderName: this.serviceProvider.serviceProviderName,
-    username: this.validation.username
+    serviceProvider: {id:this.serviceProvider.id,nickname:this.serviceProvider.nickname},
+    user: {
+      id:this.validation.id,
+      nickname:this.validation.nickname
+    }
   })
   this.eventSource = [].concat(this.chatEventSource);
   this.chatEventSource = this.eventSource;
@@ -444,48 +465,6 @@ onCurrentDateChanged(event: Date) {
   today.setHours(0, 0, 0, 0);
   event.setHours(0, 0, 0, 0);
   this.isToday = today.getTime() === event.getTime();
-}
-
-createRandomEvents() {
-  var events = [];
-  for (var i = 0; i < 50; i += 1) {
-    var date = new Date();
-    var eventType = Math.floor(Math.random() * 2);
-    var startDay = Math.floor(Math.random() * 90) - 45;
-    var endDay = Math.floor(Math.random() * 2) + startDay;
-    var startTime;
-    var endTime;
-    if (eventType === 0) {
-      startTime = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + startDay));
-      if (endDay === startDay) {
-        endDay += 1;
-      }
-      endTime = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + endDay));
-      events.push({
-        title: 'All Day - ' + i,
-        startTime: startTime,
-        endTime: endTime,
-        allDay: true,
-        serviceProviderName: this.serviceProvider.serviceProviderName,
-        username: this.validation.username
-      });
-    } else {
-      var startMinute = Math.floor(Math.random() * 24 * 60);
-      var endMinute = Math.floor(Math.random() * 180) + startMinute;
-      startTime = new Date(date.getFullYear(), date.getMonth(), date.getDate() + startDay, 0, date.getMinutes() + startMinute);
-      endTime = new Date(date.getFullYear(), date.getMonth(), date.getDate() + endDay, 0, date.getMinutes() + endMinute);
-      events.push({
-        title: 'Event - ' + i,
-        startTime: startTime,
-        endTime: endTime,
-        allDay: false,
-        serviceProviderName: this.serviceProvider.serviceProviderName,
-        username: this.validation.username
-      });
-    }
-  }
-  console.log(events)
-  return events;
 }
 
 onRangeChanged(ev) {
@@ -506,16 +485,16 @@ selectedGuide() {
 }
 
 enterReservationDetails() {
-  if (this.validation.username && this.validation.password) {
+  if (this.validation.id && this.validation.password) {
     console.log(this.eventSource)
     console.log(this.addedEventSource)
     console.log(this.deletedEventSource)
     console.log(this.guideEventSource)
     var changedEventSource = this.addedEventSource.concat(this.deletedEventSource)
     if (changedEventSource.length > 0)
-      this.nav.push(ReservationDetails, { changedEventSource: changedEventSource });
-  } else if (!this.validation.username) {
-    alert("Please sign in first !")
+      this.nav.push(ReservationDetails, changedEventSource);
+  } else if (!this.validation.id) {
+    this.presentAlert("Please login in!")
   }
 }
 
@@ -526,33 +505,49 @@ doRefresh(refresher) {
 
   setTimeout(() => {
     console.log('Async loading has ended');
-    this.getServiceProviderCalendar.load(this.serviceProvider.serviceProviderName, this.serviceProvider.serviceProviderPassword)
+    this.offerProvider.serviceProviderOffer(this.serviceProvider.id)
       .then(data2 => {
-        var data3 = []
-        console.log(data2)
-        data3 = this.changeISOtoDate(data2)
-        if (data3[0]) {
-          data3.forEach((element, index) => {
-            element.title = element.username.length.toString() + "/" + element.userNumberLimit.toString()
-          })
-          if (data3[0].serviceType === "guide") {
-            this.eventSource = [].concat(data3)
-            this.guideEventSource = this.eventSource
-          } else if (data3[0].serviceType === "chat") {
-            this.eventSource = [].concat(data3)
-            this.chatEventSource = this.eventSource
-          }
-        }
+      console.log(data2)
+      data2.forEach((element, index) => {
+        element.startTime = moment(element.startTime).toDate()
+        element.endTime = moment(element.endTime).toDate()
       })
-
+      this.eventSource = data2
+    })
     refresher.complete();
   }, 1000);
   } else {
 
   setTimeout(() => {
-    alert("Please login")
+    this.presentAlert("Please login!")
     refresher.complete();
   }, 1000);
   }
+}
+
+scrollToTop() {
+  this.content.scrollToTop();
+}
+
+goTop() {
+    this.scrollToTop()
+    this.presentToast()
+    setTimeout(() => {
+        this.ionViewWillEnter();
+    }, 500);
+}
+
+presentToast() {
+  let toast = this.toastCtrl.create({
+    message: 'Refreshing...',
+    duration: 1000,
+    position: 'middle'
+  });
+
+  toast.onDidDismiss(() => {
+    console.log(' ');
+  });
+
+  toast.present();
 }
 }

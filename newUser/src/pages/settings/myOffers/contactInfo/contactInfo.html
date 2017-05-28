@@ -1,0 +1,34 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            {{ 'Settings' | translate }}
+        </ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content class="settings">
+
+    <ion-list>
+        <ion-item>
+            <ion-label>Username</ion-label>
+            <ion-note item-right style="color:black">{{user.nickname}}</ion-note>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Price</ion-label>
+            <ion-note item-right style="color:black">{{contactInfo.totalPrice}}</ion-note>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Contact Info</ion-label>
+            <ion-note item-right style="color:black">{{contactInfo.contact}}</ion-note>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Note</ion-label>
+            <ion-note item-right style="color:black">{{contactInfo.note}}</ion-note>
+        </ion-item>
+    </ion-list>
+
+
+</ion-content>

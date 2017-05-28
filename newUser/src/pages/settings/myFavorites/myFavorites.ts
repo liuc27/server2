@@ -5,9 +5,8 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Events, NavController, NavParams, PopoverController, AlertController } from 'ionic-angular';
 import { ProductDetails } from '../../product/productLists/productDetails/productDetails';
 import { ServiceProviderDetails } from '../../serviceProvider/serviceProviderDetails/serviceProviderDetails';
-import { CheckLogin } from '../../../providers/check-login'
-import { GetMyFavorites } from '../../../providers/getMyFavorites'
-import { TranslateService } from 'ng2-translate/ng2-translate';
+import { UserProvider } from '../../../providers/userProvider'
+import { FavoriteProvider } from '../../../providers/favoriteProvider'
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import moment from 'moment';
@@ -25,10 +24,10 @@ import 'moment-timezone';
 @Component({
   selector: 'page-myFavorites',
   templateUrl: 'myFavorites.html',
-  providers: [CheckLogin, GetMyFavorites]
+  providers: [UserProvider, FavoriteProvider]
 })
 export class MyFavorites {
-  username: String;
+  id: String;
   password: String;
   alreadyLoggedIn = false;
   products: any = [];
@@ -39,14 +38,9 @@ export class MyFavorites {
 
   constructor(private nav: NavController,
     private events: Events,
-    translate: TranslateService,
-    public checkLogin: CheckLogin,
-    public getMyFavorites: GetMyFavorites,
+    public userProvider: UserProvider,
+    public favoriteProvider: FavoriteProvider,
     private http: Http) {
-    translate.setDefaultLang('en');
-    translate.use('en');
-
-
     this.loadProducts()
   }
 
@@ -57,69 +51,64 @@ export class MyFavorites {
 
   openProductDetailsPage(product) {
     console.log("detail open");
-    this.nav.push(ProductDetails, { product: product });
+    this.nav.push(ProductDetails,  product );
   }
 
-  alreadyLiked(product) {
-    if (this.validation && this.validation.username) {
-      if (this.validation.likedProduct.indexOf(product._id) >= 0) {
-        console.log(product._id)
-        console.log("posessed")
-        return true
+
+
+
+    alreadyLiked(product) {
+      if (this.validation  ) {
+      if(product._id && this.validation.likedProduct){
+        if (this.validation.likedProduct.indexOf(product._id) >= 0) {
+          return true
+        }
+        }
       }
+      return false
     }
-    return false
-  }
 
-  likeProduct(product) {
-    if (this.validation.username == undefined) {
-      alert("login before use,dude")
-    } else {
-      var likedProduct = {
-        _id: product._id,
-        username: this.validation.username,
-        password: this.validation.password
-      }
-      console.log(product.likedBy);
+    favoriteProduct(product) {
+      if (this.validation.id) {
+        console.log(product)
+        var theProduct = {
+          _id: product._id,
+          id: this.validation.id,
+          password: this.validation.password
+        }
+        console.log(product.likedBy);
 
-      this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/product/likeProduct', likedProduct)
-        .map(res => res.json())
-        .subscribe(data => {
-          // we've got back the raw data, now generate the core schedule data
-          // and save the data for later reference
-          // alert(data);
+        this.favoriteProvider.postProduct(theProduct).then(data => {
+        var flag = data
+        if (flag == "push") {
+          product.likedBy.push(this.validation.id);
+          this.validation.likedProduct.push(product._id)
+        } else if (flag == "pull") {
 
-          console.log(data)
-          //var flag = data[_body]
-
-          var flag = data.data
-          if (flag == "push") {
-            product.likedBy.push(this.validation.username);
-            this.validation.likedProduct.push(product._id)
-            this.checkLogin.updateLikedProduct(this.validation.likedProduct)
-          } else if (flag == "pull") {
-
-            var index = product.likedBy.indexOf(this.validation.username);
-            if (index > -1) {
-              product.likedBy.splice(index, 1);
-            }
-
-            var index2 = this.validation.likedProduct.indexOf(product._id);
-            if (index2 > -1) {
-              this.validation.likedProduct.splice(index2, 1);
-            }
-            console.log(this.validation)
-            this.checkLogin.updateLikedProduct(this.validation.likedProduct)
+          var index = product.likedBy.indexOf(this.validation.id);
+          if (index > -1) {
+            product.likedBy.splice(index, 1);
           }
-          console.log(product.likedBy);
 
-        });
+          var index2 = this.validation.likedProduct.indexOf(product._id);
+          if (index2 > -1) {
+            this.validation.likedProduct.splice(index2, 1);
+          }
+          console.log(this.validation)
+        }
+        this.userProvider.saveLocalStorage(this.validation)
+        console.log(product.likedBy);
+        })
+      } else {
+        alert("login before use,dude")
+
+      }
     }
-  }
+
 
   openServiceProviderDetailsPage(product) {
-    product.from = "productListPage"
-    this.nav.push(ServiceProviderDetails, product);
+    product.from = "myFavoriteProductPage"
+    this.nav.push(ServiceProviderDetails, product.serviceProvider);
   }
 
   doInfinite(infiniteScroll: any) {
@@ -160,7 +149,7 @@ export class MyFavorites {
     return new Promise(resolve => {
 
 
-      this.checkLogin.load()
+      this.userProvider.loadLocalStorage()
         .then(data => {
           this.validation = data
           this.alreadyLoggedIn = true;
@@ -172,8 +161,8 @@ export class MyFavorites {
           likedProduct.skip = this.start;
           likedProduct.limit = this.limit
 
-          this.getMyFavorites.load(this.validation.username, this.validation.password).then(data => {
-            this.products = data;
+          this.favoriteProvider.getProducts(this.validation.id).then(data => {
+             this.products = data;
           })
           console.log(this.products)
 
