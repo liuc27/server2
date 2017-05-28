@@ -16,9 +16,10 @@ var limiterPost = new Limiter({
 var url = require('url');
 var Product = require('../models/product')
 var User = require('../models/user')
+var Offer = require('../models/offer')
 
 var fs = require('fs')
-var fileURL = 'http://10.201.219.13:3000/images/'
+var fileURL = 'http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/images/'
 var ObjectId = require('mongoose').Types.ObjectId;
 
 /* /api/products */
@@ -28,29 +29,55 @@ router.get('/', limiterPost.middleware({
     outerLimit: 200,
     headers: false
 }), (req, res) => {
-
     const category = req.query.category
+    const subCategory = req.query.subCategory
     const serviceProviderId = req.query.serviceProviderId
-    const query = {}
+    let query = {}
     let skipClause = 0
     let limitClause = 20
+    let sortClause = {
+        'created': -1
+    }
+
     if (req.query.skip) skipClause = parseInt(req.query.skip)
     if (req.query.limit) limitClause = parseInt(req.query.limit)
-    if (serviceProviderId) {
-        query.serviceProviderId = serviceProviderId
-    }
+
     if (category && category != "all") {
-        query.category = category
-    }
+      if(category&&subCategory&& subCategory != "all"){
+        query = {
+            'category.name': category,
+            'category.sub': subCategory
+        }
+      }else if(category){
+        query = {
+            'category.name': category
+        }
+        }
+      }
+
     console.log(query)
-    Product.paginate(query, {
-        select: 'productName imageURL likedBy serviceProviderId serviceProviderImageURL time nickname',
-        offset: skipClause,
-        limit: limitClause
-    }, function(err, data) {
-        if (err) return next(err);
-        res.json(data.docs)
-    });
+    if (serviceProviderId) {
+        Product.paginate({
+            'serviceProvider.id': serviceProviderId
+        }, {
+            sort: sortClause,
+            select: 'productName imageURL likedBy time serviceProvider retail userNumber userNumberLimit reviewNumber',
+            offset: skipClause,
+            limit: limitClause
+        }, function(err, data) {
+            if (err) return (err);
+            res.json(data.docs)
+        });
+    } else
+        Product.paginate(query, {
+            sort: sortClause,
+            select: 'productName imageURL likedBy time serviceProvider retail  userNumber userNumberLimit reviewNumber',
+            offset: skipClause,
+            limit: limitClause
+        }, function(err, data) {
+            if (err) return next(err);
+            res.json(data.docs)
+        });
 })
 
 // router.get('/', limiterGet.middleware({
@@ -209,85 +236,150 @@ router.get('/getMenu', function(req, res, next) {
 
     var data = [{
         id: 0,
-        name: 'Food',
-        icon: 'ios-wine',
-        color: 'red',
-        category: 'food'
-    }, {
-        id: 1,
-        name: 'Funding',
+        name: 'Guide',
+        zh: '向导',
+        ja: 'ガイド',
         icon: 'ios-cafe',
         color: '#5383FF',
-        category: 'funding'
-
+        category: 'guide',
+        sub: []
+    }, {
+        id: 1,
+        name: 'Teach',
+        zh: '教学',
+        ja: '教育',
+        icon: 'ios-wine',
+        color: 'red',
+        category: 'teach',
+        sub: []
     }, {
         id: 2,
-        name: 'Beauty',
-        icon: 'ios-color-wand',
-        color: 'pink',
-        category: 'beauty'
+        name: 'Job Hunt',
+        zh: '职位介绍',
+        ja: 'リクルーター',
+        icon: 'ios-trash',
+        color: 'gold',
+        category: 'jobHunt',
+        sub: []
     }, {
         id: 3,
-        name: 'School',
-        icon: 'ios-school',
-        color: '#5383FF',
-        category: 'school'
-    }, {
-        id: 4,
-        name: 'Lang',
-        icon: 'ios-chatboxes',
-        color: 'silver',
-        category: 'launguage'
-    }, {
-        id: 5,
-        name: 'Operate',
-        icon: 'ios-laptop',
-        color: 'gold',
-        category: 'operating'
-    }, {
-        id: 6,
-        name: 'Skill',
+        name: 'School Find',
+        zh: '学校介绍',
+        ja: '学校紹介',
         icon: 'ios-construct',
         color: 'lightgreen',
-        category: 'skill'
+        category: 'schoolFind',
+        sub: []
+    }, {
+        id: 4,
+        name: 'Housework',
+        zh: '家政',
+        ja: '家政',
+        icon: 'ios-color-wand',
+        color: 'pink',
+        category: 'housework',
+        sub: []
+    }, {
+        id: 5,
+        name: 'Fix',
+        zh: '修理',
+        ja: '修理',
+        icon: 'ios-school',
+        color: '#5383FF',
+        category: 'fix',
+        sub: []
+    }, {
+        id: 6,
+        name: 'Beauty',
+        zh: '美丽健康',
+        ja: '美・健康',
+        icon: 'ios-chatboxes',
+        color: 'silver',
+        category: 'beauty',
+        sub: [{
+                id: 61,
+                name: 'Skin Care',
+                category: 'skinCare',
+                color: 'lightgreen'
+            },
+            {
+                id: 62,
+                name: 'Makeup',
+                category: 'makeup',
+                color: '#5383FF'
+            },
+            {
+                id: 63,
+                name: 'Diet',
+                category: 'diet',
+                color: 'silver'
+            },
+            {
+                id: 64,
+                name: 'Surgery',
+                category: 'surgery',
+                color: 'pink'
+            },
+            {
+                id: 65,
+                name: 'Others',
+                category: 'others',
+                color: 'yellow'
+            }
+        ]
     }, {
         id: 7,
-        name: 'Childcare',
-        icon: 'ios-musical-notes',
-        color: 'lightgreen',
-        category: 'childcare'
-    }, {
-        id: 8,
-        name: 'Trend',
+        name: 'Biz Advise',
+        zh: '商业介绍',
+        ja: 'ビジネス',
         icon: 'md-add',
         color: 'lightgreen',
-        category: 'trend'
+        category: 'bizAdvise',
+        sub: []
     }, {
-        id: 9,
-        name: 'All',
+        id: 8,
+        name: 'Law',
+        zh: '法律咨询',
+        ja: '法律',
         icon: 'ios-eye',
         color: 'orange',
-        category: 'all'
+        category: 'law',
+        sub: []
+    }, {
+        id: 9,
+        name: 'Others',
+        zh: '其他',
+        ja: 'その他',
+        icon: 'ios-musical-notes',
+        color: 'lightgreen',
+        category: 'others',
+        sub: []
     }]
     res.json(data)
 })
 
 // api/product
 
-router.post("/", (req, res) => {
-
-    if (!req.body.productName || !req.body.password || !req.body.serviceProviderId || !req.body.nickname || !req.body.category || !req.body.serviceProviderImageURL || !req.body.imageURL) {
+router.post('/', limiterPost.middleware({
+    innerLimit: 15,
+    outerLimit: 200,
+    headers: false
+}), (req, res) => {
+    if (!req.body.serviceProvider) {
         return res.status(500)
-            .send("No productName or serviceProviderId or password or nickname or category or imageURL ")
+            .send("No productName or serviceProviderId or password or serviceProvider_id or category or imageURL ")
+    } else if (!req.body.productName || !req.body.event || !req.body.serviceProvider.password || !req.body.serviceProvider.id || !req.body.serviceProvider._id || !req.body.category || !req.body.startTime || !req.body.endTime || !req.body.serviceProvider.imageURL || !req.body.imageURL) {
+        console.log(req.body)
+        return res.status(500)
+            .send("No productName or event or serviceProviderId or password or serviceProvider_id or category or imageURL ")
     }
-
+    const _id = req.body._id
+    const event = req.body.event
     const productName = req.body.productName
-    const serviceProviderId = req.body.serviceProviderId
-    const nickname = req.body.nickname
-    const password = req.body.password
-    const serviceProviderImageURL = req.body.serviceProviderImageURL
+    const serviceProvider = req.body.serviceProvider
     const category = req.body.category
     const time = req.body.time
+    const videoURL = req.body.videoURL
     const retail = req.body.retail
     const list = req.body.list
     const rate = req.body.rate
@@ -295,6 +387,10 @@ router.post("/", (req, res) => {
     const link = req.body.link
     const faceImagePoints = req.body.faceImagePoints
     const currentTime = new Date();
+    const startTime = req.body.startTime
+    const endTime = req.body.endTime
+    const userNumberLimit = req.body.userNumberLimit
+
 
     let imageURL = req.body.imageURL;
     let faceImageURL = req.body.faceImageURL;
@@ -302,22 +398,19 @@ router.post("/", (req, res) => {
     const productData = {}
 
     User.findOne({
-        id: req.body.serviceProviderId,
-        password: req.body.password
+        id: serviceProvider.id,
+        password: serviceProvider.password
     }, (err, result) => {
         if (err) {
             throw err;
         } else if (result === null) {
-            res.status(500).send("serviceProviderId not registered")
+            res.status(500).send("serviceProvider.id not registered")
         } else {
             if (productName) productData.productName = productName
-            if (serviceProviderId) productData.serviceProviderId = serviceProviderId
-            if (password) productData.password = password
-            if (nickname) productData.nickname = nickname
-            if (serviceProviderImageURL) productData.serviceProviderImageURL = serviceProviderImageURL
+            if (serviceProvider) productData.serviceProvider = serviceProvider
             if (category) productData.category = category
-
             if (time) productData.time = time
+            if (videoURL) productData.videoURL = videoURL
             if (retail) productData.retail = retail
             if (list) productData.list = list
             if (introduction) productData.introduction = introduction
@@ -325,6 +418,14 @@ router.post("/", (req, res) => {
             if (imageURL) productData.imageURL = imageURL
             if (faceImageURL) productData.faceImageURL = faceImageURL
             if (faceImagePoints) productData.faceImagePoints = faceImagePoints
+            if (startTime) productData.startTime = startTime
+            if (endTime) productData.endTime = endTime
+
+            if (userNumberLimit) {
+                productData.userNumberLimit = userNumberLimit
+            } else {
+                productData.userNumberLimit = 1
+            }
 
             if (currentTime) productData.created = currentTime
             if (currentTime) productData.updated = currentTime
@@ -337,10 +438,10 @@ router.post("/", (req, res) => {
                 base64Data = imageURL.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/png;base64,/, "");
                 base64Data += base64Data.replace('+', ' ');
                 binaryData = new Buffer(base64Data, 'base64').toString('binary');
-                fs.writeFile("images/" + serviceProviderId + "." + productName + ".productImage.png", binaryData, "binary", function(err) {
+                fs.writeFile("images/" + serviceProvider.id + "." + productName + ".productImage.png", binaryData, "binary", function(err) {
                     console.log(err); // writes out file without error, but it's not a valid image
                 });
-                productData.imageURL = fileURL + serviceProviderId + "." + productName + ".productImage.png";
+                productData.imageURL = fileURL + serviceProvider.id + "." + productName + ".productImage.png";
             }
 
             if (!faceImageURL) {
@@ -350,51 +451,84 @@ router.post("/", (req, res) => {
                 base64Data = faceImageURL.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/png;base64,/, "");
                 base64Data += base64Data.replace('+', ' ');
                 binaryData = new Buffer(base64Data, 'base64').toString('binary');
-                fs.writeFile("images/" + serviceProviderId + "." + productName + ".faceImageURL.png", binaryData, "binary", function(err) {
+                fs.writeFile("images/" + serviceProvider.id + "." + productName + ".faceImageURL.png", binaryData, "binary", function(err) {
                     console.log(err); // writes out file without error, but it's not a valid image
                 });
-                productData.faceImageURL = fileURL + serviceProviderId + "." + productName + ".faceImageURL.png";
+                productData.faceImageURL = fileURL + serviceProvider.id + "." + productName + ".faceImageURL.png";
             }
 
-            console.log(productData)
             const product = new Product(productData)
 
+            if (!_id) {
+                product.save((err, result2) => {
+                    if (err) {
+                        console.log(err)
+                        throw err;
+                    } else {
+                        let eventDetails = event
+                        eventDetails.productId = result2._id
+                        console.log(eventDetails)
+                        thisOffer = new Offer(eventDetails)
+                        thisOffer.save().then(function(offerResult) {
 
-            Product.findOne({
-                serviceProviderId: serviceProviderId,
-                productName: productName
-            }, (err, result) => {
-                if (err) {
-                    throw err;
-                } else if (result === null) {
-                    product.save((err, result) => {
-                        if (err) {
-                            throw err;
-                        } else {
-                            console.log(result)
-                            User.update({
-                                id: req.body.serviceProviderId
-                            }, {
-                                $addToSet: {
-                                    product: {
-                                        id: result._id,
-                                        productName: req.body.productName
-                                    },
-                                    category: req.body.category
-                                }
-                            }, (err, data) => {
-                                if (err) {
-                                    throw err
-                                }
-                                return res.status(200)
-                                    .json(productData);
-                            })
-                        }
-                    })
-                } else {
-                    res.status(500).send("Product Name already exists")
-                }
-            })
+                            console.log(offerResult)
+                            // User.update({
+                            //     id: serviceProvider.id
+                            // }, {
+                            //     $addToSet: {
+                            //         product: {
+                            //             _id: _id,
+                            //             productName: productName
+                            //         },
+                            //         category: category
+                            //     }
+                            // }, (err, data) => {
+                            //     if (err) {
+                            //         throw err
+                            //     }
+                            //     return res.status(200)
+                            //         .json(productData);
+                            // })
+                            return res.status(200)
+                                .json(productData);
+
+                        })
+                    }
+                })
+            } else {
+                Product.update({
+                    _id: _id
+                }, productData, {
+                    upsert: true
+                }, (err, result2) => {
+                    if (err) {
+                        console.log(err)
+                        throw err;
+                    } else {
+                        console.log(result2)
+                        // User.update({
+                        //     id: serviceProvider.id
+                        // }, {
+                        //     $addToSet: {
+                        //         product: {
+                        //             _id: _id,
+                        //             productName: productName
+                        //         },
+                        //         category: category
+                        //     }
+                        // }, (err, data) => {
+                        //     if (err) {
+                        //         throw err
+                        //     }
+                        //     return res.status(200)
+                        //         .json(productData);
+                        // })
+                        return res.status(200)
+                            .json(productData);
+                    }
+                })
+
+            }
         }
     })
 })
@@ -571,7 +705,7 @@ router.post("/", (req, res) => {
 //                 insertCommentData = {
 //                     discussion_id: req.body.discussion_id,
 //                     parent_id: req.body.parent_id,
-//                     posted: req.body.posted,
+//                     created: req.body.created,
 //                     id: req.body.id,
 //                     text: req.body.text,
 //                     notice: false,
@@ -605,7 +739,7 @@ router.post("/", (req, res) => {
 //                                 $push: {
 //                                     comment: {
 //                                         discussion_id: req.body.discussion_id,
-//                                         posted: req.body.posted
+//                                         created: req.body.created
 //                                     }
 //                                 }
 //                             }, function(err, data) {
@@ -628,4 +762,4 @@ router.post("/", (req, res) => {
 //     }
 // })
 
-module.exports = router;
+module.exports = router;;

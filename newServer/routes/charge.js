@@ -13,6 +13,7 @@ var limiterGet = new Limiter({
 var url = require('url');
 var User = require('../models/user')
 var Offer = require('../models/offer')
+var Product = require('../models/product')
 var Charge = require('../models/charge')
 var ObjectId = require('mongoose').Types.ObjectId;
 var async = require('async');
@@ -54,14 +55,63 @@ router.post('/', limiterGet.middleware({
             } else {
                 if (data == null) res.status(500)
                 else {
+                    console.log("charge succeed and begin update offer");
+
                     data.paid = true
                     newCharge = new Charge(data)
                     newCharge.save(err => {
-                        if (err) {
-                            throw err;
-                        }
-                        return res.status(200)
-                    });
+                            if (err) {
+                                throw err;
+                            }
+
+                            console.log("deal with the reservations")
+                            var updateOfferFlag = true
+
+                            async.each(data.reservation, function(element, next) {
+                                Offer.update({
+                                    _id: element._id
+                                }, {
+                                    $addToSet: {
+                                        user: element.user
+                                    }
+                                    //          ,title: (element.user.length + 1) / element.userNumberLimit
+                                }, function(err, data2) {
+                                    if (err) {
+                                        console.log("err")
+                                        updateOfferFlag = false
+                                    } else if (data2.nInserted) {
+                                        console.log(data2)
+                                        console.log("Offer Inserted!")
+                                        if (element.productId) {
+                                            Product.update({
+                                                _id: element.productId
+                                            }, {
+                                                $inc: {
+                                                    "userNumber": 1
+                                                }
+                                            }, function(err, data3) {
+                                                if (err) {
+                                                    throw (err)
+                                                } else {
+                                                    console.log("Product userNumber Updated!")
+                                                }
+                                            })
+                                        }
+                                    }
+                                })
+                            })
+                            next()
+                        },
+                        function(err) {
+                            if (err) throw (err)
+                            if (updateOfferFlag == true) {
+                                console.log("finished")
+                                return res.status(200)
+                            } else {
+                                console.log("updateOffer err")
+                                return res.status(200)
+                            }
+                        })
                 }
             }
         })
@@ -81,7 +131,7 @@ router.post('/wechatPay', limiterGet.middleware({
     let totalPrice = req.body.totalPrice
     totalPrice = 1
 
-    if (!order_no || !totalPrice || !reservation || !contact) {
+    if (!totalPrice || !reservation || !contact) {
         return res.status(400)
             .send({
                 error: "INVALID data",
@@ -123,7 +173,6 @@ router.post('/wechatPay', limiterGet.middleware({
         //処理2
         if (err) throw err;
         else if (someoneElseBooked === false) {
-            console.log("false")
 
             pingpp.charges.create({
                 order_no: order_no,
@@ -134,15 +183,15 @@ router.post('/wechatPay', limiterGet.middleware({
                 amount: totalPrice,
                 client_ip: "127.0.0.1",
                 currency: "cny",
-                subject: "Your Subject",
-                body: "Your Body"
+                subject: "service",
+                body: "Reservation Fee"
             }, function(err, charge) {
                 console.log("step3")
                 // YOUR CODE
                 if (err) {
-                    res.status(500).send("fail charge")
+                    res.status(500).send("charge submition fail")
                 } else {
-                    console.log("charge")
+                    console.log("charge submition succuss")
 
                     var thisCharge
                     thisCharge = new Charge(prePayReservation)
@@ -154,29 +203,9 @@ router.post('/wechatPay', limiterGet.middleware({
                         } else {
                             console.log("result")
                             console.log(result)
-
-                            console.log("deal with the reservations")
-                            var updateOfferFlag = true
-
-                            async.each(result.reservation, function(element, next) {
-                                Offer.update({
-                                    _id: element._id
-                                }, {
-                                    $addToSet: {
-                                        id: element.id
-                                    }
-                                }, function(err, data2) {
-                                    if (err) {
-                                        console.log("err")
-                                        updateOfferFlag = false
-                                    }
-                                })
-                                next()
-                            }, function(err) {
-                                if (err) throw (err)
-                                else if (updateOfferFlag == true) return res.status(200).json(charge.credential.wx)
-                                else return res.status(500).send("updateOffer err")
-                            })
+                            var returnData = charge.credential.wx
+                            console.log("finished")
+                            return res.status(200).json(returnData)
                         }
                     })
                 }

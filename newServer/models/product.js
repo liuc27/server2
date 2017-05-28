@@ -11,8 +11,8 @@ var productSchema = new mongoose.Schema({
         required: true
     },
     category: {
-        type: String,
-        required: false
+        name: String,
+        sub: String
     },
     time: {
         type: String,
@@ -43,21 +43,23 @@ var productSchema = new mongoose.Schema({
         required: false
     },
     faceImagePoints: [],
-    serviceProviderId: {
-        type: String,
-        required: true
-    },
-    nickname: {
-        type: String,
-        required: true
-    },
-    serviceProviderImageURL: {
-        type: String,
-        required: true
-    },
-    certificateURL: {
-        type: String,
-        required: false
+    serviceProvider: {
+        _id: {
+            type: mongoose.Schema.Types.ObjectId,
+            require: true
+        },
+        id: {
+            type: String,
+            required: true
+        },
+        nickname: {
+            type: String,
+            required: true
+        },
+        imageURL: {
+            type: String,
+            required: true
+        }
     },
     videoURL: {
         type: String,
@@ -73,6 +75,26 @@ var productSchema = new mongoose.Schema({
     updated: {
         type: Date,
         default: Date.now
+    },
+    userNumber: {
+        type: Number,
+        default: 0
+    },
+    userNumberLimit: {
+        type: Number,
+        required: true
+    },
+    reviewNumber: {
+        type: Number,
+        default: 0
+    },
+    startTime: {
+        type: Date,
+        required: true
+    },
+    endTime: {
+        type: Date,
+        required: true
     }
 });
 

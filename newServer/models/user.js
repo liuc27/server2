@@ -60,14 +60,18 @@ var userSchema = new mongoose.Schema({
     likedServiceProvider: [String],
     likedProduct: [String],
     purchasedProduct: [String],
-    certificate: {
-        type: String,
-        required: false
-    },
+    certificates: [{
+        category: String,
+        id: String,
+        imageURL: String
+    }],
     product: [],
     preProduct: [String],
     likedBy: [String],
-    category: [],
+    category: [{
+        name: String,
+        sub: String
+    }],
     created: {
         type: Date,
         default: Date.now
@@ -84,6 +88,10 @@ var userSchema = new mongoose.Schema({
     pricePerHour: {
         type: Number,
         required: false
+    },
+    reviewNumber: {
+        type: Number,
+        default: 0
     }
 })
 userSchema.plugin(mongoosePaginate);

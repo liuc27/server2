@@ -21,7 +21,7 @@ var Offer = require('../models/offer')
 /* GET users listing. */
 var fs = require('fs')
 
-var fileURL = 'http://10.201.219.13:3000/images/'
+var fileURL = 'http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/images/'
 var ObjectId = require('mongoose').Types.ObjectId;
 
 

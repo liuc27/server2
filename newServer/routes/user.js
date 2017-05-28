@@ -18,8 +18,9 @@ var User = require('../models/user')
 
 /* GET users listing. */
 var fs = require('fs')
+var async = require('async');
 
-var fileURL = 'http://10.201.219.13:3000/images/'
+var fileURL = 'http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/images/'
 var ObjectId = require('mongoose').Types.ObjectId;
 
 // api/user
@@ -38,26 +39,85 @@ router.get('/', limiterPost.middleware({
 }), (req, res) => {
 
     const category = req.query.category
-    const query = {}
+    const subCategory = req.query.subCategory
+    const userType = req.query.userType
+
+    let query = {}
     let skipClause = 0
     let limitClause = 20
     if (req.query.skip) skipClause = parseInt(req.query.skip)
     if (req.query.limit) limitClause = parseInt(req.query.limit)
 
+
+
+
     if (category && category != "all") {
-        query = {
-            category: category
+        if (category && subCategory && subCategory != "all") {
+            query = {
+                'category.name': category,
+                'category.sub': subCategory
+            }
+        } else if (category) {
+            query = {
+                'category.name': category
+            }
         }
     }
+
+    if (userType) {
+        query.userType = userType;
+    }
+
     User.paginate(query, {
-        select: 'id nickname imageURL time introduction',
+        select: 'id nickname age imageURL time introduction certificates likedBy reviewNumber',
         offset: skipClause,
         limit: limitClause
     }, function(err, data) {
-        if (err) return next(err);
+        if (err) return (err);
+        else if (data.docs == null) res.json({})
         res.json(data.docs)
     });
 })
+
+
+router.post('/applyForPro', limiterPost.middleware({
+    innerLimit: 15,
+    outerLimit: 200,
+    headers: false
+}), (req, res) => {
+    console.log("apply")
+    if (!req.body.id || !req.body.password) {
+        return res.status(500)
+            .send("No id or password")
+    }
+    const id = req.body.id;
+    const password = req.body.password;
+
+    User.findOne({
+        id: id,
+        password: password
+    }).exec((err, result) => {
+        if (err) {
+            throw err;
+        } else if (result == null) {
+            res.status(500).send("user not found")
+        } else {
+            if (result.userType == "user") {
+                result.userType = 　"candidatePro"
+                newUser = new User(result)
+                newUser.save(err => {
+                    if (err) {
+                        throw err;
+                    }
+                    console.log(newUser)
+                    return res.status(200)
+                        .json(newUser);
+                });
+            }
+        }
+    })
+})
+
 
 router.get('/:id', limiterPost.middleware({
     innerLimit: 15,
@@ -77,7 +137,7 @@ router.get('/:id', limiterPost.middleware({
         if (err) {
             throw err;
         } else if (result == null) {
-            res.status(500).send("use not found")
+            res.status(500).send("user not found")
         } else {
             console.log("result")
             console.log(result)
@@ -100,7 +160,8 @@ router.put("/:id", (req, res) => {
             .send("No id or password")
     }
     const _id = req.params.id;
-    const userType = "user"
+    // if(req.body.userType=="user"||req.body.userType=="candidatePro")
+    // const userType = req.body.userType || "user"
     const id = req.body.id;
     const password = req.body.password;
     const nickname = req.body.nickname;
@@ -113,6 +174,8 @@ router.put("/:id", (req, res) => {
     const introduction = req.body.introduction;
     const contact = req.body.contact;
     const currentTime = new Date();
+    const certificates = req.body.certificates
+    const category = req.body.category
     let imageURL = req.body.imageURL
 
 
@@ -128,7 +191,7 @@ router.put("/:id", (req, res) => {
                     code: 3
                 });
         } else if (password === userData.password) {
-            if (userType) userData.userType = userType
+            // if (userType) userData.userType = userType
             if (id) userData.id = id
             if (password) userData.password = password
             if (nickname) userData.nickname = nickname
@@ -139,8 +202,11 @@ router.put("/:id", (req, res) => {
             if (sex) userData.sex = sex
             if (age) userData.age = age
             if (introduction) userData.introduction = introduction
+            if (contact) userData.contact = contact
             if (imageURL) userData.imageURL = imageURL
             if (currentTime) userData.updated = currentTime
+            if (certificates) userData.certificates = certificates
+            if (category) userData.category = category
 
             if (!imageURL) {
                 delete userData.imageURL
@@ -155,20 +221,48 @@ router.put("/:id", (req, res) => {
                 userData.imageURL = fileURL + id + ".userImage.png";
             }
 
-            user = new User(userData)
-            console.log(userData)
-            user.save(err => {
-                if (err) {
-                    throw err;
+            async.each(userData.certificates, function(certificate, next) {
+                if (!certificate.id || !certificate.imageURL || !certificate.category) {
+                    console.log("err")
                 }
-                return res.status(200)
-                    .json(user);
+                if (!certificate.imageURL) {
+                    //delete userData.certificates.imageURL
+                    return res.status(500).send("something wrong")
+                } else if (certificate.imageURL.indexOf("http://") < 0) {
+                    var base64Data, binaryData;
+                    base64Data = certificate.imageURL.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/png;base64,/, "");
+                    base64Data += base64Data.replace('+', ' ');
+                    binaryData = new Buffer(base64Data, 'base64').toString('binary');
+                    fs.writeFile("images/" + certificate.id + ".certificateImage.png", binaryData, "binary", function(err) {
+                        console.log(err); // writes out file without error, but it's not a valid image
+                    });
+                    certificate.imageURL = fileURL + certificate.id + ".certificateImage.png";
+                    console.log(certificate.imageURL)
+                }
+                next()
+            }, function(err) {
+                //処理2
+                if (err) throw err;
+                else {
+                    user = new User(userData)
+                    console.log(userData)
+                    user.save(err => {
+                        if (err) {
+                            throw err;
+                        }
+                        return res.status(200)
+                            .json(user);
+                    });
+
+                }
             });
+
         } else {
             res.status(500).send("Wrong password")
         }
     })
 })
+
 
 router.post("/", (req, res) => {
 
@@ -210,6 +304,7 @@ router.post("/", (req, res) => {
             if (sex) userData.sex = sex
             if (age) userData.age = age
             if (introduction) userData.introduction = introduction
+            if (contact) userData.contact = contact
             if (imageURL) userData.imageURL = imageURL
             if (currentTime) userData.created = currentTime
             if (currentTime) userData.updated = currentTime
@@ -259,7 +354,7 @@ router.post("/login", limiterPost.middleware({
         if (err) {
             throw err
         } else if (result == null) {
-            res.status(500).send("use not found")
+            res.status(500).send("user not found")
         } else res.status(200).json(result)
 
     })
@@ -361,7 +456,7 @@ router.post('/wechatLogin', limiterGet.middleware({
                                         if (err) {
                                             throw err
                                         } else if (result == null) {
-                                            res.status(500).send("use not found")
+                                            res.status(500).send("user not found")
                                         } else res.status(200).json(result)
                                     })
                                     // function(err, data3) {
@@ -393,4 +488,115 @@ router.post('/wechatLogin', limiterGet.middleware({
 
 })
 
+router.post('/', limiterPost.middleware({
+    innerLimit: 15,
+    outerLimit: 200,
+    headers: false
+}), (req, res) => {
+    const creatorId = req.body.creatorId
+    const password = req.body.password
+    const event = req.body.event
+
+    if (!creatorId || !password || !event) {
+        return res.status(404)
+            .send({
+                error: "NO creatorId or password or event",
+                code: 3
+            });
+    }
+
+    console.log("0")
+
+
+    User.findOne({
+        id: creatorId,
+        password: password
+    }, (err, result) => {
+        if (err) {
+            return next(err)
+        } else if (result == null) {
+            return res.status(500).send("No serviceProvider found")
+        } else {
+            if (event.length < 1) res.status(500).send("No element in req.body.event")
+            else {
+                console.log("1")
+                let flag = true
+                async.each(event, function(element, next) {
+                    console.log(element)
+                    // 処理1
+                    let thisOffer
+                    const _id = element._id
+                    const title = element.title
+                    const serviceType = element.serviceType
+                    const startTime = element.startTime
+                    const endTime = element.endTime
+                    const user = element.user
+                    const serviceProvider = element.serviceProvider
+                    const serviceProviderNumberLimit = element.serviceProviderNumberLimit
+                    const userNumberLimit = element.userNumberLimit
+                    const repeat = element.repeat
+                    //const pricePerHour = element.pricePerHour
+                    const action = element.action
+                    const price = element.price
+                    console.log("3")
+
+                    if (action === "put") {
+
+                        if (!title || !startTime || !endTime || !action || !price || !serviceProviderNumberLimit || !userNumberLimit) {
+                            flag = false
+                            console.log("parameters")
+                        }
+                        console.log("put")
+                        thisOffer = new Offer({
+                            title: user.length + "/" + userNumberLimit,
+                            serviceType: serviceType,
+                            startTime: startTime,
+                            endTime: endTime,
+                            creatorId: creatorId,
+                            serviceProvider: serviceProvider,
+                            user: user,
+                            serviceProviderNumberLimit: serviceProviderNumberLimit,
+                            userNumberLimit: userNumberLimit,
+                            repeat: repeat,
+                            action: action,
+                            price: price
+                        })
+                        thisOffer.creatorId = creatorId
+                        thisOffer.save().then(function(result2) {
+                            console.log(result2)
+                        }).catch(function(err) {
+                            flag = false
+                            throw err
+                        })
+                    } else if (action === "delete") {
+
+                        if (!_id) {
+                            flag = false
+                            console.log("parameters")
+                        } else {
+
+                            console.log("delete")
+                            console.log(element)
+                            Offer.remove({
+                                _id: element._id
+                            }).then(function(result3) {
+                                console.log(result3)
+                            }).catch(function(err) {
+                                flag = false
+                                throw err
+                            })
+                        }
+                    }
+                    next()
+                }, function(err) {
+                    //処理2
+                    if (err) throw err;
+                    else if (flag === false) res.status(500).send("something wrong")
+                    else res.status(200).json({})
+                });
+
+            }
+        }
+    })
+})
 module.exports = router;

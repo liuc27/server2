@@ -5,12 +5,24 @@ mongoose.Promise = require('bluebird');
 var mongoosePaginate = require('mongoose-paginate');
 
 var offerSchema = new mongoose.Schema({
-    creatorName: {
+    creatorId: {
         type: String,
         required: true
     },
-    serviceProviderId: [String],
-    id: [String],
+    productId: {
+        type: String,
+        required: false
+    },
+    serviceProvider: [{
+        _id: mongoose.Schema.Types.ObjectId,
+        id: String,
+        nickname: String
+    }],
+    user: [{
+        _id: mongoose.Schema.Types.ObjectId,
+        id: String,
+        nickname: String
+    }],
     startTime: {
         type: String,
         required: true
@@ -41,7 +53,7 @@ var offerSchema = new mongoose.Schema({
     },
     userNumberLimit: {
         type: Number,
-        required: false
+        required: true
     },
     repeat: {
         type: Number,

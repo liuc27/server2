@@ -25,29 +25,33 @@ router.post('/', limiterPost.middleware({
     outerLimit: 200,
     headers: false
 }), (req, res) => {
-    console.log()
-    const serviceProviderId = req.body.serviceProviderId
+    const creatorId = req.body.creatorId
     const password = req.body.password
     const event = req.body.event
-    if (!serviceProviderId || !password || !req.body.event) {
+
+    if (!creatorId || !password || !event) {
         return res.status(404)
             .send({
-                error: "NO serviceProviderId or password",
+                error: "NO creatorId or password or event",
                 code: 3
             });
     }
 
+    console.log("0")
+
+
     User.findOne({
-        id: serviceProviderId,
+        id: creatorId,
         password: password
-    }, (err, data) => {
+    }, (err, result) => {
         if (err) {
             return next(err)
-        } else if (data == null) {
+        } else if (result == null) {
             return res.status(500).send("No serviceProvider found")
         } else {
             if (event.length < 1) res.status(500).send("No element in req.body.event")
             else {
+                console.log("1")
                 let flag = true
                 async.each(event, function(element, next) {
                     console.log(element)
@@ -58,39 +62,40 @@ router.post('/', limiterPost.middleware({
                     const serviceType = element.serviceType
                     const startTime = element.startTime
                     const endTime = element.endTime
-                    const creatorName = serviceProviderId
-                    const id = element.id
+                    const user = element.user
+                    const serviceProvider = element.serviceProvider
                     const serviceProviderNumberLimit = element.serviceProviderNumberLimit
                     const userNumberLimit = element.userNumberLimit
                     const repeat = element.repeat
                     //const pricePerHour = element.pricePerHour
                     const action = element.action
                     const price = element.price
+                    console.log("3")
 
                     if (action === "put") {
 
-                        if (!title || !startTime || !endTime || !action || !price || !serviceProviderNumberLimit || !userNumberLimit || !id) {
+                        if (!title || !startTime || !endTime || !action || !price || !serviceProviderNumberLimit || !userNumberLimit) {
                             flag = false
                             console.log("parameters")
                         }
                         console.log("put")
                         thisOffer = new Offer({
-                            title: id.length + "/" + userNumberLimit,
+                            title: user.length + "/" + userNumberLimit,
                             serviceType: serviceType,
                             startTime: startTime,
                             endTime: endTime,
-                            creatorName: creatorName,
-                            serviceProviderId: serviceProviderId,
-                            id: id,
+                            creatorId: creatorId,
+                            serviceProvider: serviceProvider,
+                            user: user,
                             serviceProviderNumberLimit: serviceProviderNumberLimit,
                             userNumberLimit: userNumberLimit,
                             repeat: repeat,
                             action: action,
                             price: price
                         })
-                        thisOffer.creatorName = serviceProviderId
-                        thisOffer.save().then(function(result) {
-                            console.log(result)
+                        thisOffer.creatorId = creatorId
+                        thisOffer.save().then(function(result2) {
+                            console.log(result2)
                         }).catch(function(err) {
                             flag = false
                             throw err
@@ -100,18 +105,29 @@ router.post('/', limiterPost.middleware({
                         if (!_id) {
                             flag = false
                             console.log("parameters")
-                        }
+                        } else {
 
-                        console.log("delete")
-                        console.log(element)
-                        Offer.remove({
-                            _id: element._id
-                        }).then(function(result) {
-                            console.log(result)
-                        }).catch(function(err) {
-                            flag = false
-                            throw err
-                        })
+                            console.log("delete")
+                            console.log(element)
+                            Offer.find({
+                                _id: element._id
+                            }).then(function(data) {
+                                console.log(data)
+                                if (!data.user) {
+                                    Offer.remove({
+                                        _id: element._id
+                                    }).then(function(result3) {
+                                        console.log(result3)
+                                    }).catch(function(err) {
+                                        flag = false
+                                        throw err
+                                    })
+                                }
+                            }).catch(function(err) {
+                                flag = false
+                                throw err
+                            })
+                        }
                     }
                     next()
                 }, function(err) {
@@ -146,19 +162,21 @@ router.post('/getMyCalendar', limiterPost.middleware({
     User.findOne({
         id: id,
         password: password
-    }, function(err, data) {
+    }, function(err, result) {
         if (err) {
             return next(err)
         } else {
-            if (data == null) {
+            if (result == null) {
                 res.status(500).send("No user found")
             } else {
                 Offer.find({
-                    serviceProviderId: {
-                        $all: [id]
+                    serviceProvider: {
+                        $elemMatch: {
+                            id: id
+                        }
                     }
-                }, function(err, data) {
-                    res.status(200).json(data)
+                }, function(err, result2) {
+                    res.status(200).json(result2)
                 })
             }
         }
@@ -188,13 +206,15 @@ router.get("/getMyReservations", limiterPost.middleware({
             res.status(500).send("No user found")
         } else {
             Offer.find({
-                id: {
-                    $all: [id]
+                user: {
+                    $elemMatch: {
+                        id: id
+                    }
                 }
-            }).exec((err, result) => {
+            }).exec((err, result2) => {
                 if (err) {
                     res.status(500).send("err")
-                } else res.status(200).json(result)
+                } else res.status(200).json(result2)
             })
         }
     })
@@ -224,14 +244,52 @@ router.get("/", limiterPost.middleware({
             res.status(500).send("No user found")
         } else {
             Offer.find({
-                serviceProviderId: {
-                    $all: [serviceProviderId]
+                serviceProvider: {
+                    $elemMatch: {
+                        id: serviceProviderId
+                    }
                 }
-            }).exec((err, result) => {
+            }, (err, result2) => {
+                console.log(result2)
                 if (err) {
-                    res.status(500).send("err")
-                } else res.status(200).json(result)
+                    return res.status(500).send("err")
+                } else {
+                    return res.status(200).json(result2)
+                }
             })
+
+
+            // ).exec((err, result2) => {
+            //       if (err) {
+            //           res.status(500).send("err")
+            //       } else res.status(200).json(result2)
+            //   })
+        }
+    })
+
+})
+
+router.get("/productId", limiterPost.middleware({
+    innerLimit: 15,
+    outerLimit: 200,
+    headers: false
+}), (req, res) => {
+    const productId = req.query.productId
+    if (!productId) {
+        return res.status(404)
+            .send({
+                error: "NO ID",
+                code: 3
+            });
+    }
+    Offer.find({
+        productId: productId
+    }, (err, result2) => {
+        console.log(result2)
+        if (err) {
+            return res.status(500).send("err")
+        } else {
+            return res.status(200).json(result2)
         }
     })
 
