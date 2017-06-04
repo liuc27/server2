@@ -35,7 +35,7 @@ export class ServiceProviderPage {
     public menu4 = [];
     public grid = [];
     start = 0
-    category = "all"
+    category = null
     infiniteScrollEnd = false
     id = undefined
     certificates = []
@@ -77,7 +77,7 @@ export class ServiceProviderPage {
     loadServiceProviders() {
         return new Promise(resolve => {
             console.log(this.start)
-            this.userProvider.get(this.start, this.category, "all", "candidatePro")
+            this.userProvider.get(this.start, this.category, null, "candidatePro")
                 .then(data => {
                     console.log("data")
                     console.log(data)

@@ -4,7 +4,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { ActionSheetController, Events, NavController, NavParams, Platform, Content, ToastController, AlertController} from 'ionic-angular';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
-import { ProductProvider } from '../../../../../providers/productProvider';
+import { ServiceProvider } from '../../../../../providers/serviceProvider';
 import { UserProvider } from '../../../../../providers/userProvider'
 import { OfferProvider } from '../../../../../providers/offerProvider'
 import { Http } from '@angular/http';
@@ -24,22 +24,23 @@ import 'moment-timezone';
 
 
 declare var Wechat: any;
+import { defaultURL } from '../../../../../providers/i18n-demo.constants';
 
 
 @Component({
     selector: 'page-reservationDetails',
     templateUrl: 'reservationDetails.html',
-    providers: [ProductProvider, UserProvider, OfferProvider]
+    providers: [ServiceProvider, UserProvider, OfferProvider]
 })
 export class ReservationDetails {
     @ViewChild(Content) content: Content;
 
-    product;
+    service;
     payOrRefund;
     chargeFlag = false;
     chatroomId;
-    productOrServiceProvider;
-    productDetails;
+    serviceOrServiceProvider;
+    serviceDetails;
     alreadyLoggedIn = false;
     validation: any = {};
     url: SafeResourceUrl;
@@ -65,7 +66,7 @@ export class ReservationDetails {
         public userProvider: UserProvider,
         private toastCtrl: ToastController,
         private alertCtrl: AlertController,
-        public chatroomService: ProductProvider) {
+        public chatroomService: ServiceProvider) {
         if (params.data) {
             this.changedEventSourceISO = params.data;
             this.changedEventSourceISO.forEach((element, index) => {
@@ -113,9 +114,9 @@ export class ReservationDetails {
             });
 
         console.log(this.changedEventSourceISO);
-        this.productOrServiceProvider = "product";
+        this.serviceOrServiceProvider = "service";
         console.log(params.data);
-        this.loadSelectedproductDetails();
+        this.loadSelectedserviceDetails();
         this.actionSheet = actionSheet;
         this.url = sanitizer.bypassSecurityTrustResourceUrl('https://appear.in/charlie123456789');
 
@@ -241,11 +242,11 @@ export class ReservationDetails {
 
     }
 
-    loadSelectedproductDetails() {
-        /*  this.productDetailsService.load()
+    loadSelectedserviceDetails() {
+        /*  this.serviceDetailsService.load()
               .then(data => {
-                  this.productDetails = data;
-                  console.log(this.productDetails);
+                  this.serviceDetails = data;
+                  console.log(this.serviceDetails);
               }); */
     }
 
@@ -278,7 +279,7 @@ export class ReservationDetails {
                     this.reservationPayment.reservation = reservationData
                     this.reservationPayment.totalPrice = this.totalPrice
 
-                    this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/charge/wechatPay', this.reservationPayment)
+                    this.http.post(defaultURL+':3000/charge/wechatPay', this.reservationPayment)
                         .map(res => res.json())
                         .subscribe(
                         data => {
@@ -332,7 +333,7 @@ export class ReservationDetails {
         reservationRefund.reservation = reservationData
         reservationRefund.totalPrice = this.totalPrice
 
-        this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/charge/refund', reservationRefund)
+        this.http.post(defaultURL+':3000/charge/refund', reservationRefund)
             .map(res => res.json())
             .subscribe(data => {
                 console.log(data)

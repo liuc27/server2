@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
+import { defaultURL } from './i18n-demo.constants';
 
 /*
   Generated class for the UserProvider provider.
@@ -29,7 +30,7 @@ export class OfferProvider {
       // then on the response it'll map the JSON data to a parsed JS object.
       // Next we process the data and resolve the promise with the new data.
           console.log("offerProvider start")
-            this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/offer?serviceProviderId='+serviceProviderId)
+            this.http.get(defaultURL+':3000/offer?serviceProviderId='+serviceProviderId)
               .map(res => res.json())
               .subscribe(
               data2 => {

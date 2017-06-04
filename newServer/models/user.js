@@ -58,7 +58,7 @@ var userSchema = new mongoose.Schema({
         required: false
     },
     likedServiceProvider: [String],
-    likedProduct: [String],
+    likedService: [String],
     purchasedProduct: [String],
     certificates: [{
         category: String,
@@ -69,7 +69,7 @@ var userSchema = new mongoose.Schema({
     preProduct: [String],
     likedBy: [String],
     category: [{
-        name: String,
+        main: String,
         sub: String
     }],
     created: {

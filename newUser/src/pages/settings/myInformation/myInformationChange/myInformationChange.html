@@ -4,7 +4,7 @@
             {{ 'My Information' | translate }}
         </ion-title>
         <ion-buttons end>
-            <button ion-button (tap)="changeInformationValue()">保存</button>
+            <button ion-button (tap)="changeInformationValue()">{{ 'Save' | translate }}</button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
@@ -38,7 +38,7 @@
                 <ion-option value="guide">{{ 'Guide' | translate }}</ion-option>
                 <ion-option value="teach">{{ 'Teach' | translate }}</ion-option>
                 <ion-option value="housework">{{ 'Housework' | translate }}</ion-option>
-                <ion-option value="fix">{{ 'Fix' | translate }}</ion-option>
+                <ion-option value="Art">{{ 'Art' | translate }}</ion-option>
                 <ion-option value="beauty">{{ 'Beauty' | translate }}</ion-option>
                 <ion-option value="jobHunt">{{ 'Job Hunt' | translate }}</ion-option>
                 <ion-option value="schoolFind">{{ 'School Find' | translate }}</ion-option>
@@ -48,14 +48,28 @@
             </ion-select>
         </ion-item> -->
 
-        <ion-item *ngIf="informationName == 'category'">
-            <ion-label>*{{ 'Service Type' | translate }}</ion-label>
-            <ion-select multiple="true" (ionChange)="selectObjectById(options, $event, 'informationValue')" [(ngModel)]="informationValue" placeholder="{{selectedCategories}}" required>
-                <ion-option *ngFor="let item of options" [value]="item.val">{{item.name | translate}}</ion-option>
-            </ion-select>
-        </ion-item>
+        <div *ngIf="informationName == 'category'">
+            <ion-item>
+                <ion-label>*{{ 'Service Type' | translate }}</ion-label>
 
-        <div *ngIf="informationName == 'introduction'">
+                <ion-select multiple="true" (ionChange)="category1Selected()" [(ngModel)]="selected1" placeholder="{{ 'Tap to choose' | translate }}" required>
+                    <ion-option *ngFor="let item of options" [value]="item">{{item.main | translate}}{{item.sub | translate}}</ion-option>
+                </ion-select>
+            </ion-item>
+
+            <ion-list>
+                <ion-list-header>
+                    {{ 'Service Type' | translate }}
+                </ion-list-header>
+                <ion-item *ngFor="let item of informationValue; let i=i ndex">
+                    <ion-label>{{item.main | translate}}{{item.sub | translate}}</ion-label>
+                    <ion-note></ion-note>
+                </ion-item>
+            </ion-list>
+
+        </div>
+
+        <div *ngIf="informationName=='introduction'">
             <ion-item>
                 <ion-label>{{ 'Introduction' | translate }}</ion-label>
             </ion-item>
@@ -64,7 +78,7 @@
             </ion-item>
         </div>
 
-        <div *ngIf="informationName == 'contact'">
+        <div *ngIf="informationName=='contact'">
             <ion-item>
                 <ion-label>{{ 'Contact Info' | translate }}</ion-label>
             </ion-item>
@@ -73,14 +87,14 @@
             </ion-item>
         </div>
 
-        <div *ngIf="informationName == 'pricePerHour'">
+        <div *ngIf="informationName=='pricePerHour'">
             <ion-item>
                 <ion-label>{{ 'Price Per Hour' | translate }}</ion-label>
                 <ion-input class="textAlignRight" type='number' item-right [(ngModel)]="informationValue"></ion-input>
             </ion-item>
         </div>
 
-        <ion-item *ngIf="informationName == 'sex'">
+        <ion-item *ngIf="informationName=='sex'">
             <ion-label>{{ 'Sex' | translate }}</ion-label>
             <ion-select [(ngModel)]="informationValue" placeholder="{{informationValue}}">
                 <ion-option value="1">{{ 'Male' | translate}}</ion-option>
@@ -88,37 +102,37 @@
             </ion-select>
         </ion-item>
 
-        <ion-item *ngIf="informationName == 'age'">
+        <ion-item *ngIf="informationName=='age'">
             <ion-label>{{ 'Age' | translate }}</ion-label>
             <ion-input class="textAlignRight" type='text' item-right [(ngModel)]="informationValue"></ion-input>
         </ion-item>
 
-        <ion-item *ngIf="informationName == 'province'">
+        <ion-item *ngIf="informationName=='province'">
             <ion-label>{{ 'Province' | translate }}</ion-label>
             <ion-input class="textAlignRight" type='text' item-right [(ngModel)]="informationValue"></ion-input>
         </ion-item>
 
-        <ion-item *ngIf="informationName == 'country'">
+        <ion-item *ngIf="informationName=='country'">
             <ion-label>{{ 'Country' | translate }}</ion-label>
             <ion-input class="textAlignRight" type='text' item-right [(ngModel)]="informationValue"></ion-input>
         </ion-item>
         <!--
-    <ion-item  *ngIf="informationName == true" >
+    <ion-item  *ngIf="informationName==t rue" >
       <label >head image</label>
-      <input #label3 type=" file " accept="image/* " (change)="uploadImage($event) ">
+      <input #label3 type=" file" accept="image/*" (change)="uploadImage($event)">
     </ion-item> -->
 
-        <!-- <ion-item  *ngIf="informationName == true" >
-      <ion-label >Password</ion-label>
-      <ion-input class="textAlignRight" type='text' item-righttype="password " (tap)="changeValue(password)>}}</ion-input>
-      </ion-item>
-
-      <ion-item  *ngIf="informationName == true" >
+        <!-- <ion-item  *ngIf="informationName==t rue" >
       <ion-label >Password</ion-label>
       <ion-input class="textAlignRight" type='text' item-righttype="password" (tap)="changeValue(password)>}}</ion-input>
+            </ion-item>
+
+            <ion-item *ngIf="informationName == true">
+                <ion-label>Password</ion-label>
+                <ion-input class="textAlignRight" type='text' item-righttype="password" (tap)="changeValue(password)>}}</ion-input>
     </ion-item> -->
 
-        <div *ngIf="informationName == 'certificates'">
+        <div *ngIf=" informationName=='certificates'">
             <ion-list>
                 <div *ngFor="let certificate of certificates">
                     <ion-item>
@@ -127,7 +141,7 @@
                             <ion-option value="guide">{{ 'Guide' | translate }}</ion-option>
                             <ion-option value="teach">{{ 'Teach' | translate }}</ion-option>
                             <ion-option value="housework">{{ 'Housework' | translate }}</ion-option>
-                            <ion-option value="fix">{{ 'Fix' | translate }}</ion-option>
+                            <ion-option value="Art">{{ 'Art' | translate }}</ion-option>
                             <ion-option value="beauty">{{ 'Beauty' | translate }}</ion-option>
                             <ion-option value="jobHunt">{{ 'Job Hunt' | translate }}</ion-option>
                             <ion-option value="schoolFind">{{ 'School Find' | translate }}</ion-option>
@@ -156,7 +170,7 @@
                     <ion-option value="guide">{{ 'Guide' | translate }}</ion-option>
                     <ion-option value="teach">{{ 'Teach' | translate }}</ion-option>
                     <ion-option value="housework">{{ 'Housework' | translate }}</ion-option>
-                    <ion-option value="fix">{{ 'Fix' | translate }}</ion-option>
+                    <ion-option value="Art">{{ 'Art' | translate }}</ion-option>
                     <ion-option value="beauty">{{ 'Beauty' | translate }}</ion-option>
                     <ion-option value="jobHunt">{{ 'Job Hunt' | translate }}</ion-option>
                     <ion-option value="schoolFind">{{ 'School Find' | translate }}</ion-option>

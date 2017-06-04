@@ -5,13 +5,15 @@ import 'rxjs/add/operator/map';
 import { TranslateService } from 'ng2-translate/ng2-translate';
 
 import {UserProvider} from '../../../../providers/userProvider'
-import {ProductProvider} from '../../../../providers/productProvider';
+import {ServiceProvider} from '../../../../providers/serviceProvider';
 import {Storage} from '@ionic/storage'
+
+import { defaultURL } from '../../../../providers/i18n-demo.constants';
 
 declare var ImgWarper: any;
 
 /*
-  Generated class for the UpdateModifyProduct page.
+  Generated class for the UpdateModifyService page.
 
   See http://ionicframework.com/docs/v2/components/#navigation for more info on
   Ionic pages and navigation.
@@ -19,7 +21,7 @@ declare var ImgWarper: any;
 @Component({
   selector: 'page-modifyMyServices',
   templateUrl: 'modifyMyServices.html',
-  providers:[UserProvider, ProductProvider]
+  providers:[UserProvider, ServiceProvider]
 })
 export class ModifyMyServices {
 @ViewChild('imageButton') selectImage;
@@ -35,7 +37,10 @@ export class ModifyMyServices {
 
   alreadyLoggedIn = {data:false};
 
-  product : any = {};
+  service : any = {
+  service:{},
+  creator:{}
+  };
 
   uploadedImg = {data: undefined};
   f = {api_key: undefined, api_id: undefined, api_secret: undefined, img: undefined, face_id: undefined,category:undefined};
@@ -43,24 +48,23 @@ export class ModifyMyServices {
   month :number;
   day :number;
   buttonDisabled : boolean;
-
+  selected1
 
   options: any = [
-  {'name':'Guide','val':{'name':'guide'}},
-  {'name':'Teach','val':{'name':'teach'}},
-  {'name':'Housework','val':{'name':'guide'}},
-  {'name':'Fix','val':{'name':'fix'}},
-  {'name':'Beauty','val':{'name':'beauty'}},
-  {'name':'BeautySkinCare','val': {'name':'beauty','sub':'skinCare'} },
-  {'name':'BeautyMakeup','val': {'name':'beauty','sub':'makeup'} },
-  {'name':'BeautyDiet','val': {'name':'beauty','sub':'diet'} },
-  {'name':'BeautySurgery','val': {'name':'beauty','sub':'surgery'} },
-  {'name':'BeautyOthers','val': {'name':'beauty','sub':'others'} },
-  {'name':'Job Hunt','val':{'name':'jobHunt'}},
-  {'name':'School Find','val':{'name':'schoolFind'}},
-  {'name':'Biz Advise','val':{'name':'bizAdvise'}},
-   {'name':'Law','val':{'name':'law'}},
-   {'name':'Others','val':{'name':'others'}},
+  {'main':'guide'},
+  {'main':'teach'},
+  {'main':'housework'},
+  {'main':'art'},
+  {'main':'beauty','sub':'skinCare'},
+  {'main':'beauty','sub':'makeup'},
+  {'main':'beauty','sub':'diet'},
+  {'main':'beauty','sub':'surgery'},
+  {'main':'beauty','sub':'others'},
+  {'main':'jobHunt'},
+  {'main':'schoolFind'},
+  {'main':'bizAdvise'},
+  {'main':'law'},
+  {'main':'others'}
   ]
 
 
@@ -68,13 +72,13 @@ export class ModifyMyServices {
               public navCtrl: NavController,
               private http: Http,
               private userProvider:UserProvider,
-              private productProvider: ProductProvider,
+              private serviceProvider: ServiceProvider,
                        public storage:Storage,
                        private translate: TranslateService,
               private toastCtrl: ToastController) {
 
               console.log(this.params)
-              this.product = this.params.data
+              this.service = this.params.data
 
 
 
@@ -92,12 +96,13 @@ export class ModifyMyServices {
         // let endTime = new Date()
         // startTime.setMinutes(0)
         // endTime.setMinutes(0)
-        // this.product.startTime = startTime.toISOString();
-        // this.product.endTime = endTime.toISOString();
+        // this.service.startTime = startTime.toISOString();
+        // this.service.endTime = endTime.toISOString();
 
-        this.productProvider.getProductDetails(this.product._id)
+        this.serviceProvider.getServiceDetails(this.service._id)
           .then(data => {
-            this.product = data
+            this.service = data
+            this.selected1 = this.service.service.category
           });
   }
 
@@ -107,24 +112,24 @@ export class ModifyMyServices {
   this.userProvider.loadLocalStorage()
   .then(data => {
     this.validation = data
-    this.product.serviceProvider._id = this.validation._id;
-    this.product.serviceProvider.id = this.validation.id;
-    this.product.serviceProvider.password = this.validation.password;
-    this.product.serviceProvider.nickname = this.validation.nickname;
-    this.product.serviceProvider.imageURL = this.validation.imageURL;
+    this.service.creator._id = this.validation._id;
+    this.service.creator.id = this.validation.id;
+    this.service.creator.password = this.validation.password;
+    this.service.creator.nickname = this.validation.nickname;
+    this.service.creator.imageURL = this.validation.imageURL;
     this.alreadyLoggedIn.data = true;
   });
   }
 
   start(){
-   console.log(this.product.startTime)
+   console.log(this.service.startTime)
   }
 
   placeholderValue(){
-  console.log(this.product.category)
-    if(this.product.category){
-      if(this.product.category.sub) return this.translateMenu(this.product.category.sub);
-      else if(this.product.category.name) return this.translateMenu(this.product.category.name);
+  console.log(this.service.service.category)
+    if(this.service.service.category){
+      if(this.service.service.category.sub) return this.translateMenu(this.service.service.category.sub);
+      else if(this.service.service.category.main) return this.translateMenu(this.service.service.category.main);
     } else return null
   }
 
@@ -136,14 +141,23 @@ export class ModifyMyServices {
     return returnData
   }
 
+/*
   selectObjectById(list: any[], id: string, property: string) {
       var item = list.find(item => item._id === id);
       var prop = eval('this.' + property);
       prop = property;
   }
-  loadSelectedproductDetails(id) {
+  */
+
+  category1Selected(){
+    if(this.selected1){
+    this.service.service.category=this.selected1
+    }
+  }
+
+  loadSelectedserviceDetails(id) {
     return new Promise(resolve => {
-      this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/product/productDetails?_id='+id)
+      this.http.get(defaultURL+':3000/offer/serviceDetails?_id='+id)
         .map(res => res.json())
         .subscribe(data => {
           resolve(data);
@@ -169,7 +183,7 @@ export class ModifyMyServices {
     var self = this;
 
     reader.onload = function (e) {
-      self.product.imageURL = reader.result;
+      self.service.service.imageURL = reader.result;
       self.presentToast()
 
     }
@@ -192,7 +206,7 @@ export class ModifyMyServices {
       //console.log(self.uploadedImg);
       //var addon ={"img": atob(reader.result.split(',')[1])};
       //Object.assign( self.f,  self.f, addon);
-      self.product.faceImageURL = reader.result;
+      self.service.service.faceImageURL = reader.result;
 
       self.f.img = atob(reader.result.split(',')[1]);
 
@@ -264,9 +278,9 @@ export class ModifyMyServices {
 
               image.onload = function () {
                 console.log(facePoints)
-                self.product.faceImagePoints = facePoints;
-                self.product.faceImageHeight = image.naturalHeight;
-                self.product.faceImageWidth = image.naturalWidth;
+                self.service.service.faceImagePoints = facePoints;
+                self.service.service.faceImageHeight = image.naturalHeight;
+                self.service.service.faceImageWidth = image.naturalWidth;
 
 
                 if (facePoints != undefined) {
@@ -301,38 +315,45 @@ export class ModifyMyServices {
     toast.present();
   }
 
-  replaceProduct() {
+  replaceService() {
     this.buttonDisabled = true;
-    console.log(this.product)
-    if (this.product.serviceProvider.id && this.product.productName&& this.product.startTime&& this.product.endTime&&this.product.userNumberLimit) {
-      console.log(this.product)
+    console.log(this.service)
+    if (this.service.creator.id && this.service.service.serviceName&& this.service.startTime&& this.service.endTime&&this.service.userNumberLimit) {
+      console.log(this.service)
     //  var pricePerHour = this.validation.pricePerHour || 1000
-    //  var duration = moment.duration(moment(this.product.endTime).diff(moment(this.product.startTime)));
+    //  var duration = moment.duration(moment(this.service.endTime).diff(moment(this.service.startTime)));
     //  var hours = duration.asHours();
 
       var serviceProviderArray = [];
       serviceProviderArray.push({"id":this.validation.id, "nickname":this.validation.nickname})
+      this.service.action = "put"
 
-      this.product.event = {
-        title: this.product.productName,
-        serviceType: 'event',
-        startTime: this.product.startTime,
-        endTime: this.product.endTime,
-        allDay: false,
-        creatorId: this.validation.id,
+/*
+      this.service = {
+        _id: this.service._id,
+        creator: this.validation,
+        service: this.service.service,
         serviceProvider: serviceProviderArray,
         user: [],
+        startTime: this.service.startTime,
+        endTime: this.service.endTime,
+        serviceType: 'service',
+        title: this.service.serviceName,
+        allDay: false,
         serviceProviderNumberLimit: 1,
-        userNumberLimit: this.product.userNumberLimit,
+        userNumberLimit: this.service.userNumberLimit,
         repeat: 0,
         action: "put",
-        price: this.product.retail
+        currency: this.service.currency || 'jpy',
+        price: this.service.price,
+        priceBeforeDiscount: this.service.priceBeforeDiscount
       }
-
-      this.http.post("http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/product", this.product)
+*/
+      this.http.post(defaultURL+':3000/offer/service', this.service)
+      .map(res => res.json())
         .subscribe(data => {
             console.log(data);
-            alert(data.statusText)
+            alert("success")
             this.buttonDisabled = false;
           },
           (err) => {
@@ -341,7 +362,7 @@ export class ModifyMyServices {
           }
         )
     }else{
-    alert("Please login first, then input product name, start time, end time and userNumberLimit!")
+    alert("Please login first, then input service name, start time, end time and userNumberLimit!")
       this.buttonDisabled = false;
 
     }

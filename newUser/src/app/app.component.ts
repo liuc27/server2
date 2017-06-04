@@ -5,7 +5,7 @@ import { StatusBar } from 'ionic-native';
 import { TabsPage } from '../pages/tabs/tabs';
 import { TranslateService } from 'ng2-translate/ng2-translate';
 import { Globalization } from '@ionic-native/globalization';
-import { defaultLanguage, availableLanguages, sysOptions } from './i18n-demo.constants';
+import { defaultLanguage, availableLanguages, sysOptions } from '../providers/i18n-demo.constants';
 
 @Component({
   template: `<ion-nav [root]="rootPage"></ion-nav>`,

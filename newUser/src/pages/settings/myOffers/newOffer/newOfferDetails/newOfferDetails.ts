@@ -20,16 +20,19 @@ import 'moment/src/locale/zh-cn';
 //timezone
 import 'moment-timezone';
 
+import { defaultURL } from '../../../../../providers/i18n-demo.constants';
+
+
 @Component({
   selector: 'page-newOfferDetails',
   templateUrl: 'newOfferDetails.html',
   providers: [UserProvider]
 })
 export class NewOfferDetails {
-  product;
+  service;
   chatroomId;
-  productOrServiceProvider;
-  productDetails;
+  serviceOrServiceProvider;
+  serviceDetails;
   alreadyLoggedIn = false;
   serviceProviderValidation: any = {};
   url: SafeResourceUrl;
@@ -67,7 +70,7 @@ export class NewOfferDetails {
     this.recaculateTotalDefaultPrice()
     console.log(this.changedEventSourceISO);
 
-    this.productOrServiceProvider = "product";
+    this.serviceOrServiceProvider = "service";
     console.log(params.data);
     this.actionSheet = actionSheet;
     this.url = sanitizer.bypassSecurityTrustResourceUrl('https://appear.in/charlie123456789');
@@ -85,7 +88,7 @@ export class NewOfferDetails {
           startTime: this.changedEventSourceISO[i].endTime,
           endTime: this.changedEventSourceISO[i].endTime,
           allDay: this.changedEventSourceISO[i].allDay,
-          creatorId: this.changedEventSourceISO[i].creatorId,
+          creator: this.changedEventSourceISO[i].creator,
           serviceProvider: this.changedEventSourceISO[i].serviceProvider,
           user: this.changedEventSourceISO[i].user,
           serviceProviderNumberLimit: 1,
@@ -297,7 +300,7 @@ export class NewOfferDetails {
     console.log(this.serviceProviderValidation)
     var offer: any = {};
 
-    offer.creatorId = this.serviceProviderValidation.id
+    offer.creator = this.serviceProviderValidation
     offer.password = this.serviceProviderValidation.password
 
     var changedEventSource = []
@@ -311,7 +314,7 @@ export class NewOfferDetails {
         endTime: moment(element.endTime).toDate(),
         allDay: element.allDay,
         serviceProvider: element.serviceProvider,
-        creatorId: element.creatorId,
+        creator: element.creator,
         user: element.user,
         serviceProviderNumberLimit: element.serviceProviderNumberLimit,
         userNumberLimit: element.userNumberLimit,
@@ -324,7 +327,7 @@ export class NewOfferDetails {
 
     offer.event = changedEventSource
     console.log(offer)
-    this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/offer', offer)
+    this.http.post(defaultURL+':3000/offer', offer)
       .map(res => res.json())
       .subscribe(
       data => {

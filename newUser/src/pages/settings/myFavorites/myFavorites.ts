@@ -3,7 +3,7 @@
  */
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Events, NavController, NavParams, PopoverController, AlertController } from 'ionic-angular';
-import { ProductDetails } from '../../product/productLists/productDetails/productDetails';
+import { ServiceDetails } from '../../service/serviceLists/serviceDetails/serviceDetails';
 import { ServiceProviderDetails } from '../../serviceProvider/serviceProviderDetails/serviceProviderDetails';
 import { UserProvider } from '../../../providers/userProvider'
 import { FavoriteProvider } from '../../../providers/favoriteProvider'
@@ -30,7 +30,7 @@ export class MyFavorites {
   id: String;
   password: String;
   alreadyLoggedIn = false;
-  products: any = [];
+  services: any = [];
   validation: any = {};
   start = 0;
   limit = 20;
@@ -40,8 +40,9 @@ export class MyFavorites {
     private events: Events,
     public userProvider: UserProvider,
     public favoriteProvider: FavoriteProvider,
+    private alertCtrl: AlertController,
     private http: Http) {
-    this.loadProducts()
+    this.loadServices()
   }
 
   ionViewWillEnter() {
@@ -49,18 +50,18 @@ export class MyFavorites {
     // this.events.publish('showTabs');
   }
 
-  openProductDetailsPage(product) {
+  openServiceDetailsPage(service) {
     console.log("detail open");
-    this.nav.push(ProductDetails,  product );
+    this.nav.push(ServiceDetails,  service );
   }
 
 
 
 
-    alreadyLiked(product) {
+    alreadyLiked(service) {
       if (this.validation  ) {
-      if(product._id && this.validation.likedProduct){
-        if (this.validation.likedProduct.indexOf(product._id) >= 0) {
+      if(service._id && this.validation.likedService){
+        if (this.validation.likedService.indexOf(service._id) >= 0) {
           return true
         }
         }
@@ -68,47 +69,64 @@ export class MyFavorites {
       return false
     }
 
-    favoriteProduct(product) {
+
+    favoriteService(service) {
       if (this.validation.id) {
-        console.log(product)
-        var theProduct = {
-          _id: product._id,
+        console.log(service)
+        var theService = {
+          _id: service._id,
           id: this.validation.id,
           password: this.validation.password
         }
-        console.log(product.likedBy);
+        console.log(service.likedBy);
 
-        this.favoriteProvider.postProduct(theProduct).then(data => {
+        this.favoriteProvider.postService(theService).then(data => {
         var flag = data
         if (flag == "push") {
-          product.likedBy.push(this.validation.id);
-          this.validation.likedProduct.push(product._id)
+        if(!service.likedBy) service.likedBy=[]
+         service.likedBy.push(this.validation.id);
+        if(!this.validation.likedService) this.validation.likedService=[]
+        this.validation.likedService.push(service._id)
         } else if (flag == "pull") {
+          if(service.likedBy){
+            var index = service.likedBy.indexOf(this.validation.id);
+            if (index > -1) {
+              service.likedBy.splice(index, 1);
+            }
+        }
 
-          var index = product.likedBy.indexOf(this.validation.id);
-          if (index > -1) {
-            product.likedBy.splice(index, 1);
-          }
-
-          var index2 = this.validation.likedProduct.indexOf(product._id);
+        if(this.validation.likedService){
+          var index2 = this.validation.likedService.indexOf(service._id);
           if (index2 > -1) {
-            this.validation.likedProduct.splice(index2, 1);
+            this.validation.likedService.splice(index2, 1);
           }
           console.log(this.validation)
+          }
         }
         this.userProvider.saveLocalStorage(this.validation)
-        console.log(product.likedBy);
+        console.log(service.likedBy);
         })
       } else {
-        alert("login before use,dude")
+      this.presentAlert("Login first please!")
 
       }
     }
 
+    presentAlert(data) {
+    let alert = this.alertCtrl.create({
+      title: data,
+      subTitle: '',
+      buttons: ['OK']
+    });
+    setTimeout(() => {
+      this.alreadyLoggedIn = true;
+    }, 50);
+    alert.present();
+    }
 
-  openServiceProviderDetailsPage(product) {
-    product.from = "myFavoriteProductPage"
-    this.nav.push(ServiceProviderDetails, product.serviceProvider);
+  openServiceProviderDetailsPage(service) {
+    service.from = "myFavoriteServicePage"
+    this.nav.push(ServiceProviderDetails, service.serviceProvider);
   }
 
   doInfinite(infiniteScroll: any) {
@@ -116,7 +134,7 @@ export class MyFavorites {
       console.log('doInfinite, start is currently ' + this.start);
       this.start += 20;
 
-      this.loadProducts().then(data => {
+      this.loadServices().then(data => {
         setTimeout(() => {
           console.log('Async operation has ended');
           infiniteScroll.complete();
@@ -136,15 +154,15 @@ export class MyFavorites {
 
     setTimeout(() => {
       console.log('Async loading has ended');
-      this.products = []
+      this.services = []
       this.start = 0
-      this.loadProducts();
+      this.loadServices();
 
       refresher.complete();
     }, 1000);
   }
 
-  loadProducts() {
+  loadServices() {
 
     return new Promise(resolve => {
 
@@ -153,18 +171,18 @@ export class MyFavorites {
         .then(data => {
           this.validation = data
           this.alreadyLoggedIn = true;
-          var likedProduct: any = {};
+          var likedService: any = {};
 
           console.log(data)
-          likedProduct = data;
-          console.log(likedProduct)
-          likedProduct.skip = this.start;
-          likedProduct.limit = this.limit
+          likedService = data;
+          console.log(likedService)
+          likedService.skip = this.start;
+          likedService.limit = this.limit
 
-          this.favoriteProvider.getProducts(this.validation.id).then(data => {
-             this.products = data;
+          this.favoriteProvider.getServices(this.validation.id).then(data => {
+             this.services = data;
           })
-          console.log(this.products)
+          console.log(this.services)
 
         })
 

@@ -32,7 +32,7 @@ export class ServiceProviderSublists {
     public menu4 = [];
     public grid = [];
     start = 0
-    category = "all"
+    category = null
     infiniteScrollEnd = false
     title
     serviceProviderId = undefined

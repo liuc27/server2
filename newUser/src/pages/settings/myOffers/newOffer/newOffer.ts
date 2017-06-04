@@ -100,7 +100,7 @@ export class NewOffer {
           startTime: moment(element.startTime).toDate(),
           endTime: moment(element.endTime).toDate(),
           allDay: element.allDay,
-          creatorId: element.creatorId,
+          creator: element.creator,
           serviceProvider: {"id":element.serviceProvider,"nickname":element.nickname},
           user: element.user,
           serviceProviderNumberLimit: element.serviceProviderNumberLimit,
@@ -152,7 +152,7 @@ export class NewOffer {
         startTime: moment(element.startTime).toDate(),
         endTime: moment(element.endTime).toDate(),
         allDay: element.allDay,
-        creatorId: element.creatorId,
+        creator: element.creator,
         serviceProvider: {"id":element.serviceProvider,"nickname":element.nickname},
         user: element.user,
         serviceProviderNumberLimit: element.serviceProviderNumberLimit,
@@ -326,7 +326,7 @@ export class NewOffer {
         if (this.serviceProviderValidation.id)
           confirm.present();
         else alert("Please login")
-      } else if (this.guideEventSource[theIndex].creatorId === this.serviceProviderValidation.id) {
+      } else if (this.guideEventSource[theIndex].creator.id === this.serviceProviderValidation.id) {
         let confirm = this.alertCtrl.create({
           title: 'Delete offer?',
           message: 'You can delete only if your offer has not yet accepted',
@@ -412,7 +412,7 @@ export class NewOffer {
         startTime: startTime,
         endTime: endTime,
         allDay: false,
-        creatorId: this.serviceProviderValidation.id,
+        creator: this.serviceProviderValidation,
         serviceProvider: serviceProviderArray,
         user: [],
         serviceProviderNumberLimit: 1,
@@ -427,7 +427,7 @@ export class NewOffer {
         startTime: startTime,
         endTime: endTime,
         allDay: false,
-        creatorId: this.serviceProviderValidation.id,
+        creator: this.serviceProviderValidation,
         serviceProvider: serviceProviderArray,
         user: [],
         serviceProviderNumberLimit: 1,
@@ -473,7 +473,7 @@ export class NewOffer {
       startTime: startTime,
       endTime: endTime,
       allDay: false,
-      creatorId: this.serviceProviderValidation.id,
+      creator: this.serviceProviderValidation,
       serviceProvider: serviceProviderArray,
       user: [],
       serviceProviderNumberLimit: 1,

@@ -1,0 +1,66 @@
+<ion-header>
+    <ion-navbar>
+
+        <ion-title (tap)="goTop()">
+            {{ title | translate }}
+        </ion-title>
+
+        <!--<ion-buttons end class="rightNavButton">
+            <button ion-button>
+        <ion-icon name="search"></ion-icon>
+      </button>
+        </ion-buttons>-->
+    </ion-navbar>
+</ion-header>
+
+<ion-content class="service">
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content>
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-slides class="ion-slides-class" *ngIf="params.data.sub.length>0">
+        <ion-slide>
+            <ion-grid>
+                <ion-row class="menuClass1" *ngFor="let row of grid">
+                    <ion-col width-19 class="ion-col-class" *ngFor="let menuItem of row">
+                        <div style="margin-left: 4vw;">
+                            <text-avatar class="roundButton" [text]="translateMenu(menuItem.name)" [color]="menuItem.color" (tap)="openServiceSublistsPage(menuItem)"></text-avatar>
+                        </div>
+                        <div class="menuText">
+                            {{translateMenu(menuItem.name)}}
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-slide>
+    </ion-slides>
+
+    <ion-list no-lines no-paddings>
+        <div *ngFor="let service of services; let i=index" style="position:relative">
+            <img class="bigImage" [src]="service.service.imageURL" (tap)="openServiceDetailsPage(service)">
+            <div class="fab-bot-left">
+                <span class="fab-bot-text">{{service.reviewNumber}}</span>
+                <ion-icon name='chatboxes'></ion-icon>
+            </div>
+
+            <div class="fab-bot-right">
+                <span class="fab-bot-text">{{(service.user || []).length}}/{{service.userNumberLimit}}</span>
+                <ion-icon name='person'></ion-icon>
+            </div>
+
+            <a class="fab-favorite" (tap)="favoriteService(service)">
+                <ion-icon name='heart-outline' *ngIf="alreadyLiked(service) == false"></ion-icon>
+                <ion-icon name='heart' *ngIf="alreadyLiked(service) == true" style="color:pink"></ion-icon>
+            </a>
+            <div class="fab-bot-middle">
+                {{service.service.serviceName}} {{service.creator.nickname}} {{service.pricing}}
+            </div>
+        </div>
+    </ion-list>
+
+    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+</ion-content>

@@ -3,7 +3,9 @@
         <!--<ion-buttons start>
         </ion-buttons>-->
 
-        <ion-title (tap)="goTop()">{{title}}</ion-title>
+        <ion-title (tap)="goTop()">
+            {{ title | translate }}
+        </ion-title>
         <!--
         <ion-buttons end class="rightNavButton">
             <button ion-button>
@@ -21,7 +23,7 @@
         </ion-refresher-content>
     </ion-refresher>
 
-    <ion-slides class="ion-slides-class">
+    <ion-slides class="ion-slides-class" *ngIf="params.data.sub.length>0">
         <ion-slide no-padding no-margin>
             <ion-grid>
                 <ion-row class="menuClass1" *ngFor="let row of grid">
@@ -38,11 +40,11 @@
         </ion-slide>
     </ion-slides>
 
-    <ion-list *ngFor="let serviceProvider of serviceProviders" no-lines no-paddings>
-        <div style="position: relative;">
+    <ion-list no-lines no-paddings>
+        <div *ngFor="let serviceProvider of serviceProviders" style="position: relative;">
             <a (tap)="openServiceProviderDetailsPage(serviceProvider)">
                 <img class="bigImage" [src]="serviceProvider.imageURL">
-                <div class="fab-bot-middle">{{serviceProvider.certificateArray}}</div>
+                <div class="fab-bot-middle">{{serviceProvider.nickname}}{{serviceProvider.certificateArray}}</div>
             </a>
             <a class="fab-favorite" (tap)="favoriteServiceProvider(serviceProvider)">
                 <ion-icon name='heart-outline' *ngIf="alreadyLikedServiceProvider(serviceProvider) == false"></ion-icon>
@@ -55,7 +57,7 @@
             </div>
 
             <div class="fab-bot-right">
-                <span class="fab-bot-text">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
+                <span class="fab-bot-text" *ngIf="serviceProvider.pricePerHour">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
             </div>
 
         </div>
@@ -65,7 +67,7 @@
             <div style="position: relative;">
                 <a (tap)="openServiceProviderDetailsPage(serviceProvider)">
                     <ion-img class="bigImage" [src]="serviceProvider.imageURL"></ion-img>
-                    <div class="fab-bot-middle">{{serviceProvider.certificateArray}}</div>
+                    <div class="fab-bot-middle">{{serviceProvider.nickname}}{{serviceProvider.certificateArray}}</div>
                 </a>
                 <a class="fab-favorite" (tap)="favoriteServiceProvider(serviceProvider)">
                     <ion-icon name='heart-outline' *ngIf="alreadyLikedServiceProvider(serviceProvider) == false"></ion-icon>
@@ -78,7 +80,7 @@
                 </div>
 
                 <div class="fab-bot-right">
-                    <span class="fab-bot-text">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
+                    <span class="fab-bot-text" *ngIf="serviceProvider.pricePerHour">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
                 </div>
             </div>
         </div>

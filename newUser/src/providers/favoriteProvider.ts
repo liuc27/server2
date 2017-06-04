@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
+import { defaultURL } from './i18n-demo.constants';
 
 /*
   Generated class for the UserProvider provider.
@@ -17,7 +18,7 @@ export class FavoriteProvider {
         this.data = null;
     }
 
-    getProducts(id) {
+    getServices(id) {
         //if (this.data) {
         //  // already loaded data
         //  return Promise.resolve(this.data);
@@ -27,7 +28,7 @@ export class FavoriteProvider {
         return new Promise(resolve => {
             console.log("offerProvider start")
             console.log(name)
-            this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/favorite/favoriteProducts?id=' + id)
+            this.http.get(defaultURL+':3000/favorite/favoriteServices?id=' + id)
                 .map(res => res.json())
                 .subscribe(
                 data => {
@@ -39,10 +40,10 @@ export class FavoriteProvider {
         })
     }
 
-    postProduct(product) {
+    postService(service) {
         return new Promise(resolve => {
-            console.log("post favorite product start")
-            this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/favorite/favoriteProduct', product)
+            console.log("post favorite service start")
+            this.http.post(defaultURL+':3000/favorite/favoriteService', service)
               .map(res => res.json())
               .subscribe(
               data => {
@@ -56,8 +57,8 @@ export class FavoriteProvider {
 
     postServiceProvider(serviceProvider) {
         return new Promise(resolve => {
-            console.log("post favorite product start")
-            this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/favorite/favoriteServiceProvider', serviceProvider)
+            console.log("post favorite service start")
+            this.http.post(defaultURL+':3000/favorite/favoriteServiceProvider', serviceProvider)
               .map(res => res.json())
               .subscribe(
               data => {
@@ -72,7 +73,7 @@ export class FavoriteProvider {
     getServiceProviders(id) {
         return new Promise(resolve => {
             console.log(name)
-            this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/favorite/favoriteServiceProviders?id=' + id)
+            this.http.get(defaultURL+':3000/favorite/favoriteServiceProviders?id=' + id)
                 .map(res => res.json())
                 .subscribe(
                 data => {

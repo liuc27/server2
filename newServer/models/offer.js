@@ -5,40 +5,54 @@ mongoose.Promise = require('bluebird');
 var mongoosePaginate = require('mongoose-paginate');
 
 var offerSchema = new mongoose.Schema({
-    creatorId: {
-        type: String,
-        required: true
+    creator: {
+        id: String,
+        nickname: String,
+        imageURL: String
     },
-    productId: {
-        type: String,
-        required: false
+    service: {
+        serviceName: String,
+        category: {
+            main: String,
+            sub: String
+        },
+        introduction: {
+            type: String,
+            required: false
+        },
+        link: {
+            type: String,
+            required: false
+        },
+        imageURL: String,
+        faceImageURL: {
+            type: String,
+            required: false
+        },
+        faceImagePoints: [],
+        videoURL: {
+            type: String,
+            required: false
+        }
     },
     serviceProvider: [{
         _id: mongoose.Schema.Types.ObjectId,
         id: String,
-        nickname: String
+        nickname: String,
+        imageURL: String
     }],
     user: [{
         _id: mongoose.Schema.Types.ObjectId,
         id: String,
         nickname: String
     }],
-    startTime: {
-        type: String,
-        required: true
-    },
-    endTime: {
-        type: String,
-        required: true
-    },
+    startTime: String,
+    endTime: String,
     serviceType: {
         type: String,
         required: false
     },
-    title: {
-        type: String,
-        required: true
-    },
+    title: String,
     text: {
         type: String,
         required: false
@@ -51,17 +65,30 @@ var offerSchema = new mongoose.Schema({
         type: Number,
         required: false
     },
-    userNumberLimit: {
-        type: Number,
-        required: true
-    },
+    userNumberLimit: Number,
     repeat: {
         type: Number,
         required: false
     },
-    price: {
+    priceBeforeDiscount: {
         type: Number,
         required: false
+    },
+    price: Number,
+    currency: String,
+    review: [],
+    likedBy: [String],
+    reviewNumber: {
+        type: Number,
+        default: 0
+    },
+    created: {
+        type: Date,
+        default: Date.now
+    },
+    updated: {
+        type: Date,
+        default: Date.now
     }
 })
 

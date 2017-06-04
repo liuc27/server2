@@ -10,19 +10,34 @@
 
 <ion-content>
 
-    <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher (ionRefresh)="doRefresh($event)">
         <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
         </ion-refresher-content>
-    </ion-refresher> -->
+    </ion-refresher>
 
-    <ion-list [virtualScroll]="serviceProviders" approxItemHeight="60px" [bufferRatio]="3">
-        <ion-item *virtualItem="let serviceProvider" (tap)="openServiceProviderDetailsPage(serviceProvider)">
-            <ion-thumbnail item-left>
-                <img style="object-fit:cover; border-radius:5%;" src="{{serviceProvider.imageURL}}">
-            </ion-thumbnail>
-            <h2>{{serviceProvider.nickname}} </h2>
-            <p>{{serviceProvider.introduction}}</p>
-        </ion-item>
+    <ion-list no-lines no-paddings>
+        <div *ngFor="let serviceProvider of serviceProviders" style="position: relative;">
+            <a (tap)="openServiceProviderDetailsPage(serviceProvider)">
+                <img class="bigImage" [src]="serviceProvider.imageURL">
+                <div class="fab-bot-middle">{{serviceProvider.nickname}}{{serviceProvider.certificateArray}}</div>
+            </a>
+            <a class="fab-favorite" (tap)="favoriteServiceProvider(serviceProvider)">
+                <ion-icon name='heart-outline' *ngIf="alreadyLikedServiceProvider(serviceProvider) == false"></ion-icon>
+                <ion-icon name='heart' *ngIf="alreadyLikedServiceProvider(serviceProvider) == true" style="color:pink"></ion-icon>
+            </a>
+
+            <div class="fab-bot-left">
+                <span class="fab-bot-text">{{serviceProvider.reviewNumber}}</span>
+                <ion-icon name='chatboxes'></ion-icon>
+            </div>
+
+            <div class="fab-bot-right">
+                <span class="fab-bot-text" *ngIf="serviceProvider.pricePerHour">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
+            </div>
+
+        </div>
     </ion-list>
-
+    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
 </ion-content>

@@ -21,11 +21,11 @@
         </ion-refresher-content>
     </ion-refresher>
 
-    <ion-list *ngFor="let serviceProvider of serviceProviders" no-lines no-paddings>
-        <div style="position: relative;">
+    <ion-list no-lines no-paddings>
+        <div *ngFor="let serviceProvider of serviceProviders" style="position: relative;">
             <a (tap)="openServiceProviderDetailsPage(serviceProvider)">
                 <img class="bigImage" [src]="serviceProvider.imageURL">
-                <div class="fab-bot-middle">{{serviceProvider.certificateArray}}</div>
+                <div class="fab-bot-middle">{{serviceProvider.nickname}}{{serviceProvider.certificateArray}}</div>
             </a>
             <a class="fab-favorite" (tap)="favoriteServiceProvider(serviceProvider)">
                 <ion-icon name='heart-outline' *ngIf="alreadyLikedServiceProvider(serviceProvider) == false"></ion-icon>
@@ -38,7 +38,7 @@
             </div>
 
             <div class="fab-bot-right">
-                <span class="fab-bot-text">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
+                <span class="fab-bot-text" *ngIf="serviceProvider.pricePerHour">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
             </div>
 
         </div>
@@ -48,7 +48,7 @@
             <div style="position: relative;">
                 <a (tap)="openServiceProviderDetailsPage(serviceProvider)">
                     <ion-img class="bigImage" [src]="serviceProvider.imageURL"></ion-img>
-                    <div class="fab-bot-middle">{{serviceProvider.certificateArray}}</div>
+                    <div class="fab-bot-middle">{{serviceProvider.nickname}}{{serviceProvider.certificateArray}}</div>
                 </a>
                 <a class="fab-favorite" (tap)="favoriteServiceProvider(serviceProvider)">
                     <ion-icon name='heart-outline' *ngIf="alreadyLikedServiceProvider(serviceProvider) == false"></ion-icon>
@@ -61,7 +61,7 @@
                 </div>
 
                 <div class="fab-bot-right">
-                    <span class="fab-bot-text">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
+                    <span class="fab-bot-text" *ngIf="serviceProvider.pricePerHour">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
                 </div>
             </div>
         </div>

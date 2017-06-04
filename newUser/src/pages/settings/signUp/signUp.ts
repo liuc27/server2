@@ -19,6 +19,8 @@
  //timezone
  import 'moment-timezone';
 
+ import { defaultURL } from '../../../providers/i18n-demo.constants';
+
 @Component({
   selector: 'page-signUp',
   templateUrl: 'signUp.html',
@@ -91,7 +93,7 @@ export class SignUp {
     }else if(this.validation.id.length<6||this.validation.password<6){
       alert("id and password need more than 6 characters!")
     } else{
-    this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/', this.validation)
+    this.http.post(defaultURL+':3000/user/', this.validation)
       .map(res => res.json())
       .subscribe(
             data => {

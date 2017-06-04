@@ -20,6 +20,8 @@ import 'moment/src/locale/zh-cn';
 //timezone
 import 'moment-timezone';
 
+import { defaultURL } from '../../../../providers/i18n-demo.constants';
+
 @Component({
 selector: 'page-newService',
 templateUrl: 'newService.html',
@@ -37,10 +39,9 @@ export class NewServicePage {
   validation: any = {}
   alreadyLoggedIn = {data:false};
 
-  product:any = {
-  serviceProvider:{},
-  imageURL: null,
-  faceImageURL: null
+  service:any = {
+  creator:{},
+  service:{}
   };
 
   uploadedImg = {data: undefined};
@@ -49,25 +50,44 @@ export class NewServicePage {
   month :number;
   day :number;
   buttonDisabled : boolean;
-  selected1
+  selected1;
 
   options: any = [
-  {'name':'Guide','val':'{"name":"guide"}'},
-  {'name':'Teach','val':'{"name":"teach"}'},
-  {'name':'Housework','val':'{"name":"Housework"}'},
-  {'name':'Fix','val':'{"name":"fix"}'},
-  {'name':'BeautySkinCare','val': '{"name":"beauty","sub":"skinCare"}'},
-  {'name':'BeautyMakeup','val': '{"name":"beauty","sub":"makeup"}'},
-  {'name':'BeautyDiet','val': '{"name":"beauty","sub":"diet"}'},
-  {'name':'BeautySurgery','val': '{"name":"beauty","sub":"surgery"}'},
-  {'name':'BeautyOthers','val': '{"name":"beauty","sub":"others"}'},
-  {'name':'Job Hunt','val':'{"name":"jobHunt"}'},
-  {'name':'School Find','val':'{"name":"schoolFind"}'},
-  {'name':'Biz Advise','val':'{"name":"bizAdvise"}'},
-  {'name':'Law','val':'{"name":"law"}'},
-  {'name':'Others','val':'{"name":"others"}'}
+  {'main':'guide'},
+  {'main':'teach'},
+  {'main':'housework'},
+  {'main':'art'},
+  {'main':'beauty','sub':'skinCare'},
+  {'main':'beauty','sub':'makeup'},
+  {'main':'beauty','sub':'diet'},
+  {'main':'beauty','sub':'surgery'},
+  {'main':'beauty','sub':'others'},
+  {'main':'jobHunt'},
+  {'main':'schoolFind'},
+  {'main':'bizAdvise'},
+  {'main':'law'},
+  {'main':'others'}
   ]
 
+/*
+  [
+  {'name':'Guide','val':{'main':'guide'}},
+  {'name':'Teach','val':{'main':'teach'}},
+  {'name':'Housework','val':{'main':'guide'}},
+  {'name':'Art','val':{'main':'art'}},
+  {'name':'Beauty','val':{'main':'beauty'}},
+  {'name':'BeautySkinCare','val': {'main':'beauty','sub':'skinCare'} },
+  {'name':'BeautyMakeup','val': {'main':'beauty','sub':'makeup'} },
+  {'name':'BeautyDiet','val': {'main':'beauty','sub':'diet'} },
+  {'name':'BeautySurgery','val': {'main':'beauty','sub':'surgery'} },
+  {'name':'BeautyOthers','val': {'main':'beauty','sub':'others'} },
+  {'name':'Job Hunt','val':{'main':'jobHunt'}},
+  {'name':'School Find','val':{'main':'schoolFind'}},
+  {'name':'Biz Advise','val':{'main':'bizAdvise'}},
+   {'name':'Law','val':{'main':'law'}},
+   {'name':'Others','val':{'main':'others'}},
+  ]
+*/
   constructor(public navCtrl: NavController,
               private events: Events,
               private http: Http,
@@ -89,26 +109,26 @@ export class NewServicePage {
     let endTime = new Date()
     startTime.setMinutes(0)
     endTime.setMinutes(0)
-    this.product.startTime = startTime.toISOString();
-    this.product.endTime = endTime.toISOString();
+    this.service.startTime = startTime.toISOString();
+    this.service.endTime = endTime.toISOString();
 
   }
   ionViewWillEnter() {
   this.userProvider.loadLocalStorage()
   .then(data => {
     this.validation = data
-    this.product.serviceProvider._id = this.validation._id;
-    this.product.serviceProvider.id = this.validation.id;
-    this.product.serviceProvider.password = this.validation.password;
-    this.product.serviceProvider.nickname = this.validation.nickname;
-    this.product.serviceProvider.imageURL = this.validation.imageURL;
+    this.service.creator._id = this.validation._id;
+    this.service.creator.id = this.validation.id;
+    this.service.creator.password = this.validation.password;
+    this.service.creator.nickname = this.validation.nickname;
+    this.service.creator.imageURL = this.validation.imageURL;
     this.alreadyLoggedIn.data = true;
   });
   }
 
   category1Selected(){
     if(this.selected1){
-    this.product.category=JSON.parse(this.selected1)
+    this.service.service.category=this.selected1
     }
   }
 
@@ -135,7 +155,7 @@ export class NewServicePage {
 
     reader.onload = function (e) {
      console.log("1")
-      self.product.imageURL = reader.result;
+      self.service.service.imageURL = reader.result;
       console.log("2")
       self.presentToast()
 
@@ -159,7 +179,7 @@ export class NewServicePage {
       //console.log(self.uploadedImg);
       //var addon ={"img": atob(reader.result.split(',')[1])};
       //Object.assign( self.f,  self.f, addon);
-      self.product.faceImageURL = reader.result;
+      self.service.service.faceImageURL = reader.result;
 
       self.f.img = atob(reader.result.split(',')[1]);
 
@@ -231,9 +251,9 @@ export class NewServicePage {
 
               image.onload = function () {
                 console.log(facePoints)
-                self.product.faceImagePoints = facePoints;
-                self.product.faceImageHeight = image.naturalHeight;
-                self.product.faceImageWidth = image.naturalWidth;
+                self.service.service.faceImagePoints = facePoints;
+                self.service.service.faceImageHeight = image.naturalHeight;
+                self.service.service.faceImageWidth = image.naturalWidth;
 
 
                 if (facePoints != undefined) {
@@ -268,38 +288,41 @@ export class NewServicePage {
   }
 
   start(){
-   console.log(this.product.startTime)
+   console.log(this.service.startTime)
   }
 
-  replaceProduct() {
+  replaceService() {
     this.buttonDisabled = true;
-    console.log(this.product)
-    if (this.product.serviceProvider.id && this.product.productName&& this.product.startTime&& this.product.endTime&&this.product.userNumberLimit) {
-      console.log(this.product)
+    console.log(this.service)
+    if (this.service.creator.id && this.service.service.serviceName&& this.service.startTime&& this.service.endTime&&this.service.userNumberLimit) {
+      console.log(this.service)
     //  var pricePerHour = this.validation.pricePerHour || 1000
-    //  var duration = moment.duration(moment(this.product.endTime).diff(moment(this.product.startTime)));
+    //  var duration = moment.duration(moment(this.service.endTime).diff(moment(this.service.startTime)));
     //  var hours = duration.asHours();
 
       var serviceProviderArray = [];
       serviceProviderArray.push({"id":this.validation.id, "nickname":this.validation.nickname})
 
-      this.product.event = {
-        title: this.product.productName,
-        serviceType: 'event',
-        startTime: this.product.startTime,
-        endTime: this.product.endTime,
-        allDay: false,
-        creatorId: this.validation.id,
+      this.service = {
+        creator: this.validation,
+        service: this.service,
         serviceProvider: serviceProviderArray,
         user: [],
+        startTime: this.service.startTime,
+        endTime: this.service.endTime,
+        serviceType: 'service',
+        title: this.service.serviceName,
+        allDay: false,
         serviceProviderNumberLimit: 1,
-        userNumberLimit: this.product.userNumberLimit,
+        userNumberLimit: this.service.userNumberLimit,
         repeat: 0,
         action: "put",
-        price: this.product.retail
+        currency: this.service.currency || 'jpy',
+        price: this.service.price,
+        priceBeforeDiscount: this.service.priceBeforeDiscount
       }
 
-      this.http.post("http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/product", this.product)
+      this.http.post(defaultURL+':3000/offer/service', this.service)
         .subscribe(data => {
             console.log(data);
             alert(data.statusText)
@@ -311,7 +334,7 @@ export class NewServicePage {
           }
         )
     }else{
-    alert("Please login first, then input product name, start time, end time and userNumberLimit!")
+    alert("Please login first, then input service name, start time, end time and userNumberLimit!")
       this.buttonDisabled = false;
 
     }

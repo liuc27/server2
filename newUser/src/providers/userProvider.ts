@@ -3,6 +3,7 @@ import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import {Storage} from '@ionic/storage'
 import { TranslateService } from 'ng2-translate/ng2-translate';
+import { defaultURL } from './i18n-demo.constants';
 
 /*
   Generated class for the UserProvider provider.
@@ -16,6 +17,7 @@ export class UserProvider {
     validation: any = {};
     data: any;
     perpage = 20
+    queryString
 
     constructor(
     public http: Http,
@@ -43,7 +45,7 @@ export class UserProvider {
                 resolve(null)
             }
             else {
-                this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/login', validaiton)
+                this.http.post(defaultURL+':3000/user/login', validaiton)
                     .map(res => res.json())
                     .subscribe(
                     data2 => {
@@ -84,9 +86,18 @@ export class UserProvider {
         })
     }
 
-    get(start:number,category:String,subCategory:String,userType) {
+    get(start:number,category,subCategory,userType) {
+
+    if(!category){
+     this.queryString = this.perpage+'&skip='+start+'&userType='+userType
+     } else if(category && !subCategory) {
+     this.queryString = this.perpage+'&skip='+start+'&category='+category+'&userType='+userType
+     }else {
+     this.queryString = this.perpage+'&skip='+start+'&category='+category+'&subCategory='+subCategory+'&userType='+userType
+     }
+
       return new Promise(resolve => {
-        this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user?limit='+this.perpage+'&skip='+start+'&category='+category+'&subCategory='+subCategory+'&userType='+userType)
+        this.http.get(defaultURL+':3000/user?limit='+this.queryString)
           .map(res => res.json())
           .subscribe(
           data => {
@@ -103,7 +114,7 @@ export class UserProvider {
     getMenu() {
     return new Promise(resolve => {
 
-        this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/product/getMenu')
+        this.http.get(defaultURL+':3000/offer/getMenu')
             .map(res => res.json())
             .subscribe(
             data => {

@@ -11,8 +11,8 @@
 
         <ion-item>
             <ion-label>*{{ 'Service Type' | translate }}</ion-label>
-            <ion-select (ionChange)="selectObjectById(options, $event, 'product')" class="gsValidate gsSmallText" name="activeUnit" [(ngModel)]="product.category" [placeholder]="placeholderValue()" required>
-                <ion-option *ngFor="let item of options" [value]="item.val">{{item.name | translate}}</ion-option>
+            <ion-select (ionChange)="category1Selected()" [(ngModel)]="selected1" [placeholder]="placeholderValue()" required>
+                <ion-option *ngFor="let item of options" [value]="item">{{item.main | translate}}{{item.sub | translate}}</ion-option>
             </ion-select>
         </ion-item>
 
@@ -26,52 +26,52 @@
 
         <ion-item>
             <ion-label primary>*{{ 'Event Name' | translate }}</ion-label>
-            <ion-input [(ngModel)]="product.productName"></ion-input>
+            <ion-input [(ngModel)]="service.service.serviceName"></ion-input>
         </ion-item>
         <ion-item>
             <ion-label primary>*{{ 'Event Introduction' | translate }}</ion-label>
-            <ion-textarea [(ngModel)]="product.introduction"></ion-textarea>
+            <ion-textarea [(ngModel)]="service.service.introduction"></ion-textarea>
         </ion-item>
 
         <ion-item>
             <ion-label>*{{ 'Start Time' | translate }}</ion-label>
-            <ion-datetime min=2017 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="product.startTime" (ionChange)="start()"></ion-datetime>
+            <ion-datetime min=2017 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="service.startTime" (ionChange)="start()"></ion-datetime>
         </ion-item>
 
         <ion-item>
             <ion-label>*{{ 'End Time' | translate }}</ion-label>
-            <ion-datetime min=2017 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="product.endTime"></ion-datetime>
+            <ion-datetime min=2017 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="service.endTime"></ion-datetime>
         </ion-item>
 
         <ion-item>
             <ion-label primary>*{{ 'User Number Limit' | translate }}</ion-label>
-            <ion-input [(ngModel)]="product.userNumberLimit"></ion-input>
+            <ion-input [(ngModel)]="service.userNumberLimit"></ion-input>
         </ion-item>
 
 
         <ion-item>
             <ion-label primary>{{ 'List Price' | translate }}</ion-label>
-            <ion-input [(ngModel)]="product.list"></ion-input>
+            <ion-input [(ngModel)]="service.priceBeforeDiscount"></ion-input>
         </ion-item>
         <ion-item>
             <ion-label primary>*{{ 'Retail Price' | translate }}</ion-label>
-            <ion-input [(ngModel)]="product.retail"></ion-input>
+            <ion-input [(ngModel)]="service.price"></ion-input>
         </ion-item>
 
 
         <ion-item>
             <ion-label primary>{{ 'Video URL' | translate }}</ion-label>
-            <ion-input [(ngModel)]="product.videoURL"></ion-input>
+            <ion-input [(ngModel)]="service.service.videoURL"></ion-input>
         </ion-item>
 
-        <ion-item>
+        <!-- <ion-item>
             <ion-label primary>{{ 'Video Time(m)' | translate }}</ion-label>
-            <ion-input [(ngModel)]="product.time"></ion-input>
-        </ion-item>
+            <ion-input [(ngModel)]="service.time"></ion-input>
+        </ion-item> -->
 
         <ion-item>
             <ion-label primary>{{ 'Shop Link' | translate }}</ion-label>
-            <ion-input [(ngModel)]="product.link"></ion-input>
+            <ion-input [(ngModel)]="service.service.link"></ion-input>
         </ion-item>
 
 
@@ -83,23 +83,10 @@
 
     </ion-list>
 
-    <!-- <ion-list >
-  <ion-item>
-    <ion-label primary>*serviceProvider name</ion-label>
-    <ion-input [(ngModel)]="product.serviceProviderId"></ion-input>
-  </ion-item>
-  <ion-item>
-    <ion-label primary>*password</ion-label>
-    <ion-input type="password" [(ngModel)]="product.password"></ion-input>
-  </ion-item>
-</ion-list> -->
-
-
-
     <ion-list>
         <ion-item>
             <ion-thumbnail item-left>
-                <img style="object-fit:cover;border-radius:5%;" src="{{product.imageURL}}">
+                <img style="object-fit:cover;border-radius:5%;" src="{{service.service.imageURL}}">
             </ion-thumbnail>
             <ion-label>{{ 'Head Image' | translate }}</ion-label>
             <!-- <img style="object-fit:cover; border-radius:5%;" src="{{informationValue}}"> -->
@@ -111,7 +98,7 @@
 
         <ion-item>
             <ion-thumbnail item-left>
-                <img style="object-fit:cover;border-radius:5%;" src="{{product.faceImageURL}}">
+                <img style="object-fit:cover;border-radius:5%;" src="{{service.service.faceImageURL}}">
             </ion-thumbnail>
             <ion-label>{{ 'Face Image' | translate }}</ion-label>
             <!-- <img style="object-fit:cover; border-radius:5%;" src="{{informationValue}}"> -->
@@ -120,9 +107,9 @@
         <input #faceImageButton [hidden]=true type="file" accept="image/*" (change)="uploadFaceImage($event)">
     </ion-list>
 
-    <button ion-button full [disabled]=buttonDisabled (tap)="replaceProduct()">Modify</button>
+    <button ion-button full [disabled]=buttonDisabled (tap)="replaceService()">Modify</button>
 
     <!--
-  <div id="jsonDiv"> {{product | json }}</div>
+  <div id="jsonDiv"> {{service | json }}</div>
   -->
 </ion-content>

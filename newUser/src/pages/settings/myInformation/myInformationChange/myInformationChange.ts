@@ -19,6 +19,7 @@ import 'moment/src/locale/zh-cn';
 //timezone
 import 'moment-timezone';
 
+import { defaultURL } from '../../../../providers/i18n-demo.constants';
 
 @Component({
   selector: 'page-myInformationChange',
@@ -40,23 +41,25 @@ export class MyInformationChange {
   informationName;
   informationValue:any;
   uploadedImg = {data: undefined};
-  selectedCategories = [];
+  selected1
+  trueOrFalse
+  selected : any = []
 
   options: any = [
-  {'name':'Guide','val':{'name':'guide'}},
-  {'name':'Teach','val':{'name':'teach'}},
-  {'name':'Housework','val':{'name':'guide'}},
-  {'name':'Fix','val':{'name':'fix'}},
-  {'name':'BeautySkinCare','val': {'name':'beauty','sub':'skinCare'} },
-  {'name':'BeautyMakeup','val': {'name':'beauty','sub':'makeup'} },
-  {'name':'BeautyDiet','val': {'name':'beauty','sub':'diet'} },
-  {'name':'BeautySurgery','val': {'name':'beauty','sub':'surgery'} },
-  {'name':'BeautyOthers','val': {'name':'beauty','sub':'others'} },
-  {'name':'Job Hunt','val':{'name':'jobHunt'}},
-  {'name':'School Find','val':{'name':'schoolFind'}},
-  {'name':'Biz Advise','val':{'name':'bizAdvise'}},
-   {'name':'Law','val':{'name':'law'}},
-   {'name':'Others','val':{'name':'others'}},
+  {'main':'guide'},
+  {'main':'teach'},
+  {'main':'housework'},
+  {'main':'art'},
+  {'main':'beauty','sub':'skinCare'},
+  {'main':'beauty','sub':'makeup'},
+  {'main':'beauty','sub':'diet'},
+  {'main':'beauty','sub':'surgery'},
+  {'main':'beauty','sub':'others'},
+  {'main':'jobHunt'},
+  {'main':'schoolFind'},
+  {'main':'bizAdvise'},
+  {'main':'law'},
+  {'main':'others'}
   ]
 
   constructor(private nav: NavController,
@@ -78,13 +81,6 @@ export class MyInformationChange {
       }
     }
 
-    if(this.informationName == "category"){
-      if(this.informationValue.length>0){
-        this.informationValue.forEach((element)=>{
-          this.selectedCategories.push(element.sub)
-        })
-      }
-    }
   }
 
   ionViewWillEnter() {
@@ -97,24 +93,18 @@ export class MyInformationChange {
       });
   }
 
-  selectObjectById(list: any[], id: string, property: string) {
-      var item = list.find(item => item._id === id);
-      var prop = eval('this.' + property);
-      prop = property;
-        if(this.informationValue.length>0){
-          this.informationValue.forEach((element)=>{
-            this.selectedCategories.push(element.sub)
-          })
-        }
-      console.log(this.informationValue)
-
+  category1Selected(){
+    if(this.selected1){
+    this.informationValue=this.selected1
+    }
   }
+
 
   changeInformationValue() {
         if(this.informationName && this.informationValue){
           this.validation[this.informationName] = this.informationValue
           console.log(this.validation)
-          this.http.put('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/'+this.validation._id, this.validation)
+          this.http.put(defaultURL+':3000/user/'+this.validation._id, this.validation)
             .map(res => res.json())
             .subscribe(
             data => {
@@ -212,7 +202,6 @@ export class MyInformationChange {
     toast.onDidDismiss(() => {
       console.log(' ');
     });
-
     toast.present();
   }
 

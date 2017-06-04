@@ -92,7 +92,7 @@
   "Guide": "ガイド",
   "Teach": "教師",
   "Housework": "家政",
-  "Fix": "修理",
+  "Art": "芸術",
   "Beauty": "美容健康",
 
   "Job Hunt": "求職",
@@ -104,7 +104,7 @@
   "guide": "ガイド",
   "teach": "教師",
   "housework": "家政",
-  "fix": "修理",
+  "art": "芸術",
   "beauty": "美容健康",
 
   "jobHunt": "求職",
@@ -113,8 +113,18 @@
   "law": "法務",
   "others": "その他",
 
+  "Skin care": "スキンケア",
+  "Makeup": "メイク",
+  "Diet": "ダイエット",
+  "Surgery": "整形",
+  "skinCare": "スキンケア",
+  "makeup": "メイク",
+  "diet": "ダイエット",
+  "surgery": "整形",
+
   "My Events": "私のイベント",
-  "Event Update": "イベント更新"
+  "Event Update": "イベント更新",
+  "Tap to choose": "タップして選擇"
 
 
 

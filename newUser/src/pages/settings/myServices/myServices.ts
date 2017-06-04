@@ -6,16 +6,19 @@ import { Events, NavController, NavParams, PopoverController, AlertController } 
 import {UserProvider} from '../../../providers/userProvider'
 import {Storage} from '@ionic/storage'
 import {ModifyMyServices} from'./modifyMyServices/modifyMyServices'
-import {ProductProvider} from '../../../providers/productProvider'
+import {ServiceProvider} from '../../../providers/serviceProvider'
 import { NewServicePage } from './newService/newService';
 
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 
+import { defaultURL } from '../../../providers/i18n-demo.constants';
+
+
 @Component({
   selector: 'page-myServices',
   templateUrl: 'myServices.html',
-  providers: [UserProvider, ProductProvider]
+  providers: [UserProvider, ServiceProvider]
 })
 export class MyServices {
 
@@ -37,7 +40,7 @@ export class MyServices {
     public storage: Storage,
     public userProvider: UserProvider,
     private http: Http,
-    public productProvider:ProductProvider,
+    public serviceProvider:ServiceProvider,
     public alertCtrl: AlertController
 ) {
 
@@ -56,14 +59,14 @@ export class MyServices {
 
 
   loadSelectedServiceProviderDetails() {
-      this.productProvider.get(this.start,null,"all",this.serviceProviderValidation.id)
+      this.serviceProvider.get(this.start,null,null,this.serviceProviderValidation.id)
       .then(data => {
         console.log("data")
         console.log(data)
         if(Object.keys(data).length==0){
           this.start-=20
         }
-          if(this.serviceProviderDetails.product){
+          if(this.serviceProviderDetails.service){
           this.serviceProviderDetails = this.serviceProviderDetails.concat(data);
           }else {
           this.serviceProviderDetails = [].concat(data);
@@ -91,7 +94,7 @@ export class MyServices {
     if(this.rate)
     commentData.rate = this.rate
     console.log(commentData)
-    this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/addServiceProviderComment', commentData)
+    this.http.post(defaultURL+':3000/user/addServiceProviderComment', commentData)
       .map(res => res.json())
       .subscribe(data => {
         // we've got back the raw data, now generate the core schedule data
@@ -107,10 +110,10 @@ export class MyServices {
   }
 */
 
-  openProductDetailsPage(product) {
+  openServiceDetailsPage(service) {
     console.log("detail open");
-    console.log(product)
-    this.nav.push(ModifyMyServices, product);
+    console.log(service)
+    this.nav.push(ModifyMyServices, service);
   }
 
   newService(){

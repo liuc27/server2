@@ -92,7 +92,7 @@
   "Guide": "向导",
   "Teach": "教学",
   "Housework": "家政",
-  "Fix": "修理",
+  "Art": "艺术",
   "Beauty": "美容健康",
 
   "Job Hunt": "求职",
@@ -104,7 +104,7 @@
   "guide": "向导",
   "teach": "教学",
   "housework": "家政",
-  "fix": "修理",
+  "art": "艺术",
   "beauty": "美容健康",
 
   "jobHunt": "求职",
@@ -114,5 +114,7 @@
   "others": "其他",
 
   "My Events": "我的活动",
-  "Event Update": "活动更新"
+  "Event Update": "活动更新",
+  "Tap to choose": "点击选择"
+
 }

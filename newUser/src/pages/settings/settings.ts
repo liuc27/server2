@@ -16,6 +16,9 @@ import { UserProvider } from '../../providers/userProvider'
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 
+import { defaultURL } from '../../providers/i18n-demo.constants';
+
+
 declare var Wechat:any;
 
 @Component({
@@ -100,7 +103,7 @@ export class SettingsPage {
   applyForPro(){
     if(this.validation){
       if(this.validation.id&&this.validation.password){
-        this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/applyForPro', this.validation)
+        this.http.post(defaultURL+':3000/user/applyForPro', this.validation)
         .map(res => res.json())
           .subscribe(data => {
             this.storage.ready().then(() => {
@@ -155,7 +158,7 @@ export class SettingsPage {
       Wechat.auth(scope, state, function (response) {
           // you may use response.code to get the access token.
           console.log((response));
-          that.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/wechatLogin', response)
+          that.http.post(defaultURL+':3000/user/wechatLogin', response)
             .map(res => res.json())
             .subscribe(data => {
               if(data.id && data.nickname){

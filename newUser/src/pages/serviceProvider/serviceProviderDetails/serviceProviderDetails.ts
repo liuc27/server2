@@ -8,13 +8,13 @@ import { serviceProviderDetailsPop2 } from "./popoverPages/serviceProviderDetail
 import { serviceProviderDetailsPop3 } from "./popoverPages/serviceProviderDetailsPop3";
 import { ServiceProviderReview } from "./serviceProviderReview/serviceProviderReview";
 import { ServiceProviderCertificate } from "./serviceProviderCertificate/serviceProviderCertificate";
-import { ProductDetails } from '../../product/productLists/productDetails/productDetails';
+import { ServiceDetails } from '../../service/serviceLists/serviceDetails/serviceDetails';
 import { UserProvider } from '../../../providers/userProvider'
 import { FavoriteProvider } from '../../../providers/favoriteProvider'
 import { Storage } from '@ionic/storage'
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { ProductProvider } from '../../../providers/productProvider';
+import { ServiceProvider } from '../../../providers/serviceProvider';
 import { Reservation } from './reservation/reservation';
 import moment from 'moment';
 
@@ -27,18 +27,19 @@ import 'moment/src/locale/zh-cn';
 
 //timezone
 import 'moment-timezone';
+import { defaultURL } from '../../../providers/i18n-demo.constants';
 
 @Component({
   selector: 'page-serviceProviderDetails',
   templateUrl: 'serviceProviderDetails.html',
-  providers: [ProductProvider, UserProvider, FavoriteProvider]
+  providers: [ServiceProvider, UserProvider, FavoriteProvider]
 })
 export class ServiceProviderDetails {
   @ViewChild('popoverContent', { read: ElementRef }) popContent: ElementRef;
   @ViewChild('popoverText', { read: ElementRef }) text: ElementRef;
   @ViewChild(Content) content: Content;
 
-  serviceProvider : any = {
+  theServiceProvider : any = {
     review:[],
     likedBy:[]
   };
@@ -71,9 +72,9 @@ export class ServiceProviderDetails {
     public storage: Storage,
     private http: Http,
     public userProvider: UserProvider,
-    public productProvider: ProductProvider,
+    public serviceProvider: ServiceProvider,
     public favoriteProvider: FavoriteProvider,
-    public reservationService: ProductProvider,
+    public reservationService: ServiceProvider,
     private toastCtrl: ToastController,
     public alertCtrl: AlertController) {
     console.log("params.data is")
@@ -86,17 +87,17 @@ export class ServiceProviderDetails {
     if(!params.data.likedBy){
       params.data.likedBy = []
     }
-    this.serviceProvider = params.data
+    this.theServiceProvider = params.data
 
 
-    this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/user/'+this.serviceProviderId)
+    this.http.get(defaultURL+':3000/user/'+this.serviceProviderId)
     .map(res => res.json())
     .subscribe(serviceProviderData => {
-        this.serviceProvider = serviceProviderData
+        this.theServiceProvider = serviceProviderData
         if(serviceProviderData.certificates){
           this.certificates = serviceProviderData.certificates
         }
-        console.log(this.serviceProvider)
+        console.log(this.theServiceProvider)
     })
 
     this.loadSelectedServiceProviderDetails()
@@ -107,7 +108,7 @@ export class ServiceProviderDetails {
       .then(data => {
         this.validation = data
         this.alreadyLoggedIn = true;
-        console.log(this.serviceProvider.id)
+        console.log(this.theServiceProvider.id)
       });
 
     this.serviceType = "guide"
@@ -124,7 +125,7 @@ export class ServiceProviderDetails {
           startTime: new Date(element.startTime),
           endTime: new Date(element.endTime),
           allDay: false,
-          serviceProviderId: this.serviceProvider.id,
+          serviceProviderId: this.theServiceProvider.id,
           id: this.validation.id
         })
       });
@@ -142,7 +143,7 @@ export class ServiceProviderDetails {
           startTime: new Date(element.startTime),
           endTime: new Date(element.endTime),
           allDay: false,
-          serviceProviderId: this.serviceProvider.id,
+          serviceProviderId: this.theServiceProvider.id,
           id: this.validation.id
         })
       });
@@ -178,8 +179,8 @@ export class ServiceProviderDetails {
       startTime: moment(element.startTime).toDate(),
       endTime: moment(element.endTime).toDate(),
       allDay: element.allDay,
-      creatorName: element.creatorName,
-      serviceProviderId: element.serviceProviderId,
+      creator: element.creator,
+      serviceProvider: element.serviceProvider,
       id: element.id,
       serviceProviderNumberLimit: element.serviceProviderNumberLimit,
       userNumberLimit: element.userNumberLimit,
@@ -195,7 +196,7 @@ export class ServiceProviderDetails {
   loadSelectedServiceProviderDetails() {
 
   return new Promise(resolve => {
-      this.productProvider.get(this.start,null,"all",this.serviceProviderId)
+      this.serviceProvider.get(this.start,null,null,this.serviceProviderId)
       .then(data => {
         console.log("data")
         console.log(data)
@@ -268,10 +269,10 @@ export class ServiceProviderDetails {
 
 
 
-    alreadyLiked(product) {
+    alreadyLiked(service) {
       if (this.validation  ) {
-      if(product._id && this.validation.likedProduct){
-        if (this.validation.likedProduct.indexOf(product._id) >= 0) {
+      if(service._id && this.validation.likedService){
+        if (this.validation.likedService.indexOf(service._id) >= 0) {
           return true
         }
         }
@@ -279,36 +280,36 @@ export class ServiceProviderDetails {
       return false
     }
 
-    favoriteProduct(product) {
+    favoriteService(service) {
       if (this.validation.id) {
-        console.log(product)
-        var theProduct = {
-          _id: product._id,
+        console.log(service)
+        var theService = {
+          _id: service._id,
           id: this.validation.id,
           password: this.validation.password
         }
-        console.log(product.likedBy);
+        console.log(service.likedBy);
 
-        this.favoriteProvider.postProduct(theProduct).then(data => {
+        this.favoriteProvider.postService(theService).then(data => {
         var flag = data
         if (flag == "push") {
-          product.likedBy.push(this.validation.id);
-          this.validation.likedProduct.push(product._id)
+          service.likedBy.push(this.validation.id);
+          this.validation.likedService.push(service._id)
         } else if (flag == "pull") {
 
-          var index = product.likedBy.indexOf(this.validation.id);
+          var index = service.likedBy.indexOf(this.validation.id);
           if (index > -1) {
-            product.likedBy.splice(index, 1);
+            service.likedBy.splice(index, 1);
           }
 
-          var index2 = this.validation.likedProduct.indexOf(product._id);
+          var index2 = this.validation.likedService.indexOf(service._id);
           if (index2 > -1) {
-            this.validation.likedProduct.splice(index2, 1);
+            this.validation.likedService.splice(index2, 1);
           }
           console.log(this.validation)
         }
         this.userProvider.saveLocalStorage(this.validation)
-        console.log(product.likedBy);
+        console.log(service.likedBy);
         })
       } else {
         this.presentAlert("Please login first!")
@@ -355,8 +356,8 @@ openServiceProviderReviewPage(){
   if(this.validation){
     if(this.validation.id&&this.validation.password&&this.validation.nickname){
       this.nav.push(ServiceProviderReview, {
-      nickname: this.serviceProvider.nickname,
-      _id:this.serviceProvider._id});
+      nickname: this.theServiceProvider.nickname,
+      _id:this.theServiceProvider._id});
     }else{
     this.presentAlert("Please login first!")
     }
@@ -371,12 +372,12 @@ openServiceProviderCertificate(certificate){
 }
 
   enterReservation() {
-    this.nav.push(Reservation, { serviceProvider: this.serviceProvider, serviceType: this.serviceType });
+    this.nav.push(Reservation, { serviceProvider: this.theServiceProvider, serviceType: this.serviceType });
   }
 
-  openProductDetailsPage(product) {
+  openServiceDetailsPage(service) {
     console.log("detail open");
-    this.nav.push(ProductDetails, product);
+    this.nav.push(ServiceDetails, service);
   }
 
   doRefresh(refresher) {

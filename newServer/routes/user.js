@@ -20,7 +20,7 @@ var User = require('../models/user')
 var fs = require('fs')
 var async = require('async');
 
-var fileURL = 'http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/images/'
+var fileURL = 'http://localhost:3000/images/'
 var ObjectId = require('mongoose').Types.ObjectId;
 
 // api/user
@@ -42,7 +42,9 @@ router.get('/', limiterPost.middleware({
     const subCategory = req.query.subCategory
     const userType = req.query.userType
 
-    let query = {}
+    let query = {
+        'userType': userType
+    }
     let skipClause = 0
     let limitClause = 20
     if (req.query.skip) skipClause = parseInt(req.query.skip)
@@ -50,26 +52,22 @@ router.get('/', limiterPost.middleware({
 
 
 
-
-    if (category && category != "all") {
-        if (category && subCategory && subCategory != "all") {
-            query = {
-                'category.name': category,
-                'category.sub': subCategory
-            }
-        } else if (category) {
-            query = {
-                'category.name': category
-            }
+    if (category && subCategory) {
+        query = {
+            'category.main': category,
+            'category.sub': subCategory,
+            'userType': userType
+        }
+    } else if (category) {
+        query = {
+            'category.main': category,
+            'userType': userType
         }
     }
 
-    if (userType) {
-        query.userType = userType;
-    }
-
+    console.log(query)
     User.paginate(query, {
-        select: 'id nickname age imageURL time introduction certificates likedBy reviewNumber',
+        select: 'id nickname age imageURL time introduction certificates likedBy reviewNumber pricePerHour',
         offset: skipClause,
         limit: limitClause
     }, function(err, data) {
@@ -176,6 +174,7 @@ router.put("/:id", (req, res) => {
     const currentTime = new Date();
     const certificates = req.body.certificates
     const category = req.body.category
+    const pricePerHour = req.body.pricePerHour
     let imageURL = req.body.imageURL
 
 
@@ -207,6 +206,7 @@ router.put("/:id", (req, res) => {
             if (currentTime) userData.updated = currentTime
             if (certificates) userData.certificates = certificates
             if (category) userData.category = category
+            if (pricePerHour) userData.pricePerHour = pricePerHour
 
             if (!imageURL) {
                 delete userData.imageURL
@@ -216,9 +216,9 @@ router.put("/:id", (req, res) => {
                 base64Data += base64Data.replace('+', ' ');
                 binaryData = new Buffer(base64Data, 'base64').toString('binary');
                 fs.writeFile("images/" + id + ".userImage.png", binaryData, "binary", function(err) {
-                    console.log(err); // writes out file without error, but it's not a valid image
+                    if (err) console.log(err); // writes out file without error, but it's not a valid image
+                    userData.imageURL = fileURL + id + ".userImage.png";
                 });
-                userData.imageURL = fileURL + id + ".userImage.png";
             }
 
             async.each(userData.certificates, function(certificate, next) {
@@ -234,10 +234,10 @@ router.put("/:id", (req, res) => {
                     base64Data += base64Data.replace('+', ' ');
                     binaryData = new Buffer(base64Data, 'base64').toString('binary');
                     fs.writeFile("images/" + certificate.id + ".certificateImage.png", binaryData, "binary", function(err) {
-                        console.log(err); // writes out file without error, but it's not a valid image
+                        if (err) console.log(err); // writes out file without error, but it's not a valid image
+                        certificate.imageURL = fileURL + certificate.id + ".certificateImage.png";
+                        console.log(certificate.imageURL)
                     });
-                    certificate.imageURL = fileURL + certificate.id + ".certificateImage.png";
-                    console.log(certificate.imageURL)
                 }
                 next()
             }, function(err) {
@@ -317,9 +317,9 @@ router.post("/", (req, res) => {
                 base64Data += base64Data.replace('+', ' ');
                 binaryData = new Buffer(base64Data, 'base64').toString('binary');
                 fs.writeFile("images/" + id + ".userImage.png", binaryData, "binary", function(err) {
-                    console.log(err); // writes out file without error, but it's not a valid image
+                    if (err) console.log(err); // writes out file without error, but it's not a valid image
+                    userData.imageURL = fileURL + id + ".userImage.png";
                 });
-                userData.imageURL = fileURL + id + ".userImage.png";
             }
             const user = new User(userData)
             user.save((err, result) => {

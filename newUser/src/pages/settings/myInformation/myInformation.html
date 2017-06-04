@@ -43,8 +43,10 @@
         </ion-list-header>
         <button ion-item (tap)="changeInformation('category')">
   <ion-label >{{ 'Service Type' | translate }}</ion-label>
-  <ion-note item-right color='dark' class="maxWidth" *ngFor="let categoryElement of categoryName">
-    {{categoryElement | translate}}
+  <ion-note item-right color='dark' class="maxWidth">
+    <span *ngFor="let categoryElement of this.validation.category">
+    {{categoryElement.sub||categoryElement.main | translate}}
+  </span>
   </ion-note>
 </button>
 

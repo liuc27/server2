@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import {Storage} from '@ionic/storage'
+import { defaultURL } from './i18n-demo.constants';
 
 /*
   Generated class for the UserProvider provider.
@@ -21,7 +22,7 @@ export class OfferProvider {
   myOffer(data1) {
     console.log("myOffer start")
     return new Promise(resolve => {
-            this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/offer/getMyCalendar', data1)
+            this.http.post(defaultURL+':3000/offer/getMyCalendar', data1)
               .map(res => res.json())
               .subscribe(
               data2 => {
@@ -42,7 +43,7 @@ export class OfferProvider {
 
     return new Promise(resolve => {
           console.log("offerProvider start")
-            this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/offer?serviceProviderId='+serviceProviderId)
+            this.http.get(defaultURL+':3000/offer?serviceProviderId='+serviceProviderId)
               .map(res => res.json())
               .subscribe(
               data2 => {
@@ -59,7 +60,7 @@ export class OfferProvider {
     return new Promise(resolve => {
           console.log("offerProvider start")
           console.log(name)
-            this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/offer/getMyReservations?id='+id)
+            this.http.get(defaultURL+':3000/offer/getMyReservations?id='+id)
               .map(res => res.json())
               .subscribe(
               data2 => {

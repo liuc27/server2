@@ -13,7 +13,6 @@ var limiterGet = new Limiter({
 var url = require('url');
 var User = require('../models/user')
 var Offer = require('../models/offer')
-var Product = require('../models/product')
 var Charge = require('../models/charge')
 var ObjectId = require('mongoose').Types.ObjectId;
 var async = require('async');
@@ -27,7 +26,7 @@ router.get('/', function(req, res, next) {
     res.send('respond with a resource');
 });
 
-// /charge
+// /charge , pingpp がwechatPayを実行して完成した次第、/chargeへ送信。
 router.post('/', limiterGet.middleware({
     innerLimit: 10,
     outerLimit: 200,
@@ -82,21 +81,6 @@ router.post('/', limiterGet.middleware({
                                     } else if (data2.nInserted) {
                                         console.log(data2)
                                         console.log("Offer Inserted!")
-                                        if (element.productId) {
-                                            Product.update({
-                                                _id: element.productId
-                                            }, {
-                                                $inc: {
-                                                    "userNumber": 1
-                                                }
-                                            }, function(err, data3) {
-                                                if (err) {
-                                                    throw (err)
-                                                } else {
-                                                    console.log("Product userNumber Updated!")
-                                                }
-                                            })
-                                        }
                                     }
                                 })
                             })
@@ -162,7 +146,9 @@ router.post('/wechatPay', limiterGet.middleware({
                 someoneElseBooked = true
             } else {
                 console.log(data)
-                if (data.userNumberLimit <= data.id.length)
+                console.log(data)
+                if (!data.user) data.user = []
+                if (data.user.length <= data.userNumberLimit)
                     someoneElseBooked = true
             }
         })

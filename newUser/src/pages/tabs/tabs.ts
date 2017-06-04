@@ -1,5 +1,5 @@
 import {Component} from '@angular/core'
-import {ProductPage} from '../product/product';
+import {ServicePage} from '../service/service';
 import {ServiceProviderPage} from '../serviceProvider/serviceProvider';
 import {SettingsPage} from '../settings/settings';
 
@@ -15,7 +15,7 @@ export class TabsPage {
 
   constructor() {
     this.tab1Root = ServiceProviderPage;
-    this.tab2Root = ProductPage;
+    this.tab2Root = ServicePage;
     this.tab3Root = SettingsPage;
   }
 

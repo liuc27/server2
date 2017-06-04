@@ -72,20 +72,20 @@
   </ion-card> -->
 
 
-    <ion-list *ngFor="let product of serviceProviderDetails">
+    <ion-list *ngFor="let service of serviceProviderDetails">
         <div style="position: relative">
-            <img class="bigImage" [src]="product.imageURL" (tap)="openProductDetailsPage(product)">
+            <img class="bigImage" [src]="service.service.imageURL" (tap)="openServiceDetailsPage(service)">
             <div class="fab-bot-left">
-                <span class="fab-bot-text">{{product.reviewNumber}}</span>
+                <span class="fab-bot-text">{{service.reviewNumber}}</span>
                 <ion-icon name='chatboxes'></ion-icon>
             </div>
 
             <div class="fab-bot-right">
-                <span class="fab-bot-text">{{product.userNumber}}/{{product.userNumberLimit}}</span>
+                <span class="fab-bot-text">{{(service.user || []).length}}/{{service.userNumberLimit}}</span>
                 <ion-icon name='person'></ion-icon>
             </div>
             <div class="fab-bot-middle">
-                {{product.productName}} {{product.serviceProvider.nickname}} {{product.pricing}}
+                {{service.serviceName}} {{service.creator.nickname}} {{service.price}}
             </div>
         </div>
     </ion-list>

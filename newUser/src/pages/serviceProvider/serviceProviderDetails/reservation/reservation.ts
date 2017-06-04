@@ -1,15 +1,17 @@
 /**
  * Created by liuchao on 6/25/16.
  */
+
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Events, NavController, NavParams, PopoverController, AlertController, Content,ToastController } from 'ionic-angular';
-import { ProductDetails } from '../../../product/productLists/productDetails/productDetails';
+import { ServiceDetails } from '../../../service/serviceLists/serviceDetails/serviceDetails';
 import { UserProvider } from '../../../../providers/userProvider'
-import {OfferProvider } from '../../../../providers/offerProvider'
+import { OfferProvider } from '../../../../providers/offerProvider'
+import { ServiceProvider } from '../../../../providers/serviceProvider'
+
 import { Storage } from '@ionic/storage'
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { ProductProvider } from '../../../../providers/productProvider';
 import { ReservationDetails } from './reservationDetails/reservationDetails';
 import moment from 'moment';
 
@@ -28,12 +30,12 @@ import 'moment-timezone';
 @Component({
   selector: 'page-reservation',
   templateUrl: 'reservation.html',
-  providers: [ProductProvider, UserProvider, OfferProvider]
+  providers: [ServiceProvider, UserProvider, OfferProvider]
 })
 export class Reservation {
 @ViewChild(Content) content: Content;
 
-  serviceProvider: any = {};
+  theServiceProvider: any = {};
   serviceProviderDetails: any = [];
   alreadyLoggedIn = false;
   showCommentBox;
@@ -54,6 +56,7 @@ export class Reservation {
     currentDate: new Date()
   };
 
+
   serviceType;
   start = 0
 
@@ -68,13 +71,13 @@ export class Reservation {
     public userProvider: UserProvider,
     public offerProvider: OfferProvider,
     private http: Http,
-    public productProvider: ProductProvider,
-    public reservationService: ProductProvider,
+    public serviceProvider: ServiceProvider,
+    public reservationService: ServiceProvider,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController) {
     console.log("params.data is")
     console.log(params.data)
-    this.serviceProvider = params.data.serviceProvider
+    this.theServiceProvider = params.data.serviceProvider
     this.serviceType = params.data.serviceType
 
     this.events = events;
@@ -111,8 +114,8 @@ ionViewWillEnter() {
       this.alreadyLoggedIn = true;
       });
 
-      console.log(this.serviceProvider)
-      this.offerProvider.serviceProviderOffer(this.serviceProvider.id)
+      console.log(this.theServiceProvider)
+      this.offerProvider.serviceProviderOffer(this.theServiceProvider.id)
         .then(data2 => {
           console.log(data2)
           data2.forEach((element, index) => {
@@ -149,14 +152,14 @@ loadSelectedServiceProviderDetails(paramsData) {
 
 
   return new Promise(resolve => {
-    this.productProvider.get(this.start, null,"all", paramsData.serviceProviderId)
+    this.serviceProvider.get(this.start, null,null, paramsData.serviceProviderId)
       .then(data => {
         console.log("data")
         console.log(data)
         if (Object.keys(data).length == 0) {
           this.start -= 20
         }
-        if (this.serviceProviderDetails.product) {
+        if (this.serviceProviderDetails.service) {
           this.serviceProviderDetails = this.serviceProviderDetails.concat(data);
         } else {
           this.serviceProviderDetails = [].concat(data);
@@ -349,7 +352,7 @@ createEvents(ev, h: Number) {
         this.eventSource = [].concat(this.guideEventSource);
         this.addedEventSource.push({
           _id: elementEvent._id,
-          creatorId: elementEvent.creatorId,
+          creator: elementEvent.creator,
           serviceProvider: elementEvent.serviceProvider,
           user: {
             id:this.validation.id,
@@ -390,7 +393,7 @@ createEvents(ev, h: Number) {
         this.deletedEventSource.push({
           _id: elementEvent._id,
           serviceType: "guide",
-          creatorId: elementEvent.creatorId,
+          creator: elementEvent.creator,
           serviceProvider: elementEvent.serviceProvider,
           user: {
             id:this.validation.id,
@@ -450,7 +453,7 @@ createCallReservation(ev, option: String) {
     startTime: startTime,
     endTime: endTime,
     allDay: false,
-    serviceProvider: {id:this.serviceProvider.id,nickname:this.serviceProvider.nickname},
+    serviceProvider: {id:this.theServiceProvider.id,nickname:this.theServiceProvider.nickname},
     user: {
       id:this.validation.id,
       nickname:this.validation.nickname
@@ -505,7 +508,7 @@ doRefresh(refresher) {
 
   setTimeout(() => {
     console.log('Async loading has ended');
-    this.offerProvider.serviceProviderOffer(this.serviceProvider.id)
+    this.offerProvider.serviceProviderOffer(this.theServiceProvider.id)
       .then(data2 => {
       console.log(data2)
       data2.forEach((element, index) => {

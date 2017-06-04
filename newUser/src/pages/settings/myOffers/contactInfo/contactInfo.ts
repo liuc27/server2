@@ -20,6 +20,9 @@ import 'moment/src/locale/zh-cn';
 //timezone
 import 'moment-timezone';
 
+import { defaultURL } from '../../../../providers/i18n-demo.constants';
+
+
 @Component({
   selector: 'page-contactInfo',
   templateUrl: 'contactInfo.html',
@@ -45,7 +48,7 @@ export class ContactInfo {
     private http: Http) {
     this.user = this.params.data.user
     this.eventId = this.params.data.eventId
-    this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/charge/showReservationUserInfo', {'eventId':this.eventId,'id':this.user.id})
+    this.http.post(defaultURL+':3000/charge/showReservationUserInfo', {'eventId':this.eventId,'id':this.user.id})
       .map(res => res.json())
       .subscribe(data2 => {
         if (data2 ) {
@@ -58,7 +61,7 @@ export class ContactInfo {
   }
 
   ionViewWillEnter() {
-  this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/charge/showReservationUserInfo', {'eventId':this.eventId,'id':this.user.id})
+  this.http.post(defaultURL+':3000/charge/showReservationUserInfo', {'eventId':this.eventId,'id':this.user.id})
     .map(res => res.json())
     .subscribe(data2 => {
       if (data2 ) {

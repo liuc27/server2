@@ -20,6 +20,7 @@ import 'moment/src/locale/zh-cn';
 //timezone
 import 'moment-timezone';
 
+import { defaultURL } from '../../../../providers/i18n-demo.constants';
 
 @Component({
   selector: 'page-serviceProviderReview',
@@ -65,7 +66,7 @@ infiniteScrollEnd = false
         this.alreadyLoggedIn = true;
       });
 
-    this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/review/'+this.serviceProvider._id+'?page='+this.page)
+    this.http.get(defaultURL+':3000/review/'+this.serviceProvider._id+'?page='+this.page)
       .map(res => res.json())
       .subscribe(
       data => {
@@ -79,7 +80,7 @@ infiniteScrollEnd = false
   }
   doInfinite(infiniteScroll: any) {
     if (this.infiniteScrollEnd === false) {
-    this.http.get('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/review/'+this.serviceProvider._id+'?page='+this.page)
+    this.http.get(defaultURL+':3000/review/'+this.serviceProvider._id+'?page='+this.page)
       .map(res => res.json())
       .subscribe(
       data => {
@@ -133,7 +134,7 @@ review(){
     if(this.rate)
     reviewData.rate = this.rate
     console.log(reviewData)
-    this.http.post('http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/review/user', reviewData)
+    this.http.post(defaultURL+':3000/review/user', reviewData)
       .map(res => res.json())
       .subscribe(
       data => {

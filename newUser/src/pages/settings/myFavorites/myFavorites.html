@@ -15,39 +15,31 @@
         </ion-refresher-content>
     </ion-refresher> -->
 
-    <ion-list [virtualScroll]="products" [approxItemHeight]="'260px'" no-lines no-paddings [bufferRatio]="3">
-        <div *virtualItem="let product">
-            <div style="position: relative;">
-                <a (tap)="openProductDetailsPage(product)">
-                    <ion-img class="bigImage" [src]="product.imageURL"></ion-img>
-                </a>
-                <a class="fab-favorite" (tap)="favoriteProduct(product)">
-                    <ion-icon name='heart-outline' *ngIf="alreadyLiked(product) == false"></ion-icon>
-                    <ion-icon name='heart' *ngIf="alreadyLiked(product) == true" style="color:pink"></ion-icon>
-                </a>
+    <ion-list no-lines no-paddings>
+        <div *ngFor="let service of services; let i=index" style="position:relative">
+            <img class="bigImage" [src]="service.service.imageURL" (tap)="openServiceDetailsPage(service)">
+            <div class="fab-bot-left">
+                <span class="fab-bot-text">{{service.reviewNumber}}</span>
+                <ion-icon name='chatboxes'></ion-icon>
+            </div>
 
-                <div class="fab-time">
-                    <ion-icon name='time-outline'></ion-icon>
-                    <span class="fab-time-text">{{product.time}}分</span>
-                </div>
+            <div class="fab-bot-right">
+                <span class="fab-bot-text">{{(service.user || []).length}}/{{service.userNumberLimit}}</span>
+                <ion-icon name='person'></ion-icon>
+            </div>
 
-                <a class="fab-serviceProvider" (tap)="openServiceProviderDetailsPage(product)">
-                    <ion-avatar>
-                        <ion-img class="roundServiceProviderButton" [src]="product.serviceProvider.imageURL"></ion-img>
-                    </ion-avatar>
-                </a>
-
-                <div class="cardIntroduction">
-                    <span item-left>{{product.productName}}</span>
-                    <span>{{product.serviceProviderId}}</span>
-                    <span>{{product.pricing}}</span>
-                </div>
+            <a class="fab-favorite" (tap)="favoriteService(service)">
+                <ion-icon name='heart-outline' *ngIf="alreadyLiked(service) == false"></ion-icon>
+                <ion-icon name='heart' *ngIf="alreadyLiked(service) == true" style="color:pink"></ion-icon>
+            </a>
+            <div class="fab-bot-middle">
+                {{service.service.serviceName}} {{service.creator.nickname}} {{service.pricing}}
             </div>
         </div>
-        <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
-            <ion-infinite-scroll-content></ion-infinite-scroll-content>
-        </ion-infinite-scroll>
-
     </ion-list>
+    <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
 
 </ion-content>
