@@ -4,13 +4,14 @@ import { Storage } from '@ionic/storage'
 import {SignUp} from './signUp/signUp'
 import { MyInformation } from './myInformation/myInformation'
 import { MyFavorites } from './myFavorites/myFavorites';
-import { MyFavoriteArtists } from './myFavoriteArtists/myFavoriteArtists';
-import { MyReservations } from './myReservations/myReservations';
+import { Recruit } from './recruit/recruit';
+import { MyCalendarAsUser } from './myCalendarAsUser/myCalendarAsUser';
 
-import { MyOffers } from './myOffers/myOffers';
+import { MyCalendarAsServiceProvider } from './myCalendarAsServiceProvider/myCalendarAsServiceProvider';
 import { MyServices } from './myServices/myServices';
 
 import { UserProvider } from '../../providers/userProvider'
+import { JobPage } from '../job/job';
 
 
 import { Http } from '@angular/http';
@@ -81,25 +82,27 @@ export class SettingsPage {
   myInformation(){
     this.nav.push(MyInformation);
   }
-  myReservations(){
-    this.nav.push(MyReservations);
+  myCalendarAsUser(){
+    this.nav.push(MyCalendarAsUser);
   }
-  myFavorites(){
+  MyFavorites(){
     this.nav.push(MyFavorites);
   }
-  myFavoriteArtists(){
-    this.nav.push(MyFavoriteArtists);
+  recruit(){
+    this.nav.push(Recruit);
   }
-
-
-  myOffers(){
-    this.nav.push(MyOffers);
+  myCalendarAsServiceProvider(){
+    this.nav.push(MyCalendarAsServiceProvider);
   }
 
   myServices(){
     this.nav.push(MyServices);
   }
 
+applyForJob(){
+this.nav.push(JobPage);
+
+}
   applyForPro(){
     if(this.validation){
       if(this.validation.id&&this.validation.password){

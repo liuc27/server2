@@ -44,7 +44,11 @@ export class ServiceDetails {
     videoURL: '',
     likedBy: [],
     creator:{},
-    service:{}
+    service:{
+    category:{
+    main:''
+    }
+    }
   };
 
 
@@ -78,6 +82,7 @@ export class ServiceDetails {
     console.log(params.data)
     this.loadSelectedserviceDetails(this.service._id).then(serviceDetails => {
       this.serviceDetails = serviceDetails
+      console.log(serviceDetails)
       this.url = sanitizer.bypassSecurityTrustResourceUrl(this.serviceDetails.videoURL);
       if(!this.serviceDetails.likedBy) this.serviceDetails.likedBy=[]
       if(this.serviceDetails.review)

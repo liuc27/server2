@@ -74,7 +74,11 @@ var offerSchema = new mongoose.Schema({
         type: Number,
         required: false
     },
-    price: Number,
+    price: {
+        type: Number,
+        required: true
+    },
+    reward: Number,
     currency: String,
     review: [],
     likedBy: [String],

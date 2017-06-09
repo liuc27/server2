@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { NavController, ToastController, NavParams } from 'ionic-angular';
+import { NavController, ToastController, NavParams,AlertController } from 'ionic-angular';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { TranslateService } from 'ng2-translate/ng2-translate';
@@ -35,10 +35,13 @@ export class ModifyMyServices {
   password: String;
   validation: any = {}
 
-  alreadyLoggedIn = {data:false};
+  alreadyLoggedIn = false;
 
   service : any = {
-  service:{},
+  service:{
+  category:{
+  }
+  },
   creator:{}
   };
 
@@ -47,7 +50,7 @@ export class ModifyMyServices {
   year : number;
   month :number;
   day :number;
-  buttonDisabled : boolean;
+  buttonDisabled = false;
   selected1
 
   options: any = [
@@ -73,8 +76,9 @@ export class ModifyMyServices {
               private http: Http,
               private userProvider:UserProvider,
               private serviceProvider: ServiceProvider,
-                       public storage:Storage,
-                       private translate: TranslateService,
+              public storage:Storage,
+              private translate: TranslateService,
+              private alertCtrl:AlertController,
               private toastCtrl: ToastController) {
 
               console.log(this.params)
@@ -82,7 +86,6 @@ export class ModifyMyServices {
 
 
 
-           this.buttonDisabled = false;
 
 
     this.f.api_key = "0ef14fa726ce34d820c5a44e57fef470";
@@ -117,7 +120,7 @@ export class ModifyMyServices {
     this.service.creator.password = this.validation.password;
     this.service.creator.nickname = this.validation.nickname;
     this.service.creator.imageURL = this.validation.imageURL;
-    this.alreadyLoggedIn.data = true;
+    this.alreadyLoggedIn = true;
   });
   }
 
@@ -174,6 +177,7 @@ export class ModifyMyServices {
 
   uploadImage(event) {
     console.log("upla")
+    this.buttonDisabled = true;
     var eventTarget = event.srcElement || event.target;
     //console.log( eventTarget.files);
     //console.log( eventTarget.files[0].name);
@@ -183,14 +187,48 @@ export class ModifyMyServices {
     var self = this;
 
     reader.onload = function (e) {
-      self.service.service.imageURL = reader.result;
-      self.presentToast()
+    var image = new Image();
+     image.src = reader.result;
 
+     image.onload = function() {
+       var maxWidth = 360,
+           maxHeight = 640,
+           imageWidth = image.width,
+           imageHeight = image.height;
+
+       if (imageWidth > imageHeight) {
+         if (imageWidth > maxWidth) {
+           imageHeight *= maxWidth / imageWidth;
+           imageWidth = maxWidth;
+         }
+       }
+       else {
+         if (imageHeight > maxHeight) {
+           imageWidth *= maxHeight / imageHeight;
+           imageHeight = maxHeight;
+         }
+       }
+
+       var canvas = document.createElement('canvas');
+       canvas.width = imageWidth;
+       canvas.height = imageHeight;
+
+       var ctx = canvas.getContext("2d");
+       ctx.drawImage(image, 0, 0, imageWidth, imageHeight);
+
+       // The resized file ready for upload
+       var finalFile = canvas.toDataURL();
+       console.log(finalFile.length)
+       self.service.service.imageURL = finalFile
+       self.buttonDisabled = false;
+     }
     }
+
     reader.readAsDataURL(file);
 
   }
 
+/*
   uploadFaceImage(event) {
     console.log("upla")
     var eventTarget = event.srcElement || event.target;
@@ -215,6 +253,66 @@ export class ModifyMyServices {
     }
     reader.readAsDataURL(file);
   }
+*/
+
+uploadFaceImage(event) {
+  console.log("faceImageUplaod")
+  this.buttonDisabled = true;
+  var eventTarget = event.srcElement || event.target;
+  //console.log( eventTarget.files);
+  //console.log( eventTarget.files[0].name);
+
+  var file = eventTarget.files[0];
+  var reader = new FileReader();
+  var self = this;
+
+  reader.onload = function (e) {
+
+  var image = new Image();
+   image.src = reader.result;
+
+   image.onload = function() {
+     var maxWidth = 360,
+         maxHeight = 640,
+         imageWidth = image.width,
+         imageHeight = image.height;
+
+     if (imageWidth > imageHeight) {
+       if (imageWidth > maxWidth) {
+         imageHeight *= maxWidth / imageWidth;
+         imageWidth = maxWidth;
+       }
+     }
+     else {
+       if (imageHeight > maxHeight) {
+         imageWidth *= maxHeight / imageHeight;
+         imageHeight = maxHeight;
+       }
+     }
+
+     var canvas = document.createElement('canvas');
+     canvas.width = imageWidth;
+     canvas.height = imageHeight;
+
+     var ctx = canvas.getContext("2d");
+     ctx.drawImage(image, 0, 0, imageWidth, imageHeight);
+
+     // The resized file ready for upload
+     var finalFile = canvas.toDataURL();
+     console.log(finalFile.length)
+
+    self.uploadedImg.data = finalFile;
+
+    self.service.service.faceImageURL = finalFile;
+
+    self.f.img = atob(finalFile.split(',')[1]);
+
+    self.getFaceLandmarks(self.f, finalFile);
+    }
+
+  }
+  reader.readAsDataURL(file);
+}
 
   getFaceLandmarks(f, readerResult) {
 
@@ -239,7 +337,8 @@ export class ModifyMyServices {
         console.log(faceLandmarks);
 
         if(faceLandmarks.face.length<1){
-          alert("无法监测到人脸！")
+          this.presentAlert("无法监测到人脸！")
+          this.buttonDisabled = false;
         }else {
           // console.log(faceLandmarks1.face[0].position);
           self.f.face_id = faceLandmarks.face[0].face_id;
@@ -284,10 +383,14 @@ export class ModifyMyServices {
 
 
                 if (facePoints != undefined) {
-                  //alert("添加成功!");
+                  //this.presentAlert("添加成功!");
                   self.presentToast()
+                  self.buttonDisabled = false;
+
                 } else {
-                  alert("添加失败!");
+                  self.presentAlert("添加失败!");
+                  self.buttonDisabled = false;
+
                 }
               }
 
@@ -296,7 +399,9 @@ export class ModifyMyServices {
         }
       },
         error =>  {
-          alert("添加失败")
+          self.presentAlert("添加失败")
+          self.buttonDisabled = false;
+
         });
   }
 
@@ -315,6 +420,17 @@ export class ModifyMyServices {
     toast.present();
   }
 
+  presentAlert(message) {
+  let alert = this.alertCtrl.create({
+    title: message,
+    subTitle: '',
+    buttons: ['OK']
+  });
+  setTimeout(() => {
+    this.alreadyLoggedIn = true;
+  }, 50);
+  alert.present();
+}
   replaceService() {
     this.buttonDisabled = true;
     console.log(this.service)
@@ -349,11 +465,13 @@ export class ModifyMyServices {
         priceBeforeDiscount: this.service.priceBeforeDiscount
       }
 */
+
+
       this.http.post(defaultURL+':3000/offer/service', this.service)
       .map(res => res.json())
         .subscribe(data => {
             console.log(data);
-            alert("success")
+            this.presentAlert("success")
             this.buttonDisabled = false;
           },
           (err) => {
@@ -362,7 +480,7 @@ export class ModifyMyServices {
           }
         )
     }else{
-    alert("Please login first, then input service name, start time, end time and userNumberLimit!")
+    this.presentAlert("Please login first, then input service name, start time, end time and userNumberLimit!")
       this.buttonDisabled = false;
 
     }

@@ -39,6 +39,7 @@ export class ServiceProviderDetails {
   @ViewChild('popoverText', { read: ElementRef }) text: ElementRef;
   @ViewChild(Content) content: Content;
 
+  showServiceType = 'service'
   theServiceProvider : any = {
     review:[],
     likedBy:[]
@@ -196,7 +197,7 @@ export class ServiceProviderDetails {
   loadSelectedServiceProviderDetails() {
 
   return new Promise(resolve => {
-      this.serviceProvider.get(this.start,null,null,this.serviceProviderId)
+      this.serviceProvider.get(this.start,null,null,this.serviceProviderId,this.showServiceType)
       .then(data => {
         console.log("data")
         console.log(data)

@@ -4,6 +4,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Events, NavController, NavParams, PopoverController, AlertController } from 'ionic-angular';
 import { ContactInfo } from './contactInfo/contactInfo'
+import { ServiceProviderDetails } from '../../serviceProvider/serviceProviderDetails/serviceProviderDetails';
 import { NewOffer } from './newOffer/newOffer';
 import { UserProvider } from '../../../providers/userProvider'
 import { OfferProvider } from '../../../providers/offerProvider'
@@ -23,17 +24,17 @@ import 'moment/src/locale/zh-cn';
 import 'moment-timezone';
 
 @Component({
-  selector: 'page-myOffers',
-  templateUrl: 'myOffers.html',
+  selector: 'page-myCalendarAsServiceProvider',
+  templateUrl: 'myCalendarAsServiceProvider.html',
   providers: [UserProvider, OfferProvider]
 })
-export class MyOffers {
+export class MyCalendarAsServiceProvider {
   serviceProviderId: String;
   password: String;
   param: string = "world";
   alreadyLoggedIn = { data: false };
   serviceProviderValidation : any = {};
-  myReservation;
+  myCalendarAsUser;
 
 
   constructor(private nav: NavController,
@@ -52,11 +53,11 @@ export class MyOffers {
       .then(data => {
         this.serviceProviderValidation = data
         this.alreadyLoggedIn.data = true;
-        this.offerProvider.myOffer(this.serviceProviderValidation).then(
+        this.offerProvider.myCalendarAsServiceProvider(this.serviceProviderValidation).then(
         data2 => {
-        this.myReservation = data2
+        this.myCalendarAsUser = data2
 
-        this.myReservation.forEach((element, index) => {
+        this.myCalendarAsUser.forEach((element, index) => {
           element.title = element.user.length.toString() + "/" + element.userNumberLimit.toString()
           element.startTime = moment(element.startTime).format()
           element.endTime = moment(element.endTime).format()
@@ -72,35 +73,35 @@ export class MyOffers {
 /*
   addReservation(x) {
     console.log(x)
-    for (var i = 0; i < this.myReservation.length; i++) {
+    for (var i = 0; i < this.myCalendarAsUser.length; i++) {
       if (i === x) {
-        this.myReservation.push({
-          title: this.myReservation[i].title,
-          serviceType: this.myReservation[i].serviceType,
-          startTime: this.myReservation[i].endTime,
-          endTime: this.myReservation[i].endTime,
-          allDay: this.myReservation[i].allDay,
-          serviceProviderId: this.myReservation[i].serviceProviderId,
-          id: this.myReservation[i].id
+        this.myCalendarAsUser.push({
+          title: this.myCalendarAsUser[i].title,
+          serviceType: this.myCalendarAsUser[i].serviceType,
+          startTime: this.myCalendarAsUser[i].endTime,
+          endTime: this.myCalendarAsUser[i].endTime,
+          allDay: this.myCalendarAsUser[i].allDay,
+          serviceProviderId: this.myCalendarAsUser[i].serviceProviderId,
+          id: this.myCalendarAsUser[i].id
         }
         );
       }
     }
-    console.log(this.myReservation)
+    console.log(this.myCalendarAsUser)
   }
 
   cancellReservation(x) {
     console.log(x)
-    for (var i = 0; i < this.myReservation.length; i++) {
+    for (var i = 0; i < this.myCalendarAsUser.length; i++) {
       if (i === x) {
-        if (this.myReservation[i].price) {
-          this.totalPrice -= this.myReservation[i].price
+        if (this.myCalendarAsUser[i].price) {
+          this.totalPrice -= this.myCalendarAsUser[i].price
         }
-        this.myReservation.splice(i, 1);
+        this.myCalendarAsUser.splice(i, 1);
 
       }
     }
-    console.log(this.myReservation)
+    console.log(this.myCalendarAsUser)
   }
 */
 
@@ -108,10 +109,15 @@ newOffer(){
   this.nav.push(NewOffer);
 }
 
-  showUsernameInfo(event, user){
+  showContactInfo(event, user){
     var data :any = {}
     data.user = user
     data.eventId = event._id
     this.nav.push(ContactInfo, data);
+  }
+
+
+  openServiceProviderDetailsPage(user) {
+    this.nav.push(ServiceProviderDetails, user);
   }
 }

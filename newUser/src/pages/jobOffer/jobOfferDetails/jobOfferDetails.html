@@ -1,0 +1,218 @@
+<ion-header>
+    <!-- <ion-navbar>
+    <ion-toolbar>
+      <ion-segment style="padding:0; margin:0;text-align: center; " [(ngModel)]="serviceType">
+
+        <ion-segment-button value="guide" (ionSelect)="selectedGuide()">
+          Guide・Call
+        </ion-segment-button>
+        <ion-segment-button value="chat" (ionSelect)="selectedChat()">
+          TextChat
+        </ion-segment-button>
+      </ion-segment>
+    </ion-toolbar>
+  </ion-navbar> -->
+
+    <ion-navbar>
+        <ion-title (tap)="goTop()">
+            {{theServiceProvider.nickname}}
+        </ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content #popoverContent>
+
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+        </ion-refresher-content>
+    </ion-refresher>
+
+    <ion-card class="adv-map">
+        <img [src]=theServiceProvider.imageURL>
+
+        <a class="fab-favorite" (tap)="favoriteServiceProvider(theServiceProvider)">
+            <ion-icon name='heart-outline' [hidden]='alreadyLikedServiceProvider(theServiceProvider)'></ion-icon>
+            <ion-icon name='heart' [hidden]='!alreadyLikedServiceProvider(theServiceProvider)' style="color:pink"></ion-icon>
+        </a>
+
+
+        <ion-item>
+            <h3>{{ 'Sex' | translate }}:{{theServiceProvider.sex | translate }} {{ 'Age' | translate }}:{{theServiceProvider.age}}</h3>
+            <h3>{{(theServiceProvider.likedBy|| []).length}}{{ 'Likes' | translate }}　{{theServiceProvider.reviewNumber}}{{ 'Reviews' | translate }}</h3>
+
+        </ion-item>
+
+        <ion-card-content>
+            <h3>{{theServiceProvider.introduction}}</h3>
+        </ion-card-content>
+
+        <ion-row style="padding: 0 0.5em">
+            <ion-col>
+                <button ion-button clear style="padding: 0 0 0 0.3em" (tap)="favoriteServiceProvider(theServiceProvider)">
+          <ion-icon name='thumbs-up'></ion-icon>
+          {{ 'Like' | translate }}
+        </button>
+            </ion-col>
+            <ion-col text-center>
+                <button ion-button clear style="padding: 0 0 0 0.3em" (tap)="openServiceProviderReviewPage()">
+          <ion-icon name='text'></ion-icon>
+          {{ 'Review' | translate }}
+        </button>
+            </ion-col>
+            <ion-col text-right>
+                <!-- <button ion-button clear style="padding: 0 0.3em 0 0">
+          <ion-icon name='share-alt'></ion-icon>
+          {{ 'Blog' | translate }}
+        </button> -->
+            </ion-col>
+        </ion-row>
+
+    </ion-card>
+
+    <ion-list>
+        <div *ngFor="let certificate of certificates">
+            <ion-item (tap)="openServiceProviderCertificate(certificate)">
+                <ion-label>{{certificate.id}}</ion-label>
+                <ion-thumbnail item-right color='dark'>
+                    <img style="object-fit:cover; border-radius:5%;" src="{{certificate.imageURL}}">
+                </ion-thumbnail>
+            </ion-item>
+        </div>
+    </ion-list>
+
+    <!-- <ion-toolbar class="listsToolbar">
+        <div class="buttonInMenu">
+            <button ion-button clear (tap)="presentServiceProviderDetailsPop1Popover($event)">
+        shoPop1
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </button>
+        </div>
+        <div class="buttonInMenu">
+            <button ion-button clear (tap)="presentServiceProviderDetailsPop2Popover($event)">
+        shoPop2
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </button>
+        </div>
+
+        <div class="buttonInMenu">
+            <button ion-button clear (tap)="presentServiceProviderDetailsPop3Popover($event)">
+        shoPop3
+        <ion-icon name="arrow-down-outline"></ion-icon>
+      </button>
+        </div>
+    </ion-toolbar> -->
+
+    <!-- <ion-card class="highLightsCard">
+        <div class="spaceLine"></div>
+        <ion-card-header>
+            Reviews
+        </ion-card-header>
+        <ion-list *ngFor="let reviewContent of theServiceProvider.review">
+            <ion-item>
+                <p style="float:right">{{reviewContent.created | date:'yyyy/MM/dd hh:mm:ss'}}</p>
+                <p>{{reviewContent.id}}</p>
+                <h3>{{reviewContent.text}}</h3>
+            </ion-item>
+        </ion-list>
+    </ion-card> -->
+
+
+    <ion-list *ngFor="let service of serviceProviderDetails" approxItemHeight="220px">
+        <ion-card class="adv-map">
+            <div>
+                <!-- <ion-slides [options]="mySlideOptions"> -->
+                <div style="position: relative">
+                    <a>
+                        <img class="bigImage" [src]="service.service.imageURL" (tap)="openServiceDetailsPage(service)">
+                        <div class="fab-bot-left">
+                            <span class="fab-bot-text">{{service.reviewNumber}}</span>
+                            <ion-icon name='chatboxes'></ion-icon>
+                        </div>
+                        <div class="fab-bot-right">
+                            <span class="fab-bot-text">{{(service.user|| []).length}}/{{service.userNumberLimit}}</span>
+                            <ion-icon name='person'></ion-icon>
+                        </div>
+
+                        <a class="fab-favorite" (tap)="favoriteService(service)">
+                            <ion-icon name='heart-outline' *ngIf="alreadyLiked(service) == false"></ion-icon>
+                            <ion-icon name='heart' *ngIf="alreadyLiked(service) == true" style="color:pink"></ion-icon>
+                        </a>
+                        <div class="fab-bot-middle">
+                            {{service.service.serviceName}} {{service.creator.nickname}} {{service.price}}
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </ion-card>
+
+    </ion-list>
+
+
+    <!-- <ion-segment padding [(ngModel)]="serviceType">
+
+    <ion-segment-button value="guide" (ionSelect)="selectedGuide()">
+      Guide・Call
+    </ion-segment-button>
+    <ion-segment-button value="chat" (ionSelect)="selectedChat()">
+      TextChat
+    </ion-segment-button>
+  </ion-segment> -->
+
+    <!-- <div [ngSwitch]="serviceType"> -->
+
+    <!-- <div *ngSwitchCase="'guide'"> -->
+
+
+
+    <!-- <ion-card class="highLightsCard">
+    <ion-card-header class="noPaddingLeftRight">Please make reservation by taping table cells</ion-card-header>
+    <ion-toolbar>
+      <ion-buttons start>
+        {{viewTitle}}
+      </ion-buttons>
+      <ion-buttons end>
+        <button ion-button (tap)="changeMode('month')">Month</button>
+        <button ion-button (tap)="changeMode('week')">Week</button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-card>
+  <div></div>
+  <div class="calendarClass">
+    <calendar [scrollToHour]=7 [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate" (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)" step="30">
+    </calendar>
+  </div>
+  <div></div> -->
+
+
+
+
+    <!-- </div> -->
+
+    <!-- <div *ngSwitchCase="'chat'">
+      <ion-card class="highLightsCard">
+        <ion-card-header class="noPaddingLeftRight">Please make reservation by taping table cells</ion-card-header>
+        <ion-toolbar>
+          <ion-buttons start>
+            {{viewTitle}}
+          </ion-buttons>
+          <ion-buttons end>
+            <button ion-button (tap)="changeMode('month')">Month</button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-card>
+      <div></div>
+      <div class="calendarClass">
+        <calendar [scrollToHour]=7 [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate" (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)" step="30">
+        </calendar>
+      </div>
+    </div>
+  </div>-->
+
+</ion-content>
+
+<ion-footer class="nextStep">
+    <ion-toolbar (tap)="enterReservation()">
+        <ion-title>{{ 'Make Reservation' | translate }}</ion-title>
+    </ion-toolbar>
+</ion-footer>

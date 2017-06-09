@@ -37,7 +37,7 @@
                     <ion-icon item-left name="add"></ion-icon>
                     {{event.title}}{{i+1}}
                     <span clear primary class="reservationCost">
-                      {{event.price}}
+                      {{event.price }} {{event.currency}}
                     </span>
                     <!-- <a item-right clear primary (tap)="cancellReservation(i)">
                       cancell<ion-icon  name="close"></ion-icon>
@@ -53,16 +53,16 @@
                     <ion-datetime min=2016 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.endTime" (ionChange)="recaculateTotal()"></ion-datetime>
                 </ion-item>
 
-                <div *ngFor="let serviceProvider of event.serviceProviderId">
+                <div *ngFor="let serviceProvider of event.serviceProvider">
                     <ion-item>
                         <ion-label>{{ 'Pros' | translate }}</ion-label>
-                        <ion-note item-right style="color:black">{{serviceProvider}}</ion-note>
+                        <ion-note item-right style="color:blue" (tap)="openServiceProviderDetailsPage(serviceProvider)">{{serviceProvider.nickname}}</ion-note>
                     </ion-item>
                 </div>
 
                 <ion-item>
                     <ion-label>{{ 'Price' | translate }}</ion-label>
-                    <ion-note item-right style="color:black">{{event.price}}</ion-note>
+                    <ion-note item-right style="color:black">{{event.price }} {{event.currency}}</ion-note>
                 </ion-item>
 
             </ion-list>
@@ -70,7 +70,7 @@
 
         <ion-item>
             <span item-right class="totalPrice">
-              {{ 'Total Price' | translate }} : {{totalPrice}}
+              {{ 'Total Price' | translate }} : {{totalPrice}} {{changedEventSourceISO[0].currency}}
             </span>
         </ion-item>
 

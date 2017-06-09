@@ -3,6 +3,7 @@
   "Pros": "专人",
   "Pro": "专人",
   "Events": "活动",
+  "Service": "活动",
 
   "h": "小时",
   "m": "分",
@@ -27,26 +28,18 @@
   "Register": "注册",
   "Logout": "登出",
 
-  "User Function": "用户功能",
-  "Reservation": "已预约",
+  "Service Receiver Function": "服务利用者功能",
+  "My Reservations": "预约一览",
   "Reservation Details": "预约详细",
   "Favorite Events": "活动收藏夹",
   "Favorite Pros": "专人收藏夹",
-
-
-  "Pro Function": "专人功能",
-  "My Schedule": "已发布预约",
-  "My Events": "已发布活动",
-  "Create Event": "发布活动",
-  "Update Schedule": "发布预约",
-  "Schedule": "日程",
-  "User": "用户",
+  "Favorites": "收藏夹",
 
   "My Information": "个人信息",
   "Head Image": "头像",
   "Nickname": "姓名",
   "Service Types": "服务种类",
-  "Introduction": "介绍",
+  "Introduction": "服务介绍",
   "Contact Info": "联系方式",
   "Price Per Hour": "服务费/小时",
   "Certificates": "证书/证明",
@@ -83,6 +76,7 @@
   "Event Introduction": "活动介绍",
   "Video URL": "介绍视频",
   "User Number Limit": "最大用户数",
+  "Service Provider Number Limit": "人数限制",
   "Video Time(m)": "视频时长(分)",
   "List Price": "原价",
   "Retail Price": "价格",
@@ -95,7 +89,7 @@
   "Art": "艺术",
   "Beauty": "美容健康",
 
-  "Job Hunt": "求职",
+  "Job Hunt": "职业介绍",
   "School Find": "留学升学",
   "Biz Advise": "商业介绍",
   "Law": "法律咨询",
@@ -113,8 +107,33 @@
   "law": "法律咨询",
   "others": "其他",
 
-  "My Events": "我的活动",
+
+  "Service Provider Function": "服务提供者功能",
+  "Schedule Management": "日程管理",
+    "My Events": "活动一览・管理",
+    "Create Event": "发布新活动",
+    "Update Schedule": "发布预约",
+    "Schedule": "日程",
+    "User": "用户",
   "Event Update": "活动更新",
-  "Tap to choose": "点击选择"
+  "Tap to choose": "点击选择",
+  "Upload your face photo here":"点击上传脸部照片",
+
+  "Deposit":"保证金",
+  "Deposit (Applicant pay)":"保证金 (由应聘者支付押金)",
+  "Deposit (Applicant pay, refund later)":"保証金(由应聘者支付押金)",
+  "Deposit (Refund by recruiter face to face)":"保证金 (由服务对象当面返还)",
+  "Reward":"报酬",
+  "Reward (Recruiter pay after service face to face)":"报酬(服务对象当面支付)",
+  "Will get paid":"预计获取金额",
+  "Currency":"货币种类",
+  "jpy":"日元",
+  "rmb":"人民币",
+  "JPY":"日元",
+  "RMB":"人民币",
+  "Recruit":"发布求人信息",
+  "Apply for a position":"找工作",
+  "Apply for this position":"应聘",
+  "Recruiter":"招聘方"
 
 }

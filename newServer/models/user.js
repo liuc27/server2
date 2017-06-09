@@ -85,6 +85,10 @@ var userSchema = new mongoose.Schema({
         default: Date.now
     },
     review: [],
+    currency: {
+        type: String,
+        required: false
+    },
     pricePerHour: {
         type: Number,
         required: false

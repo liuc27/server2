@@ -9,6 +9,10 @@ var chargeSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    chargeType: {
+        type: String,
+        required: true
+    },
     reservation: [],
     totalPrice: {
         type: Number,

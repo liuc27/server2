@@ -4,6 +4,7 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
 import { ActionSheetController, Events, NavController, NavParams, Platform, Content, ToastController, AlertController} from 'ionic-angular';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
+import { ServiceProviderDetails } from '../../serviceProviderDetails';
 import { ServiceProvider } from '../../../../../providers/serviceProvider';
 import { UserProvider } from '../../../../../providers/userProvider'
 import { OfferProvider } from '../../../../../providers/offerProvider'
@@ -278,6 +279,7 @@ export class ReservationDetails {
 
                     this.reservationPayment.reservation = reservationData
                     this.reservationPayment.totalPrice = this.totalPrice
+                    this.reservationPayment.chargeType = 'service'
 
                     this.http.post(defaultURL+':3000/charge/wechatPay', this.reservationPayment)
                         .map(res => res.json())
@@ -332,6 +334,7 @@ export class ReservationDetails {
         });
         reservationRefund.reservation = reservationData
         reservationRefund.totalPrice = this.totalPrice
+        reservationRefund.chargeType = 'serviceFee'
 
         this.http.post(defaultURL+':3000/charge/refund', reservationRefund)
             .map(res => res.json())
@@ -398,4 +401,7 @@ export class ReservationDetails {
       toast.present();
     }*/
 
+    openServiceProviderDetailsPage(serviceProvider) {
+      this.nav.push(ServiceProviderDetails, serviceProvider);
+    }
 }

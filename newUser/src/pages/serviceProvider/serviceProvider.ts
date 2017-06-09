@@ -124,9 +124,9 @@ export class ServiceProviderPage {
     }
 
 
-    presentAlert() {
+    presentAlert(message) {
     let alert = this.alertCtrl.create({
-      title: 'Please login first!',
+      title: message,
       subTitle: '',
       buttons: ['OK']
     });
@@ -139,7 +139,7 @@ export class ServiceProviderPage {
 
     favoriteServiceProvider(serviceProvider) {
         if (this.validation.id == undefined) {
-            this.presentAlert()
+            this.presentAlert('Please login first!')
             this.storage.ready().then(() => {
 
                 this.storage.remove('validation').then((data1) => {

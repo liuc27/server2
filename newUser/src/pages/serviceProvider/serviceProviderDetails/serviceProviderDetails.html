@@ -39,8 +39,8 @@
 
         <ion-item>
             <h3>{{ 'Sex' | translate }}:{{theServiceProvider.sex | translate }} {{ 'Age' | translate }}:{{theServiceProvider.age}}</h3>
-            <h3>{{theServiceProvider.likedBy.length}}{{ 'Likes' | translate }}　{{theServiceProvider.reviewNumber}}{{ 'Reviews' | translate }}</h3>
-
+            <h3>{{(theServiceProvider.likedBy|| []).length}}{{ 'Likes' | translate }}　{{theServiceProvider.reviewNumber}}{{ 'Reviews' | translate }}</h3>
+            <h3>{{ 'Price' | translate }}: {{theServiceProvider.pricePerHour}}{{ theServiceProvider.currency | translate }}/{{'h'| translate}}</h3>
         </ion-item>
 
         <ion-card-content>
@@ -118,19 +118,19 @@
     </ion-card> -->
 
 
-    <ion-list *ngFor="let service of theServiceProviderDetails" approxItemHeight="220px">
+    <ion-list *ngFor="let service of serviceProviderDetails" approxItemHeight="220px">
         <ion-card class="adv-map">
             <div>
                 <!-- <ion-slides [options]="mySlideOptions"> -->
                 <div style="position: relative">
                     <a>
-                        <img class="bigImage" [src]="service.imageURL" (tap)="openServiceDetailsPage(service)">
+                        <img class="bigImage" [src]="service.service.imageURL" (tap)="openServiceDetailsPage(service)">
                         <div class="fab-bot-left">
                             <span class="fab-bot-text">{{service.reviewNumber}}</span>
                             <ion-icon name='chatboxes'></ion-icon>
                         </div>
                         <div class="fab-bot-right">
-                            <span class="fab-bot-text">{{service.userNumber}}/{{service.userNumberLimit}}</span>
+                            <span class="fab-bot-text">{{(service.user || []).length}}/{{service.userNumberLimit}}</span>
                             <ion-icon name='person'></ion-icon>
                         </div>
 
@@ -139,7 +139,7 @@
                             <ion-icon name='heart' *ngIf="alreadyLiked(service) == true" style="color:pink"></ion-icon>
                         </a>
                         <div class="fab-bot-middle">
-                            {{service.serviceName}} {{service.theServiceProvider.nickname}} {{service.pricing}}
+                            {{service.service.serviceName}} {{service.service.price}} {{ service.service.currency | translate }}
                         </div>
                     </a>
                 </div>

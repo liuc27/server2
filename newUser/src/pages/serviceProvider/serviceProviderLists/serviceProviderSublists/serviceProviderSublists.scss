@@ -61,20 +61,20 @@ page-serviceProviderSublists {
           z-index: 50;
       }
       .fab-bot-left {
-        text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-        position: absolute;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          position: absolute;
           background-color: green;
           opacity: 0.7;
-          bottom: 1.5vw;
+          bottom: 1vw;
           left: 1.5vw;
           font-size: 4.5vw;;
           padding: 0.1vw 1vw;
           text-align: center;
           color: white;
           z-index: 50;
-          max-width: 20%;
+          max-width: 40%;
 
       }
       .fab-bot-text {
@@ -83,31 +83,35 @@ page-serviceProviderSublists {
           z-index: 50;
       }
       .fab-bot-middle {
-        text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
           position: absolute;
           bottom: 1vw;
           left: 50%;
           transform: translate(-50%, 0);
-          font-size: 7vw;
+          font-size: 5.5vw;
           padding: 0 1vw;
           font-weight: bold;
           color: #fff;
           background-color: #a9a9a9;
           text-align: center;
-              max-width: 60%;
-              z-index: 150;
+          max-width: 60%;
+          z-index: 150;
 
       }
+      .certificate2Lines {
+          max-height: 10vw;
+          padding-bot:3vw;
+      }
       .fab-bot-right {
-        text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-        position: absolute;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          position: absolute;
           background-color: green;
           opacity: 0.7;
-          bottom: 1.5vw;
+          bottom: 1vw;
           right: 1.5vw;
           float:right;
           font-size: 4.5vw;
@@ -115,7 +119,7 @@ page-serviceProviderSublists {
           text-align: center;
           color: white;
           z-index: 50;
-          max-width: 20%;
+          max-width: 40%;
       }
       .roundButton {
           width: 12vw;

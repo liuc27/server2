@@ -4,7 +4,7 @@
             {{ 'My Information' | translate }}
         </ion-title>
         <ion-buttons end>
-            <button ion-button (tap)="changeInformationValue()">{{ 'Save' | translate }}</button>
+            <button [disabled]=buttonDisabled ion-button (tap)="changeInformationValue()">{{ 'Save' | translate }}</button>
         </ion-buttons>
     </ion-navbar>
 </ion-header>
@@ -18,7 +18,7 @@
             <ion-item>
                 <ion-label>{{ 'Head Image' | translate }}</ion-label>
                 <!-- <img style="object-fit:cover; border-radius:5%;" src="{{informationValue}}"> -->
-                <button ion-button item-right (tap)="uploadImageTrigger()">Upload</button>
+                <button [disabled]=buttonDisabled ion-button item-right (tap)="uploadImageTrigger()">Upload</button>
             </ion-item>
             <input #Select [hidden]=true type="file" accept="image/*" (change)="uploadImage($event)">
             <ion-card>
@@ -87,6 +87,16 @@
             </ion-item>
         </div>
 
+        <div *ngIf="informationName=='currency'">
+            <ion-item>
+                <ion-label primary>*{{ 'Currency' | translate }}</ion-label>
+                <ion-select [(ngModel)]="informationValue" placeholder="" multiple="false">
+                    <ion-option value="jpy">{{ 'JPY' | translate }}</ion-option>
+                    <ion-option value="rmb">{{ 'RMB' | translate }}</ion-option>
+                </ion-select>
+            </ion-item>
+        </div>
+
         <div *ngIf="informationName=='pricePerHour'">
             <ion-item>
                 <ion-label>{{ 'Price Per Hour' | translate }}</ion-label>
@@ -134,10 +144,10 @@
 
         <div *ngIf=" informationName=='certificates'">
             <ion-list>
-                <div *ngFor="let certificate of certificates">
+                <div *ngFor="let certificate of certificates; let i = index">
                     <ion-item>
                         <ion-label>{{ 'Service Type' | translate }}</ion-label>
-                        <ion-select [(ngModel)]="newCertificate.category" placeholder="" multiple="false">
+                        <ion-select [(ngModel)]="certificate.category" placeholder="certificate.category" multiple="false">
                             <ion-option value="guide">{{ 'Guide' | translate }}</ion-option>
                             <ion-option value="teach">{{ 'Teach' | translate }}</ion-option>
                             <ion-option value="housework">{{ 'Housework' | translate }}</ion-option>
@@ -155,7 +165,7 @@
                         <ion-input class="textAlignRight" [(ngModel)]="certificate.id"></ion-input>
                     </ion-item>
                     <ion-item>
-                        <button ion-button item-right (tap)="uploadCertificateImageTrigger()">{{ 'Upload Certificate' | translate }}</button>
+                        <button [disabled]=buttonDisabled ion-button item-right (tap)="uploadCertificateImageTrigger(i)">{{ 'Upload Certificate' | translate }}</button>
                         <input #Select2 [hidden]=true type="file" accept="image/*" (change)="uploadCertificateImage($event,certificate)">
                         <ion-thumbnail item-left color='dark'>
                             <img style="object-fit:cover; border-radius:5%;" src="{{certificate.imageURL}}">
@@ -185,7 +195,7 @@
             </ion-item>
 
             <ion-item>
-                <button ion-button item-right (tap)="uploadNewCertificateImageTrigger()">{{ 'Upload Certificate' | translate }}</button>
+                <button [disabled]=buttonDisabled ion-button item-right (tap)="uploadNewCertificateImageTrigger()">{{ 'Upload Certificate' | translate }}</button>
                 <input #Select3 [hidden]=true type="file" accept="image/*" (change)="uploadNewCertificateImage($event,certificate)">
                 <ion-thumbnail item-left color='dark'>
                     <img style="object-fit:cover; border-radius:5%;" src="{{newCertificate.imageURL}}">

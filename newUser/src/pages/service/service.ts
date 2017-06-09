@@ -23,6 +23,7 @@ import { Storage } from '@ionic/storage'
 export class ServicePage {
 @ViewChild(Content) content: Content;
 
+serviceType = 'service'
   public services: any = [];
   //public service: any;
   public menu1: any = [];
@@ -78,7 +79,7 @@ export class ServicePage {
 
     return new Promise(resolve => {
 
-      this.serviceProvider.get(this.start, this.category, null, null)
+      this.serviceProvider.get(this.start, this.category, null, null,this.serviceType)
         .then(data => {
           console.log("data")
           console.log(data)

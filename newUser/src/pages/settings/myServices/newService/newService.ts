@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { NavController, Events, ToastController } from 'ionic-angular';
+import { NavController, Events, ToastController,AlertController } from 'ionic-angular';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { TranslateService } from 'ng2-translate/ng2-translate';
@@ -37,11 +37,16 @@ export class NewServicePage {
   Animator: any;
   password: String;
   validation: any = {}
-  alreadyLoggedIn = {data:false};
+  alreadyLoggedIn = false;
 
   service:any = {
   creator:{},
-  service:{}
+  currency:'jpy',
+  service:{
+    category:{
+
+    }
+  }
   };
 
   uploadedImg = {data: undefined};
@@ -49,7 +54,7 @@ export class NewServicePage {
   year : number;
   month :number;
   day :number;
-  buttonDisabled : boolean;
+  buttonDisabled = false;
   selected1;
 
   options: any = [
@@ -93,11 +98,9 @@ export class NewServicePage {
               private http: Http,
               public storage:Storage,
               private toastCtrl: ToastController,
+              private alertCtrl:AlertController,
               private translate: TranslateService,
               private userProvider: UserProvider) {
-
-    this.buttonDisabled = false;
-
 
     this.f.api_key = "0ef14fa726ce34d820c5a44e57fef470";
     this.f.api_secret = "4Y9YXOMSDvqu1Ompn9NSpNwWQFHs1hYD";
@@ -109,8 +112,8 @@ export class NewServicePage {
     let endTime = new Date()
     startTime.setMinutes(0)
     endTime.setMinutes(0)
-    this.service.startTime = startTime.toISOString();
-    this.service.endTime = endTime.toISOString();
+    this.service.startTime = moment(startTime).format() ;
+    this.service.endTime = moment(endTime).format();
 
   }
   ionViewWillEnter() {
@@ -122,7 +125,7 @@ export class NewServicePage {
     this.service.creator.password = this.validation.password;
     this.service.creator.nickname = this.validation.nickname;
     this.service.creator.imageURL = this.validation.imageURL;
-    this.alreadyLoggedIn.data = true;
+    this.alreadyLoggedIn = true;
   });
   }
 
@@ -139,12 +142,12 @@ export class NewServicePage {
 
   uploadFaceImageTrigger(){
   console.log("faceimgtrigger")
-
     this.selectFaceImage.nativeElement.click()
   }
 
   uploadImage(event) {
     console.log("upla")
+    this.buttonDisabled = true;
     var eventTarget = event.srcElement || event.target;
     //console.log( eventTarget.files);
     //console.log( eventTarget.files[0].name);
@@ -154,18 +157,53 @@ export class NewServicePage {
     var self = this;
 
     reader.onload = function (e) {
-     console.log("1")
-      self.service.service.imageURL = reader.result;
-      console.log("2")
-      self.presentToast()
+    var image = new Image();
+     image.src = reader.result;
 
+     image.onload = function() {
+       var maxWidth = 360,
+           maxHeight = 640,
+           imageWidth = image.width,
+           imageHeight = image.height;
+
+       if (imageWidth > imageHeight) {
+         if (imageWidth > maxWidth) {
+           imageHeight *= maxWidth / imageWidth;
+           imageWidth = maxWidth;
+         }
+       }
+       else {
+         if (imageHeight > maxHeight) {
+           imageWidth *= maxHeight / imageHeight;
+           imageHeight = maxHeight;
+         }
+       }
+
+       var canvas = document.createElement('canvas');
+       canvas.width = imageWidth;
+       canvas.height = imageHeight;
+
+       var ctx = canvas.getContext("2d");
+       ctx.drawImage(image, 0, 0, imageWidth, imageHeight);
+
+       // The resized file ready for upload
+       var finalFile = canvas.toDataURL();
+       console.log(finalFile.length)
+       self.service.service.imageURL = finalFile
+       self.buttonDisabled = false;
+
+     }
     }
+
     reader.readAsDataURL(file);
 
   }
 
+
+
   uploadFaceImage(event) {
-    console.log("upla")
+    console.log("faceImageUpload")
+    this.buttonDisabled = true;
     var eventTarget = event.srcElement || event.target;
     //console.log( eventTarget.files);
     //console.log( eventTarget.files[0].name);
@@ -175,15 +213,48 @@ export class NewServicePage {
     var self = this;
 
     reader.onload = function (e) {
-      self.uploadedImg.data = reader.result;
-      //console.log(self.uploadedImg);
-      //var addon ={"img": atob(reader.result.split(',')[1])};
-      //Object.assign( self.f,  self.f, addon);
-      self.service.service.faceImageURL = reader.result;
 
-      self.f.img = atob(reader.result.split(',')[1]);
+    var image = new Image();
+     image.src = reader.result;
 
-      self.getFaceLandmarks(self.f, reader.result);
+     image.onload = function() {
+       var maxWidth = 360,
+           maxHeight = 640,
+           imageWidth = image.width,
+           imageHeight = image.height;
+
+       if (imageWidth > imageHeight) {
+         if (imageWidth > maxWidth) {
+           imageHeight *= maxWidth / imageWidth;
+           imageWidth = maxWidth;
+         }
+       }
+       else {
+         if (imageHeight > maxHeight) {
+           imageWidth *= maxHeight / imageHeight;
+           imageHeight = maxHeight;
+         }
+       }
+
+       var canvas = document.createElement('canvas');
+       canvas.width = imageWidth;
+       canvas.height = imageHeight;
+
+       var ctx = canvas.getContext("2d");
+       ctx.drawImage(image, 0, 0, imageWidth, imageHeight);
+
+       // The resized file ready for upload
+       var finalFile = canvas.toDataURL();
+       console.log(finalFile.length)
+
+      self.uploadedImg.data = finalFile;
+
+      self.service.service.faceImageURL = finalFile;
+
+      self.f.img = atob(finalFile.split(',')[1]);
+
+      self.getFaceLandmarks(self.f, finalFile);
+      }
 
     }
     reader.readAsDataURL(file);
@@ -212,7 +283,8 @@ export class NewServicePage {
         console.log(faceLandmarks);
 
         if(faceLandmarks.face.length<1){
-          alert("无法监测到人脸！")
+          this.presentAlert("无法监测到人脸！")
+          this.buttonDisabled = false;
         }else {
           // console.log(faceLandmarks1.face[0].position);
           self.f.face_id = faceLandmarks.face[0].face_id;
@@ -257,10 +329,12 @@ export class NewServicePage {
 
 
                 if (facePoints != undefined) {
-                  //alert("添加成功!");
+                  //this.presentAlert("添加成功!");
                   self.presentToast()
+                  self.buttonDisabled = false;
                 } else {
-                  alert("添加失败!");
+                  self.presentAlert("添加失败!");
+                  self.buttonDisabled = false;
                 }
               }
 
@@ -269,7 +343,8 @@ export class NewServicePage {
         }
       },
         error =>  {
-          alert("添加失败")
+          self.presentAlert("添加失败")
+          self.buttonDisabled = false;
         });
   }
 
@@ -286,6 +361,17 @@ export class NewServicePage {
 
     toast.present();
   }
+  presentAlert(message) {
+  let alert = this.alertCtrl.create({
+    title: message,
+    subTitle: '',
+    buttons: ['OK']
+  });
+  setTimeout(() => {
+    this.alreadyLoggedIn = true;
+  }, 50);
+  alert.present();
+}
 
   start(){
    console.log(this.service.startTime)
@@ -305,7 +391,7 @@ export class NewServicePage {
 
       this.service = {
         creator: this.validation,
-        service: this.service,
+        service: this.service.service,
         serviceProvider: serviceProviderArray,
         user: [],
         startTime: this.service.startTime,
@@ -325,7 +411,7 @@ export class NewServicePage {
       this.http.post(defaultURL+':3000/offer/service', this.service)
         .subscribe(data => {
             console.log(data);
-            alert(data.statusText)
+            this.presentAlert(data.statusText)
             this.buttonDisabled = false;
           },
           (err) => {
@@ -334,7 +420,7 @@ export class NewServicePage {
           }
         )
     }else{
-    alert("Please login first, then input service name, start time, end time and userNumberLimit!")
+    this.presentAlert("Please login first, then input service name, start time, end time and userNumberLimit!")
       this.buttonDisabled = false;
 
     }

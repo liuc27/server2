@@ -12,20 +12,20 @@ page-serviceProviderReview {
         .spaceLine {
             height: 5vw;
             background-color: #fff3f3;
-            width: 100vw;
+            width: 100%;
         }
         .noPaddingLeftRight{
           padding-left: 0;
           padding-right: 0;
         }
         .alignLeft{
-          width: 100vw;
-          padding-left:16px;
+          width: 100%;
+          padding:0;
           text-align: left;
         }
         .alignRight{
-          width: 100vw;
-          padding-right:16px;
+          width: 100%;
+          padding:0;
           text-align: right;
         }
         .highLightsCard {

@@ -5,7 +5,8 @@ import { Component, ViewChild, ElementRef } from '@angular/core';
 import { Events, NavController, NavParams, PopoverController, AlertController } from 'ionic-angular';
 import { UserProvider } from '../../../providers/userProvider'
 import { OfferProvider } from '../../../providers/offerProvider'
-import { ServiceProviderDetails } from '../../serviceProvider/serviceProviderDetails/serviceProviderDetails';
+import { JobOfferDetails } from '../../jobOffer/jobOfferDetails/jobOfferDetails';
+import { ContactInfo } from '../myCalendarAsServiceProvider/contactInfo/contactInfo'
 
 import { Storage } from '@ionic/storage'
 import { Http } from '@angular/http';
@@ -23,17 +24,17 @@ import 'moment/src/locale/zh-cn';
 import 'moment-timezone';
 
 @Component({
-  selector: 'page-myReservations',
-  templateUrl: 'myReservations.html',
+  selector: 'page-myCalendarAsUser',
+  templateUrl: 'myCalendarAsUser.html',
   providers: [UserProvider, OfferProvider]
 })
-export class MyReservations {
+export class MyCalendarAsUser {
   id: String;
   password: String;
   param: string = "world";
   alreadyLoggedIn = { data: false };
   validation : any = {};
-  myReservation;
+  myCalendarAsUser;
 
   constructor(private nav: NavController,
     private events: Events,
@@ -45,9 +46,9 @@ export class MyReservations {
       .then(data => {
         this.validation = data
         this.alreadyLoggedIn.data = true;
-        this.offerProvider.myReservation(this.validation.id).then(data2 => {
-          this.myReservation = data2
-          this.myReservation.forEach((element, index) => {
+        this.offerProvider.myCalendarAsUser(this.validation.id).then(data2 => {
+          this.myCalendarAsUser = data2
+          this.myCalendarAsUser.forEach((element, index) => {
             element.title = element.user.length.toString() + "/" + element.userNumberLimit.toString()
           })
         })
@@ -61,19 +62,24 @@ export class MyReservations {
       .then(data => {
         this.validation = data
         this.alreadyLoggedIn.data = true;
-        this.offerProvider.myReservation(this.validation.id).then(data2 => {
-          this.myReservation = data2
-          this.myReservation.forEach((element, index) => {
+        this.offerProvider.myCalendarAsUser(this.validation.id).then(data2 => {
+          this.myCalendarAsUser = data2
+          this.myCalendarAsUser.forEach((element, index) => {
             element.title = element.user.length.toString() + "/" + element.userNumberLimit.toString()
           })
         })
       });
   }
 
-  openServiceProviderDetailsPage(serviceProvider) {
-    console.log(serviceProvider);
-    serviceProvider.from = "myReservationPage"
-    this.nav.push(ServiceProviderDetails, serviceProvider);
+  showContactInfo(event, user){
+    var data :any = {}
+    data.user = user
+    data.eventId = event._id
+    this.nav.push(ContactInfo, data);
+  }
+
+  openJobOfferDetailsPage(user) {
+    this.nav.push(JobOfferDetails, user);
   }
 
 }

@@ -28,6 +28,8 @@ export class ServiceLists {
   @ViewChild('popoverText', { read: ElementRef }) text: ElementRef;
   @ViewChild(Content) content: Content;
 
+
+  serviceType = 'service'
 //  serviceProvider;
   category;
   title
@@ -129,7 +131,7 @@ export class ServiceLists {
 
   loadServices() {
   return new Promise(resolve => {
-      this.serviceProvider.get(this.start,this.category,null,null)
+      this.serviceProvider.get(this.start,this.category,null,null,this.serviceType)
       .then(data => {
         console.log("data")
         console.log(data)

@@ -64,16 +64,16 @@
 
             <ion-list>
                 <ion-list-header>
-                    {{ 'User Function' | translate }}
+                    {{ 'Service Receiver Function' | translate }}
                 </ion-list-header>
-                <a ion-item (tap)="myReservations()">
-                    <ion-icon color="primary" name="cart">&nbsp;{{ 'Reservation' | translate }}</ion-icon>
+                <a ion-item (tap)="myCalendarAsUser()">
+                    <ion-icon color="primary" name="cart">&nbsp;{{ 'My Reservations' | translate }}</ion-icon>
                 </a>
-                <a ion-item (tap)="myFavorites()">
-                    <ion-icon color="primary" name="heart">&nbsp;{{ 'Favorite Events' | translate }}</ion-icon>
+                <a ion-item (tap)="MyFavorites()">
+                    <ion-icon color="primary" name="heart">&nbsp;{{ 'Favorites' | translate }}</ion-icon>
                 </a>
-                <a ion-item (tap)="myFavoriteArtists()">
-                    <ion-icon color="primary" name="heart">&nbsp;{{ 'Favorite Pros' | translate }}</ion-icon>
+                <a ion-item (tap)="recruit()">
+                    <ion-icon color="primary" name="heart">&nbsp;{{ 'Recruit' | translate }}</ion-icon>
                 </a>
                 <!-- <a ion-item (tap)="myCoupons()">
           <ion-icon color="primary" name="color-wand">&nbsp;My Coupons</ion-icon>
@@ -85,15 +85,17 @@
 
             <ion-list>
                 <ion-list-header>
-                    {{ 'Pro Function' | translate }}
+                    {{ 'Service Provider Function' | translate }}
                 </ion-list-header>
-                <a ion-item (tap)="myOffers()">
-                    <ion-icon color="primary" name="cart">&nbsp;{{ 'My Schedule' | translate }}</ion-icon>
+                <a ion-item (tap)="myCalendarAsServiceProvider()">
+                    <ion-icon color="primary" name="cart">&nbsp;{{ 'Schedule Management' | translate }}</ion-icon>
                 </a>
                 <a ion-item (tap)="myServices()">
                     <ion-icon color="primary" name="cart">&nbsp;{{ 'My Events' | translate }}</ion-icon>
                 </a>
-
+                <a ion-item (tap)="applyForJob()">
+                    <ion-icon color="primary" name="heart">&nbsp;{{ 'Apply for a position' | translate }}</ion-icon>
+                </a>
 
             </ion-list>
             <div padding *ngIf="this.validation.userType == 'user'">

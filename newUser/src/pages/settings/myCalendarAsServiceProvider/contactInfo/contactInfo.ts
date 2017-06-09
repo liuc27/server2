@@ -34,7 +34,7 @@ export class ContactInfo {
   param: string = "world";
   alreadyLoggedIn = { data: false };
   serviceProviderValidation : any = {};
-  myReservation;
+  myCalendarAsUser;
   contactInfo : any = {};
   user : any = {};
   eventId;

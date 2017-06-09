@@ -1,0 +1,156 @@
+<ion-header>
+    <ion-navbar>
+
+        <ion-title (tap)="goTop()"> {{ 'Reservation Details' | translate }}
+        </ion-title>
+
+        <ion-buttons end>
+            <button ion-button (tap)="shareActionSheet()">
+      <ion-icon name="share-alt"></ion-icon>
+    </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content class="jobReservationDetails">
+
+    <ion-card class="adv-map">
+        <!--<div style="position: relative">
+        <ion-slides>
+          <ion-slide>
+            <div class="videoWrapper">
+              <iframe class="youtubeVideo"
+               [src]="url" frameborder="0" allowfullscreen>
+              </iframe>
+            </div>
+          </ion-slide>
+        </ion-slides>
+        <a class="fab-serviceProvider" (tap)="openServiceProviderDetailsPage(service.email)">
+          <ion-avatar >
+            <img src="img/card-saopaoloo.png">
+          </ion-avatar>
+        </a>
+      </div>-->
+        <div *ngFor="let event of changedEventSourceISO; let i = index " padding>
+            <ion-list>
+                <ion-list-header no-padding>
+                    <!-- <ion-icon item-left name="add" (tap)="addReservation(i)"></ion-icon> -->
+                    <ion-icon item-left name="add"></ion-icon>
+                    {{event.title}}{{i+1}}
+                    <span clear primary class="jobReservationCost">
+                      {{event.price }}{{event.currency | translate}}
+                    </span>
+                    <!-- <a item-right clear primary (tap)="cancellReservation(i)">
+                      cancell<ion-icon  name="close"></ion-icon>
+                    </a> -->
+                </ion-list-header>
+                <ion-item>
+                    <ion-label>{{ 'Start Time' | translate }}</ion-label>
+                    <ion-datetime style="color:black;" min=2016 max="2020" displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.startTime" (ionChange)="recaculateTotal()"></ion-datetime>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label>{{ 'End Time' | translate }}</ion-label>
+                    <ion-datetime min=2016 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.endTime" (ionChange)="recaculateTotal()"></ion-datetime>
+                </ion-item>
+
+                <div *ngFor="let user of event.user">
+                    <ion-item>
+                        <ion-label>{{ 'Recruiter' | translate }}</ion-label>
+                        <ion-note item-right style="color:blue" (tap)="openJobOfferDetailsPage(user)">{{user.nickname}}</ion-note>
+                    </ion-item>
+                </div>
+
+                <ion-item>
+                    <ion-label>{{ 'Reward' | translate }}</ion-label>
+                    <ion-note item-right style="color:black">{{event.reward}} {{event.currency | translate}}</ion-note>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label>{{ 'Deposit' | translate }}</ion-label>
+                    <ion-note item-right style="color:black">{{event.price}} {{event.currency | translate}}</ion-note>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label>{{ 'Will get paid' | translate }}</ion-label>
+                    <ion-note item-right style="color:black">{{event.reward + event.price}} {{changedEventSourceISO[0].currency | translate}}</ion-note>
+                </ion-item>
+            </ion-list>
+        </div>
+
+        <ion-item>
+            <span item-right class="totalPrice">
+              {{ 'Deposit' | translate }} : {{totalPrice}} {{changedEventSourceISO[0].currency | translate}}
+            </span>
+        </ion-item>
+
+
+        <ion-item>
+            <ion-label>{{ 'Contact Info' | translate }}</ion-label>
+            <ion-textarea rows="2" [(ngModel)]="jobReservationPayment.contact"></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>{{ 'Message' | translate }}</ion-label>
+            <ion-textarea rows="2" [(ngModel)]="jobReservationPayment.note"></ion-textarea>
+        </ion-item>
+
+
+    </ion-card>
+
+
+    <!--<ion-card class="highLightsCard">
+      <div class="spaceLine"></div>
+      <ion-card-header>
+        About This Deal
+      </ion-card-header>
+      <ion-list >
+        <div ion-item>
+          detail
+        </div>
+      </ion-list>
+    </ion-card>-->
+
+    <ion-list *ngIf="payOrRefund == 'pay'">
+        <a ion-item (tap)="pay('applepay')">
+            <ion-avatar item-left>
+                <img src="assets/img/applepay.jpg">
+            </ion-avatar>
+            <ion-icon color="primary">&nbsp;ApplePay</ion-icon>
+        </a>
+        <a ion-item (tap)="pay('alipay')">
+            <ion-avatar item-left>
+                <img src="assets/img/alipay.jpg">
+            </ion-avatar>
+            <ion-icon color="primary">&nbsp;Alipay</ion-icon>
+        </a>
+        <a ion-item (tap)="pay('wechatPay')">
+            <ion-avatar item-left>
+                <img src="assets/img/wechatpay.jpg">
+            </ion-avatar>
+            <ion-icon color="primary">&nbsp;WechatPay</ion-icon>
+        </a>
+        <a ion-item (tap)="pay('unionpay')">
+            <ion-avatar item-left>
+                <img src="assets/img/unionpay.jpg">
+            </ion-avatar>
+            <ion-icon color="primary">&nbsp;UnionPay</ion-icon>
+        </a>
+    </ion-list>
+
+
+    <ion-list *ngIf="payOrRefund == 'refund'">
+        <a ion-item (tap)="refund()">
+            <ion-avatar item-left>
+                <img src="assets/img/applepay.jpg">
+            </ion-avatar>
+            <ion-icon color="primary">&nbsp;Refund</ion-icon>
+        </a>
+    </ion-list>
+
+</ion-content>
+
+<!--<ion-footer class="nextStep">
+       <ion-toolbar (tap)="enterPay()">
+         <ion-title >view Payment</ion-title>
+       </ion-toolbar>
+</ion-footer>-->

@@ -1,7 +1,7 @@
 /**
  * Created by liuchao on 6/25/16.
  */
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ViewChildren,Renderer,ElementRef,ContentChildren } from '@angular/core';
 import { Events, NavController, NavParams, PopoverController, AlertController, ToastController } from 'ionic-angular';
 import { UserProvider } from '../../../../providers/userProvider'
 import { Storage } from '@ionic/storage'
@@ -28,7 +28,7 @@ import { defaultURL } from '../../../../providers/i18n-demo.constants';
 })
 export class MyInformationChange {
 @ViewChild('Select') selectComp;
-@ViewChild('Select2') selectComp2;
+@ViewChildren('Select2') selectComp2s;
 @ViewChild('Select3') selectComp3;
 
   id: String;
@@ -44,6 +44,7 @@ export class MyInformationChange {
   selected1
   trueOrFalse
   selected : any = []
+  buttonDisabled = false;
 
   options: any = [
   {'main':'guide'},
@@ -68,13 +69,14 @@ export class MyInformationChange {
     public storage: Storage,
     private params: NavParams,
     public userProvider: UserProvider,
+    private renderer: Renderer,
     private http: Http) {
 
     console.log(params)
 
     this.informationName = params.data.name;
     this.informationValue = params.data.value;
-    if(this.informationValue&&this.informationName=="certificate"){
+    if(this.informationValue&&this.informationName=="certificates"){
       if(this.informationValue[0]){
         this.certificates = this.informationValue
         console.log(this.certificates)
@@ -92,6 +94,7 @@ export class MyInformationChange {
         this.alreadyLoggedIn.data = true;
       });
   }
+
 
   category1Selected(){
     if(this.selected1){
@@ -125,8 +128,10 @@ export class MyInformationChange {
          this.selectComp.nativeElement.click()
   }
 
+/*
   uploadImage(event) {
     console.log("upla")
+    this.buttonDisabled = true
     var eventTarget = event.srcElement || event.target;
     //console.log( eventTarget.files);
     //console.log( eventTarget.files[0].name);
@@ -139,27 +144,88 @@ export class MyInformationChange {
       self.validation.imageURL = reader.result;
       self.informationValue = reader.result
       self.presentToast()
-
+      self.buttonDisabled = false
     }
     reader.readAsDataURL(file);
   }
+*/
 
-  uploadCertificateImageTrigger(){
-         this.selectComp2.nativeElement.click()
+    uploadImage(event) {
+      console.log("upla")
+      this.buttonDisabled = true
+      var eventTarget = event.srcElement || event.target;
+      //console.log( eventTarget.files);
+      //console.log( eventTarget.files[0].name);
+
+      var file = eventTarget.files[0];
+      var reader = new FileReader();
+      var self = this;
+
+      reader.onload = function (e) {
+      var image = new Image();
+       image.src = reader.result;
+
+       image.onload = function() {
+         var maxWidth = 360,
+             maxHeight = 640,
+             imageWidth = image.width,
+             imageHeight = image.height;
+
+         if (imageWidth > imageHeight) {
+           if (imageWidth > maxWidth) {
+             imageHeight *= maxWidth / imageWidth;
+             imageWidth = maxWidth;
+           }
+         }
+         else {
+           if (imageHeight > maxHeight) {
+             imageWidth *= maxHeight / imageHeight;
+             imageHeight = maxHeight;
+           }
+         }
+
+         var canvas = document.createElement('canvas');
+         canvas.width = imageWidth;
+         canvas.height = imageHeight;
+
+         var ctx = canvas.getContext("2d");
+         ctx.drawImage(image, 0, 0, imageWidth, imageHeight);
+
+         // The resized file ready for upload
+         var finalFile = canvas.toDataURL();
+         console.log(finalFile.length)
+
+         self.validation.imageURL = finalFile;
+         self.informationValue = finalFile
+         self.buttonDisabled = false
+
+       }
+      }
+
+      reader.readAsDataURL(file);
+
+    }
+
+
+  uploadCertificateImageTrigger(i){
+         this.selectComp2s._results[i].nativeElement.click()
   }
 
   uploadCertificateImage(event,certificate) {
+    this.buttonDisabled = true
     var eventTarget = event.srcElement || event.target;
+    console.log(certificate)
 
     var file = eventTarget.files[0];
     var reader = new FileReader();
     var self = this;
 
     reader.onload = function (e) {
-      certificate.certificateImageURL = reader.result;
+      certificate.imageURL = reader.result;
       self.informationValue = self.certificates
     //  self.validation.certificate[self.informationName] = reader.result
       self.presentToast()
+      self.buttonDisabled = false
     }
     reader.readAsDataURL(file);
   }
@@ -170,6 +236,7 @@ export class MyInformationChange {
 
   uploadNewCertificateImage(event) {
     console.log("new")
+    this.buttonDisabled = true
     var eventTarget = event.srcElement || event.target;
 
     var file = eventTarget.files[0];
@@ -178,16 +245,14 @@ export class MyInformationChange {
 
     reader.onload = function (e) {
       self.newCertificate.imageURL = reader.result
-      if(!self.validation.certificates) self.validation.certificates = [].concat(self.newCertificate)
-      else self.validation.certificates = self.validation.certificates.concat(self.newCertificate)
-      self.informationValue = self.validation.certificates
+      if(!self.certificates) self.certificates = [].concat(self.newCertificate)
+      else self.certificates = self.certificates.concat(self.newCertificate)
+      self.informationValue = self.certificates
 
       console.log(self.informationValue)
       self.presentToast()
-      self.certificates = self.validation.certificates
       self.newCertificate = {}
-
-
+      self.buttonDisabled = false
     }
     reader.readAsDataURL(file);
   }

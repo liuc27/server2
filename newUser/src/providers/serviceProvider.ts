@@ -19,7 +19,7 @@ export class ServiceProvider {
     this.data = [];
   }
 
-  get(start:number,category,subCategory,serviceProviderId) {
+  get(start:number,category,subCategory,serviceProviderId,serviceType) {
     if(serviceProviderId){
       this.queryString = this.perpage+'&skip='+start+'&serviceProviderId='+serviceProviderId
     }else if(category && subCategory){
@@ -30,6 +30,9 @@ export class ServiceProvider {
       this.queryString = this.perpage+'&skip='+start
     }
 
+    if(serviceType){
+      this.queryString += '&serviceType='+serviceType
+    }
     return new Promise(resolve => {
       this.http.get(defaultURL+':3000/offer/service?limit='+this.queryString)
         .map(res => res.json())

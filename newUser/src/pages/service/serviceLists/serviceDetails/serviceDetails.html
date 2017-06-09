@@ -52,6 +52,7 @@
             <h2>{{ 'Pro' | translate }}:{{service.creator.nickname}}</h2>
             <h3>{{serviceDetails.likedBy.length}}{{ 'Likes' | translate }} {{service.reviewNumber}}{{ 'Reviews' | translate }}</h3>
             <h3>{{(service.user || []).length}}/{{service.userNumberLimit}}{{ 'User' | translate }}</h3>
+            <h3>{{'Price' | translate}}: {{service.price}}{{ service.currency | translate }}</h3>
         </ion-item>
         <!--<ion-item actions>
             <span item-left>{{service.retail}}</span>
@@ -87,7 +88,7 @@
 
         <ion-row style="padding: 0 0.5em">
             <ion-col>
-                <button ion-button clear style="padding: 0 0.3em" (tap)="enterMorphingPage()">
+                <button *ngIf="serviceDetails.service.category.main == 'beauty'" ion-button clear style="padding: 0 0.3em" (tap)="enterMorphingPage()">
           <ion-icon name='photos'></ion-icon>
           {{ 'VR Try' | translate }}
         </button>

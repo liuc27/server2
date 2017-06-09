@@ -25,6 +25,8 @@ export class ServiceSublists {
   @ViewChild(Content) content: Content;
 
   //serviceProvider;
+  serviceType = 'service'
+
   category;
   title
   serviceOrServiceProvider;
@@ -111,7 +113,7 @@ export class ServiceSublists {
   loadServices() {
   console.log(this.parameters)
   return new Promise(resolve => {
-      this.serviceProvider.get(this.start,this.parameters.name,this.parameters.sub,null)
+      this.serviceProvider.get(this.start,this.parameters.name,this.parameters.sub,null,this.serviceType)
       .then(data => {
         console.log("data")
         console.log(data)

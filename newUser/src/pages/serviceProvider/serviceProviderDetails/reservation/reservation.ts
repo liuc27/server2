@@ -7,7 +7,6 @@ import { Events, NavController, NavParams, PopoverController, AlertController, C
 import { ServiceDetails } from '../../../service/serviceLists/serviceDetails/serviceDetails';
 import { UserProvider } from '../../../../providers/userProvider'
 import { OfferProvider } from '../../../../providers/offerProvider'
-import { ServiceProvider } from '../../../../providers/serviceProvider'
 
 import { Storage } from '@ionic/storage'
 import { Http } from '@angular/http';
@@ -30,7 +29,7 @@ import 'moment-timezone';
 @Component({
   selector: 'page-reservation',
   templateUrl: 'reservation.html',
-  providers: [ServiceProvider, UserProvider, OfferProvider]
+  providers: [UserProvider, OfferProvider]
 })
 export class Reservation {
 @ViewChild(Content) content: Content;
@@ -71,8 +70,6 @@ export class Reservation {
     public userProvider: UserProvider,
     public offerProvider: OfferProvider,
     private http: Http,
-    public serviceProvider: ServiceProvider,
-    public reservationService: ServiceProvider,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController) {
     console.log("params.data is")
@@ -115,7 +112,7 @@ ionViewWillEnter() {
       });
 
       console.log(this.theServiceProvider)
-      this.offerProvider.serviceProviderOffer(this.theServiceProvider.id)
+      this.offerProvider.serviceProviderOffer(this.theServiceProvider.id,["guide","service"])
         .then(data2 => {
           console.log(data2)
           data2.forEach((element, index) => {
@@ -146,27 +143,6 @@ changeISOtoDate(data2){
   })
 
   return data3;
-}
-
-loadSelectedServiceProviderDetails(paramsData) {
-
-
-  return new Promise(resolve => {
-    this.serviceProvider.get(this.start, null,null, paramsData.serviceProviderId)
-      .then(data => {
-        console.log("data")
-        console.log(data)
-        if (Object.keys(data).length == 0) {
-          this.start -= 20
-        }
-        if (this.serviceProviderDetails.service) {
-          this.serviceProviderDetails = this.serviceProviderDetails.concat(data);
-        } else {
-          this.serviceProviderDetails = [].concat(data);
-        }
-        resolve(data);
-      });
-  });
 }
 
 changeMode(mode) {
@@ -202,7 +178,7 @@ onTimeSelected(ev) {
   console.log(this.calendar.mode)
   console.log(this.serviceType)
 
-  if (this.calendar.mode == "month" && this.serviceType == "guide") {
+  if (this.calendar.mode == "month") {
     let confirm1 = this.alertCtrl.create({
       title: 'Make reservation?',
       message: 'How many hours do you need?',
@@ -224,40 +200,7 @@ onTimeSelected(ev) {
     if(this.validation.id)
     confirm1.present();
     else this.presentAlert("Please login!")
-  } else if (this.calendar.mode == "month" && this.serviceType == "chat") {
-    let confirm2 = this.alertCtrl.create({
-      title: 'Make chat reservation?',
-      message: '1 hour support for any time in a day',
-      buttons: [
-        {
-          text: '8AM~10PM support',
-          handler: () => {
-            this.createCallReservation(ev, "dayTime")
-          }
-        }, {
-          text: '10PM~8AM support',
-          handler: () => {
-            this.createCallReservation(ev, "nightTime")
-          }
-        }, {
-          text: '24hour support',
-          handler: () => {
-            this.createCallReservation(ev, "fullTime")
-          }
-        },
-
-        {
-          text: 'cancell',
-          handler: () => {
-
-          }
-        }
-      ]
-    });
-    if(this.validation.id)
-    confirm2.present();
-    else this.presentAlert("Please login!")
-  } else if (this.calendar.mode == "week" && this.serviceType == "guide") {
+  } else if (this.calendar.mode == "week") {
     var alertType = 0;
     var alertType2 = 0;
     var theIndex;
@@ -305,7 +248,7 @@ onTimeSelected(ev) {
       if(this.validation.id)
       confirm.present();
       else this.presentAlert("Please login")
-    } else if(alertType == 1){
+    } else if(alertType == 1&&this.guideEventSource[theIndex].serviceType == "guide"){
 
       console.log("ev")
       console.log(ev)
@@ -362,7 +305,8 @@ createEvents(ev, h: Number) {
           action: "put",
           startTime: elementEvent.startTime,
           endTime: elementEvent.endTime,
-          price: elementEvent.price
+          price: elementEvent.price,
+          currency: elementEvent.currency
         })
         console.log(this.addedEventSource)
         console.log(this.eventSource)
@@ -402,7 +346,8 @@ createEvents(ev, h: Number) {
           action: "delete",
           startTime: elementEvent.startTime,
           endTime: elementEvent.endTime,
-          price: elementEvent.price
+          price: elementEvent.price,
+          currency: elementEvent.currency
         })
         elementEvent.title = elementEvent.user.length.toString() + "/" + elementEvent.userNumberLimit.toString()
         this.addedEventSource = []
@@ -508,7 +453,7 @@ doRefresh(refresher) {
 
   setTimeout(() => {
     console.log('Async loading has ended');
-    this.offerProvider.serviceProviderOffer(this.theServiceProvider.id)
+    this.offerProvider.serviceProviderOffer(this.theServiceProvider.id,["guide","service"])
       .then(data2 => {
       console.log(data2)
       data2.forEach((element, index) => {

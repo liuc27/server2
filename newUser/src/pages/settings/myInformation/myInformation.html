@@ -55,6 +55,11 @@
           <ion-note item-right color='dark' class="maxWidth">{{validation.introduction}}</ion-note>
     </button>
 
+        <button ion-item (tap)="changeInformation('currency')">
+  <ion-label>{{ 'Currency' | translate }}</ion-label>
+  <ion-note item-right color='dark' class="maxWidth">{{validation.currency}}</ion-note>
+</button>
+
         <button ion-item (tap)="changeInformation('pricePerHour')">
       <ion-label>{{ 'Price Per Hour' | translate }}</ion-label>
       <ion-note item-right color='dark' class="maxWidth">{{validation.pricePerHour}}</ion-note>

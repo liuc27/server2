@@ -13,16 +13,16 @@ import { ServicePage } from '../pages/service/service';
 import { ServiceProviderPage } from '../pages/serviceProvider/serviceProvider';
 import { SettingsPage } from '../pages/settings/settings';
 import { SignUp } from '../pages/settings/signUp/signUp';
-import { MyReservations } from '../pages/settings/myReservations/myReservations';
+import { MyCalendarAsUser } from '../pages/settings/myCalendarAsUser/myCalendarAsUser';
 import { MyFavorites } from '../pages/settings/myFavorites/myFavorites';
-import { MyFavoriteArtists } from '../pages/settings/myFavoriteArtists/myFavoriteArtists';
+import { Recruit } from '../pages/settings/recruit/recruit';
 import { MyInformation } from '../pages/settings/myInformation/myInformation';
 import { MyInformationChange } from '../pages/settings/myInformation/myInformationChange/myInformationChange';
-import { MyOffers } from '../pages/settings/myOffers/myOffers';
-import { ContactInfo } from '../pages/settings/myOffers/contactInfo/contactInfo';
+import { MyCalendarAsServiceProvider } from '../pages/settings/myCalendarAsServiceProvider/myCalendarAsServiceProvider';
+import { ContactInfo } from '../pages/settings/myCalendarAsServiceProvider/contactInfo/contactInfo';
 import { NewServicePage } from '../pages/settings/myServices/newService/newService';
-import { NewOffer } from '../pages/settings/myOffers/newOffer/newOffer';
-import { NewOfferDetails } from '../pages/settings/myOffers/newOffer/newOfferDetails/newOfferDetails';
+import { NewOffer } from '../pages/settings/myCalendarAsServiceProvider/newOffer/newOffer';
+import { NewOfferDetails } from '../pages/settings/myCalendarAsServiceProvider/newOffer/newOfferDetails/newOfferDetails';
 import { MyServices } from '../pages/settings/myServices/myServices';
 import { ModifyMyServices } from'../pages/settings/myServices/modifyMyServices/modifyMyServices'
 
@@ -59,7 +59,26 @@ import { ModalContentPage } from "../pages/service/serviceLists/modalPages/modal
 //import { ServiceProvider } from '../providers/serviceProvider';
 //import { UserProvider } from '../providers/userProvider'
 
-import { Ionic2RatingModule } from 'ionic2-rating/module';
+
+import { JobPage } from '../pages/job/job';
+import { JobLists } from '../pages/job/jobLists/jobLists';
+import { JobSublists } from '../pages/job/jobLists/jobSublists/jobSublists';
+import { JobDetails } from '../pages/job/jobLists/jobDetails/jobDetails';
+import { JobOfferDetails } from '../pages/jobOffer/jobOfferDetails/jobOfferDetails';
+
+import { JobReservation } from '../pages/jobOffer/jobOfferDetails/jobReservation/jobReservation';
+import { JobReservationDetails } from '../pages/jobOffer/jobOfferDetails/jobReservation/jobReservationDetails/jobReservationDetails';
+
+/*
+import { JobPayment } from '../pages/job/jobLists/jobDetails/jobPayment/jobPayment';
+import { JobReview } from '../pages/job/jobLists/jobDetails/jobReview/jobReview';
+import { JobListsPop1 } from "../pages/job/jobLists/popoverPages/jobListsPop1";
+import { JobListsPop2 } from "../pages/job/jobLists/popoverPages/jobListsPop2";
+import { JobListsPop3 } from "../pages/job/jobLists/popoverPages/jobListsPop3";
+*/
+
+
+import { Ionic2RatingModule } from 'ionic2-rating';
 import { NgCalendarModule } from 'ionic2-calendar';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -78,8 +97,8 @@ import { TextAvatarDirective } from '../directives/text-avatar/text-avatar';
     MyInformation,
     MyInformationChange,
     MyFavorites,
-    MyFavoriteArtists,
-    MyReservations,
+    Recruit,
+    MyCalendarAsUser,
     TabsPage,
     ServiceLists,
     ServiceSublists,
@@ -105,14 +124,29 @@ import { TextAvatarDirective } from '../directives/text-avatar/text-avatar';
     ServiceListsPop2,
     ServiceListsPop3,
     ModalContentPage,
-    MyOffers,
+    MyCalendarAsServiceProvider,
     ContactInfo,
     NewServicePage,
     NewOffer,
     NewOfferDetails,
     MyServices,
     ModifyMyServices,
-    TextAvatarDirective
+    TextAvatarDirective,
+
+    JobPage,
+    JobLists,
+    JobSublists,
+    JobDetails,
+    JobOfferDetails,
+    JobReservation,
+    JobReservationDetails
+    /*,
+    JobPayment,
+    JobReview,
+    JobListsPop1,
+    JobListsPop2,
+    JobListsPop3
+    */
   ],
   imports: [
   BrowserModule,
@@ -137,8 +171,8 @@ import { TextAvatarDirective } from '../directives/text-avatar/text-avatar';
     MyInformation,
     MyInformationChange,
     MyFavorites,
-    MyFavoriteArtists,
-    MyReservations,
+    Recruit,
+    MyCalendarAsUser,
     TabsPage,
     ServiceLists,
     ServiceSublists,
@@ -164,13 +198,28 @@ import { TextAvatarDirective } from '../directives/text-avatar/text-avatar';
     ServiceListsPop2,
     ServiceListsPop3,
     ModalContentPage,
-    MyOffers,
+    MyCalendarAsServiceProvider,
     ContactInfo,
     NewServicePage,
     NewOffer,
     NewOfferDetails,
     MyServices,
-    ModifyMyServices
+    ModifyMyServices,
+
+    JobPage,
+    JobLists,
+    JobSublists,
+    JobDetails,
+    JobOfferDetails,
+    JobReservation,
+    JobReservationDetails
+    /*,
+    JobPayment,
+    JobReview,
+    JobListsPop1,
+    JobListsPop2,
+    JobListsPop3
+    */
   ],
   providers: [
     StatusBar,

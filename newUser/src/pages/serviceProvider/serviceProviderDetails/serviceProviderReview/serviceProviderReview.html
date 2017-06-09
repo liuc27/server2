@@ -19,21 +19,21 @@
         <button ion-button style="float: right" (tap)="review()">Review</button>
 
     </div> -->
-        <div class="spaceLine"></div>
-        <ion-item>
-            {{ 'Reviews' | translate }}
-        </ion-item>
-        <ion-list [virtualScroll]="reviews" [approxItemHeight]="'260px'" no-lines no-paddings>
-            <div *virtualItem="let review">
-                <div style="position: relative;">
+    <div class="spaceLine"></div>
+    <ion-item>
+        {{ 'Reviews' | translate }}
+    </ion-item>
+    <ion-list [virtualScroll]="reviews" [approxItemHeight]="'320px'" no-lines no-paddings>
+        <ion-item *virtualItem="let review">
+            <div style="position: relative;">
 
-                    <h2 class="alignLeft">{{review.text}}</h2>
-                    <h3 class="alignRight">{{review.author.nickname}}</h3>
-                    <h3 class="alignRight">{{review.created | date:'yyyy/MM/dd hh:mm:ss'}}</h3>
-                </div>
+                <h2 class="alignLeft">{{review.text}}</h2>
+                <h3 class="alignRight">{{review.author.nickname}}</h3>
+                <h3 class="alignRight">{{review.created | date:'yy/MM/dd hh:mm'}}</h3>
             </div>
+        </ion-item>
 
-        </ion-list>
+    </ion-list>
 
     <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
         <ion-infinite-scroll-content></ion-infinite-scroll-content>

@@ -59,7 +59,7 @@ export class MyServices {
 
 
   loadSelectedServiceProviderDetails() {
-      this.serviceProvider.get(this.start,null,null,this.serviceProviderValidation.id)
+      this.serviceProvider.get(this.start,null,null,this.serviceProviderValidation.id,'service')
       .then(data => {
         console.log("data")
         console.log(data)

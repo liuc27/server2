@@ -27,10 +27,11 @@ export class MorphingPage {
   @ViewChild('result4', {read: ElementRef}) result4: ElementRef;
   @ViewChild('result5', {read: ElementRef}) result5: ElementRef;
   @ViewChild('result6', {read: ElementRef}) result6: ElementRef;
+  @ViewChild('imageButton') selectImage;
   @ViewChild(Content) content: Content;
 
 
-  uploadedImg = {data:undefined};
+  uploadedImg;
   service;
   serviceOrShop;
   serviceDetails;
@@ -54,6 +55,7 @@ export class MorphingPage {
   validation : any = {};
 
   url: SafeResourceUrl;
+  buttonDisabled = false;
 
 
   constructor(private params: NavParams,
@@ -148,7 +150,7 @@ export class MorphingPage {
     var self = this;
 
     reader.onload = function(e) {
-      self.uploadedImg.data = reader.result;
+      //self.uploadedImg = reader.result;
       //console.log(self.uploadedImg);
       self.f.img = atob(reader.result.split(',')[1]);
       self.getFaceLandmarks(self.f, reader.result, self.result3, self.pointDefiner3);
@@ -157,6 +159,7 @@ export class MorphingPage {
     //console.log(this.uploadedImg );
   }
 
+/*
   inputUserImage(event) {
     var eventTarget = event.srcElement || event.target;
     //console.log( eventTarget.files);
@@ -167,14 +170,76 @@ export class MorphingPage {
     var self = this;
 
     reader.onload = function(e) {
-      self.uploadedImg.data = reader.result;
       //console.log(self.uploadedImg);
       //var addon ={"img": atob(reader.result.split(',')[1])};
       //Object.assign( self.f,  self.f, addon);
+      //self.uploadedImg = reader.result;
       self.f.img = atob(reader.result.split(',')[1]);
       self.getFaceLandmarks(self.f, reader.result, self.result4, self.pointDefiner4);
     }
     reader.readAsDataURL(file);
+  }
+*/
+
+
+inputUserImageTrigger(){
+  console.log("imgtrigger")
+  this.selectImage.nativeElement.click()
+}
+
+  inputUserImage(event) {
+    console.log("upla")
+    this.buttonDisabled = true;
+    var eventTarget = event.srcElement || event.target;
+    //console.log( eventTarget.files);
+    //console.log( eventTarget.files[0].name);
+
+    var file = eventTarget.files[0];
+    var reader = new FileReader();
+    var self = this;
+
+    reader.onload = function (e) {
+    var image = new Image();
+     image.src = reader.result;
+
+     image.onload = function() {
+       var maxWidth = 360,
+           maxHeight = 640,
+           imageWidth = image.width,
+           imageHeight = image.height;
+
+       if (imageWidth > imageHeight) {
+         if (imageWidth > maxWidth) {
+           imageHeight *= maxWidth / imageWidth;
+           imageWidth = maxWidth;
+         }
+       }
+       else {
+         if (imageHeight > maxHeight) {
+           imageWidth *= maxHeight / imageHeight;
+           imageHeight = maxHeight;
+         }
+       }
+
+       var canvas = document.createElement('canvas');
+       canvas.width = imageWidth;
+       canvas.height = imageHeight;
+
+       var ctx = canvas.getContext("2d");
+       ctx.drawImage(image, 0, 0, imageWidth, imageHeight);
+
+       // The resized file ready for upload
+       var finalFile = canvas.toDataURL();
+       console.log(finalFile.length)
+
+       self.uploadedImg = finalFile;
+       self.f.img = atob(finalFile.split(',')[1]);
+       self.getFaceLandmarks(self.f, finalFile, self.result4, self.pointDefiner4);
+     }
+    }
+
+    reader.readAsDataURL(file);
+
   }
 
   getFaceLandmarks(f,readerResult,result,pointDefiner){
@@ -236,30 +301,6 @@ export class MorphingPage {
             this.storage.set('userImage',readerResult);
             })
             this.morphingPrepare(readerResult, facePoints, result, pointDefiner, false )
-
-            // var image = new Image();
-            // var self = this;
-            //
-            // image.onload = function () {
-            //   self.setImage(result, image);
-            //   console.log(image);
-            //   pointDefiner.value = new self.PointDefiner(result.nativeElement, image, self.imageData);
-            //
-            //   for (var x = 0; x < facePoints.length; x++) {
-            //     facePoints[x] = new self.Point(facePoints[x].x * 3, facePoints[x].y * image.naturalHeight * 3 / image.naturalWidth);
-            //   }
-            //   pointDefiner.value.oriPoints = facePoints;
-            //   pointDefiner.value.dstPoints = facePoints;
-            //   pointDefiner.value.redraw();
-            //
-            //   self.inputUserImageSize.height = this.height;
-            //   self.inputUserImageSize.width = this.width;
-            //
-            //
-            //   console.log(this.width);
-            // }
-            //
-            // image.src = readerResult;
           });
       });
   }
@@ -267,6 +308,7 @@ export class MorphingPage {
   makeup(){
     console.log(this.pointDefiner3);
     console.log(this.pointDefiner4);
+    this.buttonDisabled = true;
     this.animatorResult = new this.Animator(this.pointDefiner3.value, this.pointDefiner4.value);
     this.animatorResult.generate(6);
     this.drawResult();
@@ -281,6 +323,7 @@ export class MorphingPage {
     var res_ctx2 = this.result6.nativeElement.getContext('2d');
     this.result6.nativeElement.height = this.inputUserImageSize.height;
     res_ctx2.putImageData(frames[4],0,0);
+    this.buttonDisabled = false;
   }
 
   onViewWillEnter() {
@@ -312,6 +355,7 @@ export class MorphingPage {
       pointDefiner.value = new self.PointDefiner(canvasResult.nativeElement, i, self.imageData);
       pointDefiner.value.oriPoints = imagePoints;
       pointDefiner.value.dstPoints = imagePoints;
+      self.buttonDisabled = false;
       //pointDefiner.value.redraw();
     };
     i.src = dt;
@@ -329,10 +373,14 @@ export class MorphingPage {
       console.log(image);
       self.pointDefiner3.value = new self.PointDefiner(self.result3.nativeElement, image, self.imageData);
       var facePoints = [];
-
-      self.service.faceImagePoints.forEach((x) => {
+      if(self.service){
+      if(self.service.service){
+      if(self.service.service.faceImagePoints)
+      self.service.service.faceImagePoints.forEach((x) => {
         facePoints.push(Object.assign({}, x));
       });
+      }
+      }
 
       console.log("self.service.faceImagePoints");
       console.log(facePoints);
@@ -344,8 +392,8 @@ export class MorphingPage {
       // self.pointDefiner3.value.redraw();
     }
 
-
-    image.src = this.service.creator.faceImageURL;
+console.log(this.service)
+    image.src = this.service.service.faceImageURL;
 
     console.log("did enter")
 
@@ -354,6 +402,7 @@ export class MorphingPage {
     this.storage.get('userImagePoints').then((pointsData) => {
 
         this.storage.get('userImage').then((data) => {
+          this.uploadedImg = data
 
           this.morphingPrepare(data, pointsData, this.result4, this.pointDefiner4, false )
 

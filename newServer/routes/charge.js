@@ -65,13 +65,31 @@ router.post('/', limiterGet.middleware({
 
                             console.log("deal with the reservations")
                             var updateOfferFlag = true
-
-                            async.each(data.reservation, function(element, next) {
+                            if (data.chargeType === "service") {
+                                async.each(data.reservation, function(element, next) {
+                                    Offer.update({
+                                        _id: element._id
+                                    }, {
+                                        $addToSet: {
+                                            user: element.user
+                                        }
+                                        //          ,title: (element.user.length + 1) / element.userNumberLimit
+                                    }, function(err, data2) {
+                                        if (err) {
+                                            console.log("err")
+                                            updateOfferFlag = false
+                                        } else if (data2.nInserted) {
+                                            console.log(data2)
+                                            console.log("Offer Inserted!")
+                                        }
+                                    })
+                                })
+                            } else if (data.chargeType === "deposit") {
                                 Offer.update({
                                     _id: element._id
                                 }, {
                                     $addToSet: {
-                                        user: element.user
+                                        serviceProvider: element.serviceProvider
                                     }
                                     //          ,title: (element.user.length + 1) / element.userNumberLimit
                                 }, function(err, data2) {
@@ -83,7 +101,7 @@ router.post('/', limiterGet.middleware({
                                         console.log("Offer Inserted!")
                                     }
                                 })
-                            })
+                            }
                             next()
                         },
                         function(err) {
@@ -112,10 +130,11 @@ router.post('/wechatPay', limiterGet.middleware({
     const reservation = req.body.reservation
     const contact = req.body.contact
     const note = req.body.note
+    const chargeType = req.body.chargeType
     let totalPrice = req.body.totalPrice
     totalPrice = 1
 
-    if (!totalPrice || !reservation || !contact) {
+    if (!totalPrice || !reservation || !contact || !chargeType) {
         return res.status(400)
             .send({
                 error: "INVALID data",
@@ -128,6 +147,8 @@ router.post('/wechatPay', limiterGet.middleware({
     prePayReservation.totalPrice = req.body.totalPrice
     prePayReservation.reservation = req.body.reservation
     prePayReservation.contact = req.body.contact
+    prePayReservation.chargeType = req.body.chargeType
+
     if (req.body.note) prePayReservation.note = req.body.note
 
     console.log(prePayReservation)
@@ -147,9 +168,15 @@ router.post('/wechatPay', limiterGet.middleware({
             } else {
                 console.log(data)
                 console.log(data)
-                if (!data.user) data.user = []
-                if (data.user.length <= data.userNumberLimit)
-                    someoneElseBooked = true
+                if (chargeType == 'service') {
+                    if (!data.user) data.user = []
+                    if (data.user.length <= data.userNumberLimit)
+                        someoneElseBooked = true
+                } else if (chargeType == 'deposit') {
+                    if (!data.serviceProvider) data.serviceProvider = []
+                    if (data.serviceProvider.length <= data.serviceProviderNumberLimit)
+                        someoneElseBooked = true
+                }
             }
         })
         next()
@@ -169,8 +196,8 @@ router.post('/wechatPay', limiterGet.middleware({
                 amount: totalPrice,
                 client_ip: "127.0.0.1",
                 currency: "cny",
-                subject: "service",
-                body: "Reservation Fee"
+                subject: chargeType,
+                body: chargeType
             }, function(err, charge) {
                 console.log("step3")
                 // YOUR CODE

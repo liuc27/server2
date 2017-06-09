@@ -44,25 +44,29 @@
 
 
     <ion-list no-lines no-paddings>
-        <div style="position: relative;" *ngFor="let serviceProvider of serviceProviders">
-            <a (tap)="openServiceProviderDetailsPage(serviceProvider)">
-                <img class="bigImage" [src]="serviceProvider.imageURL">
-                <div class="fab-bot-middle">{{serviceProvider.nickname}}{{serviceProvider.certificateArray}}</div>
-            </a>
-            <a class="fab-favorite" (tap)="favoriteServiceProvider(serviceProvider)">
-                <ion-icon name='heart-outline' *ngIf="alreadyLikedServiceProvider(serviceProvider) == false"></ion-icon>
-                <ion-icon name='heart' *ngIf="alreadyLikedServiceProvider(serviceProvider) == true" style="color:pink"></ion-icon>
-            </a>
+        <div *ngFor="let serviceProvider of serviceProviders">
+            <div style="position: relative;">
+                <a (tap)="openServiceProviderDetailsPage(serviceProvider)">
+                    <img class="bigImage" [src]="serviceProvider.imageURL">
+                    <div class="fab-bot-middle">{{serviceProvider.nickname}}</div>
+                </a>
+                <a class="fab-favorite" (tap)="favoriteServiceProvider(serviceProvider)">
+                    <ion-icon name='heart-outline' *ngIf="alreadyLikedServiceProvider(serviceProvider) == false"></ion-icon>
+                    <ion-icon name='heart' *ngIf="alreadyLikedServiceProvider(serviceProvider) == true" style="color:pink"></ion-icon>
+                </a>
 
-            <div class="fab-bot-left">
-                <span class="fab-bot-text">{{serviceProvider.reviewNumber}}</span>
-                <ion-icon name='chatboxes'></ion-icon>
+                <div class="fab-bot-left">
+                    <span class="fab-bot-text">{{serviceProvider.reviewNumber}}</span>
+                    <ion-icon name='chatboxes'></ion-icon>
+                </div>
+
+                <div class="fab-bot-right">
+                    <span class="fab-bot-text" *ngIf="serviceProvider.pricePerHour">{{serviceProvider.pricePerHour}}{{ serviceProvider.currency | translate }}/{{ 'h' | translate }}</span>
+                </div>
             </div>
-
-            <div class="fab-bot-right">
-                <span class="fab-bot-text" *ngIf="serviceProvider.pricePerHour">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
-            </div>
-
+            <ion-item>
+                <h2 text-wrap class="certificate2Lines">{{serviceProvider.certificateArray}}</h2>
+            </ion-item>
         </div>
     </ion-list>
 
@@ -85,7 +89,7 @@
                 </div>
 
                 <div class="fab-bot-right">
-                    <span class="fab-bot-text" *ngIf="serviceProvider.pricePerHour">{{serviceProvider.pricePerHour}}/{{ 'h' | translate }}</span>
+                    <span class="fab-bot-text" *ngIf="serviceProvider.pricePerHour">{{serviceProvider.pricePerHour}}{{ serviceProvider.currency | translate }}/{{ 'h' | translate }}</span>
                 </div>
 
             </div>

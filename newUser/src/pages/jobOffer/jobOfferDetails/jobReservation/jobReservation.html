@@ -1,0 +1,82 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title (tap)="goTop()">
+            {{ 'Reservation' | translate }}
+        </ion-title>
+    </ion-navbar>
+
+    <!-- <ion-navbar>
+        <ion-title>
+            讲师介绍
+        </ion-title>
+    </ion-navbar> -->
+
+</ion-header>
+
+<ion-content no-bounce>
+    <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+        </ion-refresher-content>
+    </ion-refresher> -->
+    <!-- <ion-segment padding [(ngModel)]="serviceType">
+
+    <ion-segment-button value="guide" (ionSelect)="selectedGuide()">
+      Guide・Call
+    </ion-segment-button>
+    <ion-segment-button value="chat" (ionSelect)="selectedChat()">
+      TextChat
+    </ion-segment-button>
+  </ion-segment>
+  <div [ngSwitch]="serviceType">
+
+    <div *ngSwitchCase="'guide'"> -->
+    <ion-card class="highLightsCard">
+        <!-- <ion-card-header class="noPaddingLeftRight">Please make jobReservation by taping table cells</ion-card-header> -->
+        <ion-toolbar>
+            <ion-buttons start>
+                {{viewTitle}}
+            </ion-buttons>
+            <ion-buttons end>
+                <button ion-button (tap)="changeMode('month')">{{ 'Month' | translate }}</button>
+                <button ion-button (tap)="changeMode('week')">{{ 'Week' | translate }}</button>
+            </ion-buttons>
+        </ion-toolbar>
+    </ion-card>
+
+    <div class="calendarClass">
+        <calendar [scrollToHour]=7 [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate" (onCurrentDateChanged)="onCurrentDateChanged($event)" (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)"
+            (onTimeSelected)="onTimeSelected($event)" step="30">
+            </calendar>
+    </div>
+    <!-- </div>
+    <div *ngSwitchCase="'chat'">
+
+      <ion-card class="highLightsCard">
+        <ion-card-header class="noPaddingLeftRight">Please make jobReservation by taping table cells</ion-card-header>
+        <ion-toolbar>
+          <ion-buttons start>
+            {{viewTitle}}
+          </ion-buttons>
+          <ion-buttons end>
+            <button ion-button (tap)="changeMode('month')">Month</button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-card>
+      <div></div>
+      <div class="calendarClass">
+        <calendar [scrollToHour]=7 [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate" (onCurrentDateChanged)="onCurrentDateChanged($event)" (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)" (onTimeSelected)="onTimeSelected($event)"
+            step="30">
+          </calendar>
+      </div>
+
+    </div>
+  </div>-->
+
+
+</ion-content>
+
+<ion-footer class="nextStep">
+    <ion-toolbar (tap)="enterReservationDetails()">
+        <ion-title>{{ 'Reservation Details' | translate }}</ion-title>
+    </ion-toolbar>
+</ion-footer>

@@ -18,7 +18,7 @@ var User = require('../models/user')
 var Offer = require('../models/offer')
 var async = require('async');
 var fs = require('fs')
-var fileURL = 'http://localhost:3000/images/'
+var fileURL = 'http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/images/'
 var ObjectId = require('mongoose').Types.ObjectId;
 
 /* GET users listing. */
@@ -76,7 +76,7 @@ router.post('/', limiterPost.middleware({
                     const action = element.action
                     const price = element.price
 
-                    const currency = element.currency
+                    const currency = element.currency || 'yen'
                     const priceBeforeDiscount = element.priceBeforeDiscount
                     const currentTime = new Date()
 
@@ -102,6 +102,7 @@ router.post('/', limiterPost.middleware({
                             repeat: repeat,
                             action: action,
                             price: price,
+                            currency: currency,
                             priceBeforeDiscount: priceBeforeDiscount,
                             created: currentTime,
                             updated: currentTime
@@ -155,7 +156,7 @@ router.post('/', limiterPost.middleware({
     })
 })
 
-router.post('/getMyCalendar', limiterPost.middleware({
+router.post('/getMyCalendarAsServiceProvider', limiterPost.middleware({
     innerLimit: 15,
     outerLimit: 200,
     headers: false
@@ -197,7 +198,7 @@ router.post('/getMyCalendar', limiterPost.middleware({
 
 })
 
-router.get("/getMyReservations", limiterPost.middleware({
+router.get("/getMyCalendarAsUser", limiterPost.middleware({
     innerLimit: 15,
     outerLimit: 200,
     headers: false
@@ -235,12 +236,17 @@ router.get("/getMyReservations", limiterPost.middleware({
 })
 
 
-router.get("/", limiterPost.middleware({
+router.get("/serviceProviderOffer", limiterPost.middleware({
     innerLimit: 15,
     outerLimit: 200,
     headers: false
 }), (req, res) => {
     const serviceProviderId = req.query.serviceProviderId
+    const serviceType = req.query.serviceType
+    if (req.query.serviceType)
+        var serviceTypeArr = req.query.serviceType.split(',');
+
+    console.log(serviceTypeArr)
     if (!serviceProviderId) {
         return res.status(404)
             .send({
@@ -248,6 +254,19 @@ router.get("/", limiterPost.middleware({
                 code: 3
             });
     }
+
+    let query = {
+        serviceProvider: {
+            $elemMatch: {
+                id: serviceProviderId
+            }
+        }
+    }
+
+    if (serviceType) query.serviceType = {
+        $in: serviceTypeArr
+    }
+
     User.findOne({
         id: serviceProviderId
     }).exec((err, result) => {
@@ -256,13 +275,7 @@ router.get("/", limiterPost.middleware({
         } else if (result === null) {
             res.status(500).send("No user found")
         } else {
-            Offer.find({
-                serviceProvider: {
-                    $elemMatch: {
-                        id: serviceProviderId
-                    }
-                }
-            }, (err, result2) => {
+            Offer.find(query, (err, result2) => {
                 console.log(result2)
                 if (err) {
                     return res.status(500).send("err")
@@ -281,6 +294,59 @@ router.get("/", limiterPost.middleware({
     })
 
 })
+
+
+router.get("/userOffer", limiterPost.middleware({
+    innerLimit: 15,
+    outerLimit: 200,
+    headers: false
+}), (req, res) => {
+    const userId = req.query.userId
+    const serviceType = req.query.serviceType
+    if (req.query.serviceType)
+        var serviceTypeArr = req.query.serviceType.split(',');
+
+    console.log(serviceTypeArr)
+    if (!userId) {
+        return res.status(404)
+            .send({
+                error: "NO ID",
+                code: 3
+            });
+    }
+
+    let query = {
+        user: {
+            $elemMatch: {
+                id: userId
+            }
+        }
+    }
+
+    if (serviceType) query.serviceType = {
+        $in: serviceTypeArr
+    }
+
+    User.findOne({
+        id: userId
+    }, ((err, result) => {
+        if (err) {
+            res.status(500).send("err")
+        } else if (result === null) {
+            res.status(500).send("No user found")
+        } else {
+            Offer.find(query, (err, result2) => {
+                console.log(result2)
+                if (err) {
+                    return res.status(500).send("err")
+                } else {
+                    return res.status(200).json(result2)
+                }
+            })
+        }
+    }))
+})
+
 
 router.get("/productId", limiterPost.middleware({
     innerLimit: 15,
@@ -438,12 +504,11 @@ router.get('/service', limiterPost.middleware({
     outerLimit: 200,
     headers: false
 }), (req, res) => {
+    const serviceType = req.query.serviceType
     const category = req.query.category
     const subCategory = req.query.subCategory
     const serviceProviderId = req.query.serviceProviderId
-    let query = {
-        'serviceType': 'service'
-    }
+    let query = {}
     let skipClause = 0
     let limitClause = 20
     let sortClause = {
@@ -453,21 +518,21 @@ router.get('/service', limiterPost.middleware({
     if (req.query.skip) skipClause = parseInt(req.query.skip)
     if (req.query.limit) limitClause = parseInt(req.query.limit)
 
-
+    if (serviceType) query.serviceType = serviceType
     if (serviceProviderId) {
         query = {
-            'serviceType': 'service',
+            'serviceType': serviceType,
             'creator.id': serviceProviderId
         }
     } else if (category && subCategory) {
         query = {
-            'serviceType': 'service',
+            'serviceType': serviceType,
             'service.category.main': category,
             'service.category.sub': subCategory
         }
     } else if (category) {
         query = {
-            'serviceType': 'service',
+            'serviceType': serviceType,
             'service.category.main': category
         }
     }
@@ -477,7 +542,7 @@ router.get('/service', limiterPost.middleware({
 
     Offer.paginate(query, {
         sort: sortClause,
-        select: 'service creator serviceProvider startTime endTime price priceBeforeDiscount userNumber userNumberLimit reviewNumber',
+        select: 'service creator serviceProvider startTime endTime price reward priceBeforeDiscount userNumber userNumberLimit reviewNumber currency',
         offset: skipClause,
         limit: limitClause
     }, function(err, data) {
@@ -516,6 +581,7 @@ router.get('/serviceDetails', limiterPost.middleware({
             // }
             // var signedURL = cf.getSignedUrl('http://d247r75rbkpi3y.cloudfront.net/trump.mp4', options);
             // if (signedURL) result.videoURL = signedURL
+            console.log(result)
             res.status(200)
                 .json(result);
         }
@@ -537,6 +603,7 @@ router.post('/service', limiterPost.middleware({
         return res.status(500)
             .send("No serviceName or service or creatorId or password or category or imageURL ")
     }
+
     const _id = req.body._id
     console.log(_id)
     const creator = req.body.creator
@@ -561,8 +628,9 @@ router.post('/service', limiterPost.middleware({
     const userNumberLimit = req.body.userNumberLimit
     const repeat = req.body.repeat
     const action = req.body.action
-    const currency = req.body.currency
+    const currency = req.body.currency || 'yen'
     const price = req.body.price
+    const reward = req.body.reward
     const priceBeforeDiscount = req.body.priceBeforeDiscount
     const currentTime = new Date();
 
@@ -581,6 +649,13 @@ router.post('/service', limiterPost.middleware({
         } else if (result === null) {
             res.status(500).send("creator.id not registered")
         } else {
+            // if((userInfo.userType == 'candidatePro' && serviceType == 'service')||(userInfo.userType == 'user' && serviceType == 'job')){
+            //   console.log('qualified')
+            // }else{
+            //   return res.status(500)
+            //       .send("Not qualified")
+            // }
+
             if (creator) serviceData.creator = creator
 
             if (serviceName) serviceData.service.serviceName = serviceName
@@ -607,6 +682,7 @@ router.post('/service', limiterPost.middleware({
             if (repeat) serviceData.repeat = repeat
             if (currency) serviceData.currency = currency
             if (price) serviceData.price = price
+            if (reward) serviceData.reward = reward
             if (priceBeforeDiscount) serviceData.priceBeforeDiscount = priceBeforeDiscount
 
             if (currentTime) serviceData.created = currentTime
@@ -625,8 +701,8 @@ router.post('/service', limiterPost.middleware({
                 binaryData = new Buffer(base64Data, 'base64').toString('binary');
                 fs.writeFile("images/" + creator.id + "." + serviceName + ".serviceImage.png", binaryData, "binary", function(err) {
                     if (err) console.log(err); // writes out file without error, but it's not a valid image
-                    serviceData.service.imageURL = fileURL + creator.id + "." + serviceName + ".serviceImage.png";
                 });
+                serviceData.service.imageURL = fileURL + creator.id + "." + serviceName + ".serviceImage.png";
             }
 
             if (!faceImageURL) {
@@ -638,9 +714,8 @@ router.post('/service', limiterPost.middleware({
                 binaryData = new Buffer(base64Data, 'base64').toString('binary');
                 fs.writeFile("images/" + creator.id + "." + serviceName + ".faceImageURL.png", binaryData, "binary", function(err) {
                     if (err) console.log(err); // writes out file without error, but it's not a valid image
-                    serviceData.service.faceImageURL = fileURL + creator.id + "." + serviceName + ".faceImageURL.png";
-
                 });
+                serviceData.service.faceImageURL = fileURL + creator.id + "." + serviceName + ".faceImageURL.png";
             }
 
 

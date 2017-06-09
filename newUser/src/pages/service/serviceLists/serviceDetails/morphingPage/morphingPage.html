@@ -1,7 +1,9 @@
 <ion-header>
     <ion-navbar>
 
-        <ion-title (tap)="goTop()">serviceDetails Page</ion-title>
+        <ion-title (tap)="goTop()">
+            {{ "VR Try" | translate }}
+        </ion-title>
 
         <ion-buttons end class="rightNavButton">
             <button ion-button>
@@ -36,21 +38,30 @@
   </div>
   <div>end</div>
   -->
-    <input #label type="file" (change)="inputModelImage($event)">
-    <!--
-  <img [src]="uploadedImg.data">
-  -->
+    <input #label type="file" (change)="inputModelImage($event)" [hidden]="true">
+
     <div>
         <canvas #result3 style="width:100%;"></canvas>
     </div>
 
-    <input #label2 type="file" (change)="inputUserImage($event)">
+
+    <ion-item>
+        <ion-thumbnail item-left>
+            <img style="object-fit:cover;border-radius:5%;" [src]="uploadedImg">
+        </ion-thumbnail>
+        <ion-label>{{ 'Upload your face photo here' | translate }}</ion-label>
+        <!-- <img style="object-fit:cover; border-radius:5%;" src="{{informationValue}}"> -->
+        <button [disabled]=buttonDisabled ion-button item-right (tap)="inputUserImageTrigger()">{{ 'Upload' | translate }}</button>
+    </ion-item>
+    <input #imageButton [hidden]=true type="file" accept="image/*" (change)="inputUserImage($event)">
+
+    <!-- <input #imageButton type="file" (change)="inputUserImage($event)"> -->
     <div>
         <canvas #result4 style="width:100%;"></canvas>
     </div>
 
     <div padding>
-        <button ion-button primary block (tap)="makeup()">Try makeup</button>
+        <button [disabled]=buttonDisabled ion-button primary block (tap)="makeup()">Try makeup</button>
     </div>
 
     <div>

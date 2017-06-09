@@ -182,7 +182,7 @@ export class NewOffer {
         if(this.serviceProviderValidation.pricePerHour) this.guidePricePerHour = this.serviceProviderValidation.pricePerHour
 
 
-        this.offerProvider.myOffer(this.serviceProviderValidation)
+        this.offerProvider.myCalendarAsServiceProvider(this.serviceProviderValidation)
           .then(data2 => {
             var data3 = []
             console.log(data2)
@@ -534,7 +534,7 @@ export class NewOffer {
 
       setTimeout(() => {
         console.log('Async loading has ended');
-        this.offerProvider.myOffer(this.serviceProviderValidation)
+        this.offerProvider.myCalendarAsServiceProvider(this.serviceProviderValidation)
           .then(data2 => {
             var data3 = []
             console.log(data2)

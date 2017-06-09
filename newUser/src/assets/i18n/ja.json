@@ -3,6 +3,7 @@
   "Pros": "プロ",
   "Pro": "プロ",
   "Events": "イベント",
+  "Service": "イベント",
 
   "h": "時",
   "m": "分",
@@ -27,27 +28,19 @@
   "Register": "登録",
   "Logout": "ログアウト",
 
-  "User Function": "ユーザ機能",
-  "Reservation": "予約情報",
+  "Service Receiver Function": "サービス利用者機能",
+  "My Reservations": "予約一覧",
   "Reservation Details": "予約詳細",
   "Favorite Events": "イベント箱",
   "Favorite Pros": "プロ箱",
-
-
-  "Pro Function": "プロ機能",
-  "My Schedule": "私のスケジュール",
-  "My Events": "私のイベント",
-  "Create Event": "イベント作成",
-  "Update Schedule": "予定作成",
-  "Schedule": "日程",
-  "User": "ユーザ",
+  "Favorites": "お気に入り",
 
   "My Information": "個人情報",
   "User Information(Optional)":"個人情報(任意)",
   "Head Image": "写真",
   "Nickname": "名前",
   "Service Types": "サービス種類",
-  "Introduction": "紹介",
+  "Introduction": "サービス紹介",
   "Contact Info": "連絡方式",
   "Price Per Hour": "費用/時間",
   "Certificates": "証明書",
@@ -83,6 +76,7 @@
   "Event Introduction": "イベント詳細",
   "Video URL": "紹介ビデオリンク",
   "User Number Limit": "ユーザ数制限",
+  "Service Provider Number Limit": "人数制限",
   "Video Time(m)": "ビデオ時間(分)",
   "List Price": "原価",
   "Retail Price": "価格",
@@ -95,7 +89,7 @@
   "Art": "芸術",
   "Beauty": "美容健康",
 
-  "Job Hunt": "求職",
+  "Job Hunt": "職業紹介",
   "School Find": "学校紹介",
   "Biz Advise": "ビジネス",
   "Law": "法務",
@@ -122,10 +116,33 @@
   "diet": "ダイエット",
   "surgery": "整形",
 
-  "My Events": "私のイベント",
+  "Service Provider Function": "サービス提供者機能",
+  "Schedule Management": "日程管理",
+  "My Events": "イベント一覧・管理",
+  "Create Event": "イベント登録",
+  "Update Schedule": "空き時間登録",
+  "Schedule": "日程",
+  "User": "ユーザ",
   "Event Update": "イベント更新",
-  "Tap to choose": "タップして選擇"
+  "Tap to choose": "タップして選擇",
+  "Upload your face photo here":"ここで顔写真をアップロード",
 
+  "Deposit":"保証金",
+  "Deposit (Applicant pay)":"保証金(応募者が預かり)",
+  "Deposit (Applicant pay, refund later)":"保証金(応募者が預かり)",
+  "Deposit (Refund by recruiter face to face)":"保証金(当日リクルーターが返済)",
+  "Will get paid":"所得予定",
+  "Reward":"給料",
+  "Reward (Recruiter pay after service face to face)":"給料(当日リクルーターが支払い)",
+  "Currency":"通貨",
+  "jpy":"円",
+  "rmb":"人民元",
+  "JPY":"円",
+  "RMB":"人民元",
+  "Recruit":"求人",
+  "Apply for a position":"バイト・仕事探す",
+  "Apply for this position":"応募へ",
+  "Recruiter":"リクルーター"
 
 
 }

@@ -1,0 +1,129 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{ 'Recruit' | translate }}</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding class="recruit">
+
+    <ion-list>
+
+        <!-- <ion-select [(ngModel)]="service.category" placeholder="" multiple="false"> -->
+        <!-- <ion-option value="guide">{{ 'Guide' | translate }}</ion-option>
+                <ion-option value="teach">{{ 'Teach' | translate }}</ion-option>
+                <ion-option value="housework">{{ 'Housework' | translate }}</ion-option>
+                <ion-option value="Art">{{ 'Art' | translate }}</ion-option>
+                <ion-option value="beauty">{{ 'Beauty' | translate }}</ion-option>
+                <ion-option [value]=beautySkinCare>{{ 'Beauty' | translate }} + Skin Care</ion-option>
+                <ion-option value="jobHunt">{{ 'Job Hunt' | translate }}</ion-option>
+                <ion-option value="schoolFind">{{ 'School Find' | translate }}</ion-option>
+                <ion-option value="bizAdvise">{{ 'Biz Advise' | translate }}</ion-option>
+                <ion-option value="law">{{ 'Law' | translate }}</ion-option>
+                <ion-option value="others">{{ 'Others' | translate }}</ion-option>
+              </ion-select> -->
+
+
+
+        <!-- (ionChange)="selectObjectById(options, $event, 'service')"  -->
+
+        <ion-item>
+            <ion-label>*{{ 'Service Type' | translate }}</ion-label>
+            <ion-select [(ngModel)]="selected1" (ionChange)="category1Selected()" placeholder="{{ 'Tap to choose' | translate }}">
+                <ion-option *ngFor="let item of options" [value]="item">{{item.main | translate}}{{item.sub | translate}}</ion-option>
+            </ion-select>
+        </ion-item>
+
+        <!-- <ion-item>
+            <ion-label>*{{ 'Service Type' | translate }}</ion-label>
+            <ion-select [(ngModel)]="selected1">
+                <ion-option *ngFor="let item of category1" [value]="item.val">{{item.name | translate}}</ion-option>
+            </ion-select>
+        </ion-item> -->
+
+
+        <!--
+    <ion-item>
+      <ion-label primary>时间</ion-label>
+      <ion-datetime displayFormat="YYYY/MM/DD h:mm"
+                    pickerFormat="YYYY MM DD h mm"  [(ngModel)]="timeLimit"></ion-datetime>
+    </ion-item>
+-->
+
+        <ion-item>
+            <ion-label primary>*{{ 'Event Name' | translate }}</ion-label>
+            <ion-input [(ngModel)]="service.service.serviceName"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label primary>*{{ 'Event Introduction' | translate }}</ion-label>
+            <ion-textarea [(ngModel)]="service.service.introduction"></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>*{{ 'Start Time' | translate }}</ion-label>
+            <ion-datetime min=2017 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="service.startTime" (ionChange)="start()"></ion-datetime>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>*{{ 'End Time' | translate }}</ion-label>
+            <ion-datetime min=2017 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="service.endTime"></ion-datetime>
+        </ion-item>
+
+        <ion-item>
+            <ion-label primary>*{{ 'Service Provider Number Limit' | translate }}</ion-label>
+            <ion-input [(ngModel)]="service.serviceProviderNumberLimit"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-label primary>*{{ 'Currency' | translate }}</ion-label>
+            <ion-select [(ngModel)]="service.currency" placeholder="" multiple="false">
+                <ion-option value="jpy">{{ 'JPY' | translate }}</ion-option>
+                <ion-option value="rmb">{{ 'RMB' | translate }}</ion-option>
+            </ion-select>
+        </ion-item>
+
+        <ion-item>
+            <ion-label primary>*{{ 'Reward' | translate }}</ion-label>
+            <ion-input [(ngModel)]="service.reward"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-label primary>*{{ 'Deposit (Applicant pay)' | translate }}</ion-label>
+            <ion-input [(ngModel)]="service.price"></ion-input>
+        </ion-item>
+
+    </ion-list>
+
+    <ion-list>
+        <ion-item>
+            <ion-thumbnail item-left>
+                <img style="object-fit:cover;border-radius:5%;" [src]="service.service.imageURL">
+            </ion-thumbnail>
+            <ion-label>{{ 'Head Image' | translate }}</ion-label>
+            <!-- <img style="object-fit:cover; border-radius:5%;" src="{{informationValue}}"> -->
+            <button [disabled]=buttonDisabled ion-button item-right (tap)="uploadImageTrigger()">{{ 'Upload' | translate }}</button>
+        </ion-item>
+        <input #imageButton [hidden]=true type="file" accept="image/*" (change)="uploadImage($event)">
+
+
+
+        <!-- <div *ngIf="service.service.category.main == 'beauty'">
+            <ion-item>
+                <ion-thumbnail item-left>
+                    <img style="object-fit:cover;border-radius:5%;" [src]="service.service.faceImageURL">
+                </ion-thumbnail>
+                <ion-label>{{ 'Face Image' | translate }}</ion-label>
+                <button [disabled]=buttonDisabled ion-button item-right (tap)="uploadFaceImageTrigger()">{{ 'Upload' | translate }}</button>
+            </ion-item>
+            <input #faceImageButton [hidden]=true type="file" accept="image/*" (change)="uploadFaceImage($event)">
+        </div> -->
+    </ion-list>
+
+
+
+
+    <button ion-button full [disabled]=buttonDisabled (tap)="replaceService()">{{ 'Submit' | translate }}</button>
+
+    <!--
+  <div id="jsonDiv"> {{service | json }}</div>
+  -->
+</ion-content>

@@ -1,7 +1,9 @@
 <ion-header>
     <ion-navbar>
 
-        <ion-title (tap)="goTop()">{{title}}</ion-title>
+        <ion-title (tap)="goTop()">
+            {{ title | translate }}
+        </ion-title>
 
         <!--<ion-buttons end class="rightNavButton">
             <button ion-button>
@@ -21,8 +23,7 @@
         <div *ngFor="let service of services; let i=index" style="position:relative">
             <img class="bigImage" [src]="service.service.imageURL" (tap)="openServiceDetailsPage(service)">
             <div class="fab-bot-left">
-                <span class="fab-bot-text">{{service.reviewNumber}}</span>
-                <ion-icon name='chatboxes'></ion-icon>
+                <span class="fab-bot-text">{{service.price}}{{ service.currency | translate }}</span>
             </div>
 
             <div class="fab-bot-right">
@@ -35,7 +36,7 @@
                 <ion-icon name='heart' *ngIf="alreadyLiked(service) == true" style="color:pink"></ion-icon>
             </a>
             <div class="fab-bot-middle">
-                {{service.service.serviceName}} {{service.creator.nickname}} {{service.pricing}}
+                {{service.service.serviceName}} {{service.creator.nickname}}
             </div>
         </div>
     </ion-list>
