@@ -15,16 +15,22 @@ import { SettingsPage } from '../pages/settings/settings';
 import { SignUp } from '../pages/settings/signUp/signUp';
 import { MyCalendarAsUser } from '../pages/settings/myCalendarAsUser/myCalendarAsUser';
 import { MyFavorites } from '../pages/settings/myFavorites/myFavorites';
-import { Recruit } from '../pages/settings/recruit/recruit';
 import { MyInformation } from '../pages/settings/myInformation/myInformation';
 import { MyInformationChange } from '../pages/settings/myInformation/myInformationChange/myInformationChange';
 import { MyCalendarAsServiceProvider } from '../pages/settings/myCalendarAsServiceProvider/myCalendarAsServiceProvider';
 import { ContactInfo } from '../pages/settings/myCalendarAsServiceProvider/contactInfo/contactInfo';
-import { NewServicePage } from '../pages/settings/myServices/newService/newService';
 import { NewOffer } from '../pages/settings/myCalendarAsServiceProvider/newOffer/newOffer';
 import { NewOfferDetails } from '../pages/settings/myCalendarAsServiceProvider/newOffer/newOfferDetails/newOfferDetails';
 import { MyServices } from '../pages/settings/myServices/myServices';
+import { NewService } from '../pages/settings/myServices/newService/newService';
 import { ModifyMyServices } from'../pages/settings/myServices/modifyMyServices/modifyMyServices'
+import { ServiceTimeDetails } from '../pages/settings/myServices/newService/serviceTimeDetails/serviceTimeDetails';
+
+import { MyRecruitment } from '../pages/settings/myRecruitment/myRecruitment';
+import { NewRecruitment } from '../pages/settings/myRecruitment/newRecruitment/newRecruitment';
+import { ModifyMyRecruitment } from'../pages/settings/myRecruitment/modifyMyRecruitment/modifyMyRecruitment'
+import { RecruitmentTimeDetails } from '../pages/settings/myRecruitment/newRecruitment/recruitmentTimeDetails/recruitmentTimeDetails';
+
 
 import { ServiceLists } from '../pages/service/serviceLists/serviceLists';
 import { ServiceSublists } from '../pages/service/serviceLists/serviceSublists/serviceSublists';
@@ -97,7 +103,6 @@ import { TextAvatarDirective } from '../directives/text-avatar/text-avatar';
     MyInformation,
     MyInformationChange,
     MyFavorites,
-    Recruit,
     MyCalendarAsUser,
     TabsPage,
     ServiceLists,
@@ -126,7 +131,12 @@ import { TextAvatarDirective } from '../directives/text-avatar/text-avatar';
     ModalContentPage,
     MyCalendarAsServiceProvider,
     ContactInfo,
-    NewServicePage,
+    NewService,
+    ServiceTimeDetails,
+    MyRecruitment,
+    NewRecruitment,
+    ModifyMyRecruitment,
+    RecruitmentTimeDetails,
     NewOffer,
     NewOfferDetails,
     MyServices,
@@ -171,7 +181,6 @@ import { TextAvatarDirective } from '../directives/text-avatar/text-avatar';
     MyInformation,
     MyInformationChange,
     MyFavorites,
-    Recruit,
     MyCalendarAsUser,
     TabsPage,
     ServiceLists,
@@ -200,7 +209,12 @@ import { TextAvatarDirective } from '../directives/text-avatar/text-avatar';
     ModalContentPage,
     MyCalendarAsServiceProvider,
     ContactInfo,
-    NewServicePage,
+    NewService,
+    ServiceTimeDetails,
+    MyRecruitment,
+    NewRecruitment,
+    ModifyMyRecruitment,
+    RecruitmentTimeDetails,
     NewOffer,
     NewOfferDetails,
     MyServices,

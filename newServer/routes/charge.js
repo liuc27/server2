@@ -32,7 +32,7 @@ router.post('/', limiterGet.middleware({
     outerLimit: 200,
     headers: false
 }), function(req, res, next) {
-    console.log(req.body.data.object)
+    //console.log(req.body.data.object)
     const params = req.body.data.object
 
     if (!params) {
@@ -63,48 +63,50 @@ router.post('/', limiterGet.middleware({
                                 throw err;
                             }
 
-                            console.log("deal with the reservations")
+                            console.log("deal with ")
+                            console.log(data.reservation)
+
                             var updateOfferFlag = true
-                            if (data.chargeType === "service") {
+                            // if (data.chargeType === "service"s) {
                                 async.each(data.reservation, function(element, next) {
+                                  console.log(element.user[0])
                                     Offer.update({
-                                        _id: element._id
-                                    }, {
+                                        'reservationDetails._id': element._id
+                                    },
+                                    {
                                         $addToSet: {
-                                            user: element.user
+                                            'reservationDetails.0.user': element.user[0]
                                         }
-                                        //          ,title: (element.user.length + 1) / element.userNumberLimit
-                                    }, function(err, data2) {
+                                    },
+                                    function(err, data2) {
                                         if (err) {
                                             console.log("err")
                                             updateOfferFlag = false
-                                        } else if (data2.nInserted) {
+                                        } else if (data2) {
                                             console.log(data2)
                                             console.log("Offer Inserted!")
                                         }
                                     })
-                                })
-                            } else if (data.chargeType === "deposit") {
-                                Offer.update({
-                                    _id: element._id
-                                }, {
-                                    $addToSet: {
-                                        serviceProvider: element.serviceProvider
-                                    }
-                                    //          ,title: (element.user.length + 1) / element.userNumberLimit
-                                }, function(err, data2) {
-                                    if (err) {
-                                        console.log("err")
-                                        updateOfferFlag = false
-                                    } else if (data2.nInserted) {
-                                        console.log(data2)
-                                        console.log("Offer Inserted!")
-                                    }
-                                })
-                            }
-                            next()
-                        },
-                        function(err) {
+                                    next()
+                            // } else if (data.chargeType === "deposit") {
+                                // Offer.update({
+                                //     _id: element._id
+                                // }, {
+                                //     $addToSet: {
+                                //         'reservationDetails[0].serviceProvider': element.serviceProvider[0]
+                                //     }
+                                //     //          ,title: (element.user.length + 1) / element.userNumberLimit
+                                // }, function(err, data2) {
+                                //     if (err) {
+                                //         console.log("err")
+                                //         updateOfferFlag = false
+                                //     } else if (data2.nInserted) {
+                                //         console.log(data2)
+                                //         console.log("Offer Inserted!")
+                                //     }
+                                // })
+                            // }
+                        },function(err) {
                             if (err) throw (err)
                             if (updateOfferFlag == true) {
                                 console.log("finished")
@@ -114,6 +116,7 @@ router.post('/', limiterGet.middleware({
                                 return res.status(200)
                             }
                         })
+                      })
                 }
             }
         })
@@ -169,12 +172,12 @@ router.post('/wechatPay', limiterGet.middleware({
                 console.log(data)
                 console.log(data)
                 if (chargeType == 'service') {
-                    if (!data.user) data.user = []
-                    if (data.user.length <= data.userNumberLimit)
+                    if (!data.reservationDetails.user) data.reservationDetails.user = []
+                    if (data.reservationDetails.user.length <= data.reservationDetails.userNumberLimit)
                         someoneElseBooked = true
                 } else if (chargeType == 'deposit') {
-                    if (!data.serviceProvider) data.serviceProvider = []
-                    if (data.serviceProvider.length <= data.serviceProviderNumberLimit)
+                    if (!data.reservationDetails.serviceProvider) data.reservationDetails.serviceProvider = []
+                    if (data.reservationDetails.serviceProvider.length <= data.reservationDetails.serviceProviderNumberLimit)
                         someoneElseBooked = true
                 }
             }

@@ -25,7 +25,6 @@ import {ServicePayment} from './servicePayment/servicePayment';
 declare var Wechat: any;
 
 
-
 @Component({
   selector: 'page-serviceDetails',
   templateUrl: 'serviceDetails.html',
@@ -41,6 +40,7 @@ export class ServiceDetails {
   serviceDetails: any = {
     review: [],
     introduction: '',
+    reservationDetails:[],
     videoURL: '',
     likedBy: [],
     creator:{},
@@ -51,6 +51,8 @@ export class ServiceDetails {
     }
   };
 
+joinOrNot = []
+reservationArray = []
 
   url: SafeResourceUrl;
   rate = 4;
@@ -398,27 +400,50 @@ favoriteService(service) {
 
   openVideoPage() {
     console.log("video open");
-    this.nav.push(Video, { videoDetails: this.serviceDetails });
+    this.nav.push(Video, this.serviceDetails );
   }
+
+  updateEvent(reservation, i){
+
+    console.log(i)
+    console.log(reservation)
+
+    if(this.joinOrNot[i]===true){
+    reservation.price = this.serviceDetails.price
+    reservation.serviceType = this.serviceDetails.serviceType
+    reservation.user = [{
+    id:this.validation.id,
+    _id:this.validation._id,
+    nickname: this.validation.nickname,
+    imageURL: this.validation.imageURL
+    }]
+
+    this.reservationArray.push(reservation)
+    }else if(this.joinOrNot[i]===false){
+    this.reservationArray.forEach((element,index)=>{
+      if(element._id === reservation._id){
+        this.reservationArray.splice(index,1)
+      }
+    })
+
+    }
+    console.log(this.reservationArray)
+  }
+
 
   joinEvent(){
 
   if(this.validation){
-    if(this.validation.id&&this.validation.password&&this.validation.nickname){
-      this.serviceDetails.action = "put"
-      let reservationArray = []
-      reservationArray[0] = this.serviceDetails
-      console.log(this.serviceDetails)
-      console.log(reservationArray)
-      this.nav.push(ReservationDetails, reservationArray);
+    if(this.validation.id&&this.validation.password&&this.validation.nickname&&
+    (this.reservationArray.length>0)){
+      console.log(this.reservationArray)
+      this.nav.push(ReservationDetails, this.reservationArray);
     }else{
-      this.presentAlert("Login first please!")
+      this.presentAlert("Login and check the event you want to attend please!")
     }
   }else{
       this.presentAlert("Login first please!")
   }
-
-
   }
 
   doRefresh(refresher) {

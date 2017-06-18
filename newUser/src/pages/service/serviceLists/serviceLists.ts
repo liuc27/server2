@@ -112,7 +112,7 @@ export class ServiceLists {
     return returnData
   }
   getMenu(data) {
-                  for (var i = 0; i < 5; i++) {
+                  for (var i = 0; i < data.length; i++) {
                       this.menu1.push(data[i])
                   }
                   this.grid.push(this.menu1);

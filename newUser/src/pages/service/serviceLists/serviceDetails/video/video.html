@@ -6,14 +6,14 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>video</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>{{serviceDetails.serviceName}}</ion-title>
+    </ion-navbar>
 
 </ion-header>
 
 
 <ion-content>
-  <video width="100%" [src]="url" [poster]="videoDetails.imageURL" type="video/mp4" controls="controls" preload="none">
+    <video width="100%" [src]="url" [poster]="serviceDetails.imageURL" type="video/mp4" controls="controls" preload="none">
   </video>
 </ion-content>

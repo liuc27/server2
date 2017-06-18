@@ -51,7 +51,7 @@
         <ion-item>
             <h2>{{ 'Recruiter' | translate }}:{{service.creator.nickname}}</h2>
             <h3>{{serviceDetails.likedBy.length}}{{ 'Likes' | translate }} {{service.reviewNumber}}{{ 'Reviews' | translate }}</h3>
-            <h3>{{(service.user || []).length}}/{{service.userNumberLimit}}{{ 'User' | translate }}</h3>
+            <h3>{{(service.serviceProvider || []).length}}/{{service.serviceProviderNumberLimit}} {{ 'Applicants' | translate }}</h3>
             <h3>{{ 'Reward (Recruiter pay after service face to face)' | translate }}:{{service.reward || 0}}{{ service.currency | translate }}</h3>
             <h3>{{ 'Deposit (Applicant pay, refund later)' | translate }}:{{service.price || 0}}{{ service.currency | translate }}</h3>
 
@@ -125,14 +125,8 @@
 
     <ion-card class="highLightsCard">
         <div class="spaceLine"></div>
-        <!--<ion-card-header>
-            Reviews
-        </ion-card-header>-->
         <ion-list>
             <ion-item *ngFor="let reviewContent of serviceDetails.review">
-                <!--<ion-avatar item-left>
-                    <img src="{{'images/' + reviewContent.id + '.userImage.jpg'}}">
-                </ion-avatar>-->
                 <p style="float:right">{{reviewContent.created | date:'yyyy/MM/dd hh:mm:ss'}}</p>
                 <p>{{reviewContent.id}}</p>
                 <h3>{{reviewContent.text}}</h3>
@@ -146,21 +140,31 @@
     </div>
 
 
+
+    <!-- (tap)="joinEvent(reservation)" -->
+    <ion-card *ngFor="let reservation of serviceDetails.reservationDetails; let i = index">
+        <div style="position: relative; height: 9rem;">
+
+            <ion-item style="width: 80%">
+                <!-- <ion-label>{{ 'Start Time' | translate }}</ion-label> -->
+                <ion-datetime displayFormat="YY/MM/DD HH:mm" [(ngModel)]="reservation.startTime"></ion-datetime>
+                ~
+                <ion-datetime displayFormat="MM/DD HH:mm" [(ngModel)]="reservation.endTime"></ion-datetime>
+
+            </ion-item>
+
+            <ion-item style="width: 80%">
+                <ion-label>{{ 'Service Provider Number Limit' | translate }}:{{reservation.serviceProvider.length || 0}}/{{reservation.serviceProviderNumberLimit}}</ion-label>
+            </ion-item>
+
+            <ion-checkbox *ngIf="reservation.serviceProvider.length<reservation.serviceProviderNumberLimit" [(ngModel)]="joinOrNot[i]" (ionChange)="updateEvent(reservation,i)" style="bottom: 6.5rem;left: 85%;"></ion-checkbox>
+        </div>
+
+    </ion-card>
 </ion-content>
 
-<ion-footer class="nextStep">
-    <ion-toolbar (tap)="joinEvent(service)">
-        <ion-title>{{ 'Apply for this position' | translate }}</ion-title>
+<ion-footer *ngIf="serviceDetails.reservationDetails.length>0" class="nextStep">
+    <ion-toolbar (tap)="joinEvent()">
+        <ion-title>{{ 'Join Event' | translate }}</ion-title>
     </ion-toolbar>
 </ion-footer>
-
-<!-- <ion-footer class="nextStep">
-  <ion-segment padding>
-    <ion-segment-button (ionSelect)="learn()">
-      Learn
-    </ion-segment-button>
-    <ion-segment-button (ionSelect)="advertise()">
-      Adervertise
-    </ion-segment-button>
-  </ion-segment>
-</ion-footer> -->

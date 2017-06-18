@@ -4,11 +4,12 @@ import { Storage } from '@ionic/storage'
 import {SignUp} from './signUp/signUp'
 import { MyInformation } from './myInformation/myInformation'
 import { MyFavorites } from './myFavorites/myFavorites';
-import { Recruit } from './recruit/recruit';
+//import { MyRecruitment } from './myRecruitment/myRecruitment';
 import { MyCalendarAsUser } from './myCalendarAsUser/myCalendarAsUser';
 
 import { MyCalendarAsServiceProvider } from './myCalendarAsServiceProvider/myCalendarAsServiceProvider';
 import { MyServices } from './myServices/myServices';
+import { MyRecruitment } from './myRecruitment/myRecruitment';
 
 import { UserProvider } from '../../providers/userProvider'
 import { JobPage } from '../job/job';
@@ -85,11 +86,11 @@ export class SettingsPage {
   myCalendarAsUser(){
     this.nav.push(MyCalendarAsUser);
   }
-  MyFavorites(){
+  myFavorites(){
     this.nav.push(MyFavorites);
   }
-  recruit(){
-    this.nav.push(Recruit);
+  myRecruitment(){
+    this.nav.push(MyRecruitment);
   }
   myCalendarAsServiceProvider(){
     this.nav.push(MyCalendarAsServiceProvider);

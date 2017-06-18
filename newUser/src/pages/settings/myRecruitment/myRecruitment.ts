@@ -6,8 +6,8 @@ import { Events, NavController, NavParams, PopoverController, AlertController } 
 import {UserProvider} from '../../../providers/userProvider'
 import {Storage} from '@ionic/storage'
 import {ServiceProvider} from '../../../providers/serviceProvider'
-import { NewService } from './newService/newService';
-import {ModifyMyServices} from'./modifyMyServices/modifyMyServices'
+import { NewRecruitment } from './newRecruitment/newRecruitment';
+import {ModifyMyRecruitment} from'./modifyMyRecruitment/modifyMyRecruitment'
 
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
@@ -16,11 +16,11 @@ import { defaultURL } from '../../../providers/i18n-demo.constants';
 
 
 @Component({
-  selector: 'page-myServices',
-  templateUrl: 'myServices.html',
+  selector: 'page-myRecruitment',
+  templateUrl: 'myRecruitment.html',
   providers: [UserProvider, ServiceProvider]
 })
-export class MyServices {
+export class MyRecruitment {
 
   serviceProviderValidation : any = {};
   serviceProviderDetails : any = [];
@@ -59,7 +59,7 @@ export class MyServices {
 
 
   loadSelectedServiceProviderDetails() {
-      this.serviceProvider.get(this.start,null,null,this.serviceProviderValidation.id,'service')
+      this.serviceProvider.get(this.start,null,null,this.serviceProviderValidation.id,'recruitment')
       .then(data => {
         console.log("data")
         console.log(data)
@@ -113,11 +113,11 @@ export class MyServices {
   openServiceDetailsPage(service) {
     console.log("detail open");
     console.log(service)
-    this.nav.push(ModifyMyServices, service);
+    this.nav.push(ModifyMyRecruitment, service);
   }
 
   newService(){
-    this.nav.push(NewService);
+    this.nav.push(NewRecruitment);
   }
 
   doRefresh(refresher) {

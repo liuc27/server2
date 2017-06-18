@@ -23,7 +23,7 @@ import { Storage } from '@ionic/storage'
 export class JobPage {
 @ViewChild(Content) content: Content;
 
-serviceType = 'job'
+serviceType = 'recruitment'
   public services: any = [];
   //public service: any;
   public menu1: any = [];

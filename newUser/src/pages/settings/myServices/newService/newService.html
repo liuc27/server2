@@ -1,6 +1,9 @@
 <ion-header>
     <ion-navbar>
         <ion-title>{{ 'Creat Event' | translate }}</ion-title>
+        <!-- <ion-buttons end>
+            <button ion-button [disabled]=buttonDisabled (tap)="replaceService()">{{ 'Save' | translate }}</button>
+        </ion-buttons> -->
     </ion-navbar>
 </ion-header>
 
@@ -56,21 +59,6 @@
         <ion-item>
             <ion-label primary>*{{ 'Event Introduction' | translate }}</ion-label>
             <ion-textarea [(ngModel)]="service.service.introduction"></ion-textarea>
-        </ion-item>
-
-        <ion-item>
-            <ion-label>*{{ 'Start Time' | translate }}</ion-label>
-            <ion-datetime min=2017 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="service.startTime" (ionChange)="start()"></ion-datetime>
-        </ion-item>
-
-        <ion-item>
-            <ion-label>*{{ 'End Time' | translate }}</ion-label>
-            <ion-datetime min=2017 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="service.endTime"></ion-datetime>
-        </ion-item>
-
-        <ion-item>
-            <ion-label primary>*{{ 'User Number Limit' | translate }}</ion-label>
-            <ion-input [(ngModel)]="service.userNumberLimit"></ion-input>
         </ion-item>
 
         <ion-item>
@@ -142,11 +130,27 @@
         </div>
     </ion-list>
 
+    <a ion-item (tap)="openReservationDetails()">
+        <ion-icon color="primary" name="cart">&nbsp;{{ 'Update Schedule' | translate }}</ion-icon>
+    </a>
 
+    <!-- <ion-list  *ngFor="let reservationDetails of service.reservationDetails">
 
+    <ion-item>
+        <ion-label>*{{ 'Start Time' | translate }}</ion-label>
+        <ion-datetime min=2017 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="service.startTime" (ionChange)="start()"></ion-datetime>
+    </ion-item>
 
-    <button ion-button full [disabled]=buttonDisabled (tap)="replaceService()">{{ 'Submit' | translate }}</button>
+    <ion-item>
+        <ion-label>*{{ 'End Time' | translate }}</ion-label>
+        <ion-datetime min=2017 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="service.endTime"></ion-datetime>
+    </ion-item>
 
+    <ion-item>
+        <ion-label primary>*{{ 'User Number Limit' | translate }}</ion-label>
+        <ion-input [(ngModel)]="service.userNumberLimit"></ion-input>
+    </ion-item>
+  </ion-list> -->
     <!--
   <div id="jsonDiv"> {{service | json }}</div>
   -->

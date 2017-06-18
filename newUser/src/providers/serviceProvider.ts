@@ -19,9 +19,9 @@ export class ServiceProvider {
     this.data = [];
   }
 
-  get(start:number,category,subCategory,serviceProviderId,serviceType) {
-    if(serviceProviderId){
-      this.queryString = this.perpage+'&skip='+start+'&serviceProviderId='+serviceProviderId
+  get(start:number,category,subCategory,creatorId,serviceType) {
+    if(creatorId){
+      this.queryString = this.perpage+'&skip='+start+'&creatorId='+creatorId
     }else if(category && subCategory){
       this.queryString = this.perpage+'&skip='+start+'&category='+category+'&subCategory='+subCategory
     }else if(category){

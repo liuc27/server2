@@ -24,7 +24,7 @@ export class JobSublists {
   @ViewChild('popoverText', { read: ElementRef }) text: ElementRef;
   @ViewChild(Content) content: Content;
 
-  serviceType = 'job'
+  serviceType = 'recruitment'
   //serviceProvider;
   category;
   title

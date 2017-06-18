@@ -37,7 +37,7 @@
                     <ion-icon item-left name="add"></ion-icon>
                     {{event.title}}{{i+1}}
                     <span clear primary class="reservationCost">
-                      {{event.price }} {{event.currency}}
+                      {{event.price }} {{event.currency | translate}}
                     </span>
                     <!-- <a item-right clear primary (tap)="cancellReservation(i)">
                       cancell<ion-icon  name="close"></ion-icon>
@@ -101,7 +101,8 @@
       </ion-list>
     </ion-card>-->
 
-    <ion-list *ngIf="payOrRefund == 'pay'">
+    <!-- <ion-list *ngIf="payOrRefund == 'pay'"> -->
+    <ion-list>
         <a ion-item (tap)="pay('applepay')">
             <ion-avatar item-left>
                 <img src="assets/img/applepay.jpg">
@@ -129,14 +130,14 @@
     </ion-list>
 
 
-    <ion-list *ngIf="payOrRefund == 'refund'">
+    <!-- <ion-list *ngIf="payOrRefund == 'refund'">
         <a ion-item (tap)="refund()">
             <ion-avatar item-left>
                 <img src="assets/img/applepay.jpg">
             </ion-avatar>
             <ion-icon color="primary">&nbsp;Refund</ion-icon>
         </a>
-    </ion-list>
+    </ion-list> -->
 
 </ion-content>
 

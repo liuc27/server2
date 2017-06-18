@@ -40,6 +40,7 @@ export class JobDetails {
   serviceDetails: any = {
     review: [],
     introduction: '',
+    reservationDetails:[],
     videoURL: '',
     likedBy: [],
     creator:{},
@@ -50,6 +51,9 @@ export class JobDetails {
     }
   };
 
+
+  joinOrNot = []
+  reservationArray = []
 
   url: SafeResourceUrl;
   rate = 4;
@@ -401,25 +405,48 @@ favoriteService(service) {
   //  this.nav.push(Video, { videoDetails: this.serviceDetails });
   }
 
-  joinEvent(){
 
-  if(this.validation){
-    if(this.validation.id&&this.validation.password&&this.validation.nickname){
-      this.serviceDetails.action = "put"
-      let reservationArray = []
-      reservationArray[0] = this.serviceDetails
-      console.log(this.serviceDetails)
-      console.log(reservationArray)
-      this.nav.push(JobReservationDetails, reservationArray);
-    }else{
-      this.presentAlert("Login first please!")
+  updateEvent(reservation, i){
+
+    console.log(i)
+    if(this.joinOrNot[i]===true){
+    reservation.price = this.serviceDetails.price
+    reservation.reward = this.serviceDetails.reward
+    reservation.serviceType = this.serviceDetails.serviceType
+    reservation.user = [{
+    id:this.validation.id,
+    _id:this.validation._id,
+    nickname: this.validation.nickname,
+    imageURL: this.validation.imageURL
+    }]
+
+    this.reservationArray.push(reservation)
+    }else if(this.joinOrNot[i]===false){
+    this.reservationArray.forEach((element,index)=>{
+      if(element._id === reservation._id){
+        this.reservationArray.splice(index,1)
+      }
+    })
+
     }
-  }else{
-      this.presentAlert("Login first please!")
+    console.log(this.reservationArray)
   }
 
+    joinEvent(){
 
-  }
+    if(this.validation){
+      if(this.validation.id&&this.validation.password&&this.validation.nickname&&
+      (this.reservationArray.length>0)){
+        console.log(this.reservationArray)
+        this.nav.push(JobReservationDetails, this.reservationArray);
+      }else{
+        this.presentAlert("Login and check the event you want to attend please!")
+      }
+    }else{
+        this.presentAlert("Login first please!")
+    }
+    }
+
 
   doRefresh(refresher) {
     console.log('Begin load', refresher);

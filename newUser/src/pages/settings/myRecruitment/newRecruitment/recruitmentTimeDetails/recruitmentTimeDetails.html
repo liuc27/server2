@@ -1,0 +1,95 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            {{ 'Schedule Management' | translate }}
+        </ion-title>
+
+        <ion-buttons end>
+            <button [disabled]=buttonDisabled ion-button (tap)="newOfferSubmit()">{{ 'Save' | translate }}</button>
+        </ion-buttons>
+
+
+    </ion-navbar>
+
+</ion-header>
+
+<ion-content class="settings">
+
+
+    <ion-list>
+        <!-- <ion-list-header no-padding>
+          {{ 'Schedule' | translate }}
+      </ion-list-header> -->
+        <ion-item>
+            <ion-label>{{ 'Start Time' | translate }}</ion-label>
+            <ion-datetime min=2016 max="2020" displayFormat="YYYY/MM/DD HH:mm" [(ngModel)]="newReservation.startTime"></ion-datetime>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>{{ 'End Time' | translate }}</ion-label>
+            <ion-datetime min=2016 max=2020 displayFormat="YYYY/MM/DD HH:mm" [(ngModel)]="newReservation.endTime"></ion-datetime>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>{{ 'User Number Limit' | translate }}</ion-label>
+            <ion-input type="number" item-right style="color:black" [(ngModel)]="newReservation.userNumberLimit"></ion-input>
+        </ion-item>
+
+        <div style="text-align:center;">
+            <button ion-button style="width:50vw;" primary (tap)="addReservation()">
+        {{ 'Add' | translate }}<ion-icon  name="plus"></ion-icon>
+      </button>
+        </div>
+    </ion-list>
+
+    <ion-card>
+        <ion-card-header>
+            <ion-title>
+                {{ 'Schedule' | translate }}
+            </ion-title>
+        </ion-card-header>
+        <ion-list *ngFor="let reservation of reservations; let i = index ">
+            <div *ngIf="reservation.action != 'delete'">
+                <ion-list-header no-padding>
+                    <!-- <ion-icon item-left name="add" (tap)="addReservation(i)"></ion-icon> -->
+                    {{ 'Schedule' | translate }}{{i+1}}
+                    <!-- <span clear primary class="reservationCost">
+                    {{reservation.pricePerHour}}/h
+                  </span> -->
+                    <a item-right clear primary (tap)="deleteReservation(i)">
+                    cancell<ion-icon  name="close"></ion-icon>
+                  </a>
+                </ion-list-header>
+                <ion-item>
+                    <ion-label>{{ 'Start Time' | translate }}</ion-label>
+                    <ion-datetime min=2016 max="2020" disabled=true displayFormat="YYYY/MM/DD HH:mm" [(ngModel)]="reservation.startTime"></ion-datetime>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label>{{ 'End Time' | translate }}</ion-label>
+                    <ion-datetime min=2016 max=2020 displayFormat="YYYY/MM/DD HH:mm" disabled=true [(ngModel)]="reservation.endTime"></ion-datetime>
+                </ion-item>
+
+                <ion-item *ngFor="let user of reservation.user">
+                    <ion-label>{{ 'Service Receiver' | translate }}</ion-label>
+                    <ion-note item-right style="color:black;">
+                        <a>{{user.nickname}}</a>
+                    </ion-note>
+                </ion-item>
+
+                <ion-item>
+                    <ion-label>{{ 'User Number Limit' | translate }}</ion-label>
+                    <ion-note item-right style="color:black">{{reservation.userNumberLimit}}</ion-note>
+                </ion-item>
+            </div>
+
+
+        </ion-list>
+
+    </ion-card>
+
+
+
+
+
+</ion-content>

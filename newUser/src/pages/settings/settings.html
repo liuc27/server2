@@ -69,11 +69,11 @@
                 <a ion-item (tap)="myCalendarAsUser()">
                     <ion-icon color="primary" name="cart">&nbsp;{{ 'My Reservations' | translate }}</ion-icon>
                 </a>
-                <a ion-item (tap)="MyFavorites()">
+                <a ion-item (tap)="myFavorites()">
                     <ion-icon color="primary" name="heart">&nbsp;{{ 'Favorites' | translate }}</ion-icon>
                 </a>
-                <a ion-item (tap)="recruit()">
-                    <ion-icon color="primary" name="heart">&nbsp;{{ 'Recruit' | translate }}</ion-icon>
+                <a ion-item (tap)="myRecruitment()">
+                    <ion-icon color="primary" name="heart">&nbsp;{{ 'Release Recruit' | translate }}</ion-icon>
                 </a>
                 <!-- <a ion-item (tap)="myCoupons()">
           <ion-icon color="primary" name="color-wand">&nbsp;My Coupons</ion-icon>
@@ -87,9 +87,9 @@
                 <ion-list-header>
                     {{ 'Service Provider Function' | translate }}
                 </ion-list-header>
-                <a ion-item (tap)="myCalendarAsServiceProvider()">
+                <!-- <a ion-item (tap)="myCalendarAsServiceProvider()">
                     <ion-icon color="primary" name="cart">&nbsp;{{ 'Schedule Management' | translate }}</ion-icon>
-                </a>
+                </a> -->
                 <a ion-item (tap)="myServices()">
                     <ion-icon color="primary" name="cart">&nbsp;{{ 'My Events' | translate }}</ion-icon>
                 </a>
@@ -99,7 +99,7 @@
 
             </ion-list>
             <div padding *ngIf="this.validation.userType == 'user'">
-                <button ion-button full clear (tap)="applyForPro()">{{ 'Apply for Pro possition' | translate }}</button>
+                <button ion-button full clear (tap)="applyForPro()">{{ 'Apply for pro possition' | translate }}</button>
             </div>
             <div padding *ngIf="this.validation.userType == 'candidatePro'" text-center>
                 {{ 'Request is under review' | translate }}

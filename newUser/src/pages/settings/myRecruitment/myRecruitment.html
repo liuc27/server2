@@ -1,0 +1,92 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>
+            {{ 'My Events' | translate }}
+        </ion-title>
+        <ion-buttons end>
+            <button ion-button (tap)="newService()">{{ 'Create Event' | translate }}</button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+
+<ion-content #popoverContent>
+
+    <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
+        <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
+        </ion-refresher-content>
+    </ion-refresher> -->
+
+    <!--  <ion-card class="adv-map">
+    <img [src]=serviceProviderValidation.imageURL>
+
+ <ion-card-content>
+      <ion-card-title>{{serviceProviderValidation.id}}</ion-card-title>
+      <p>{{serviceProviderValidation.introduction}}</p>
+    </ion-card-content>
+
+    <ion-row style="padding: 0 0.5em">
+      <ion-col>
+        <button ion-button clear style="padding: 0 0 0 0.3em">
+          <ion-icon name='thumbs-up'></ion-icon>
+          Like
+        </button>
+      </ion-col>
+      <ion-col text-center>
+        <button ion-button clear (tap)="showCommentBox=!showCommentBox">
+          <ion-icon name='text'></ion-icon>
+          Comment
+        </button>
+      </ion-col>
+      <ion-col text-right>
+        <button ion-button clear style="padding: 0 0.3em 0 0">
+          <ion-icon name='share-alt'></ion-icon>
+          Check blog
+        </button>
+      </ion-col>
+    </ion-row>
+
+  </ion-card>-->
+
+    <!-- <div [hidden]="!showCommentBox" style="padding: 0.5em">
+    <div no-padding>
+      <rating [(ngModel)]="rate"></rating>
+    </div>
+    <div>
+      <ion-textarea placeholder="Input comment here" [(ngModel)]="comment" style="border-bottom-width: 1px"></ion-textarea>
+    </div>
+
+    <button ion-button style="float: right" (tap)="sendComment()">Comment</button>
+
+  </div> -->
+
+
+    <!-- <ion-card class="highLightsCard">
+    <div class="spaceLine"></div>
+    <ion-list *ngFor="let commentContent of serviceProviderValidation.comment">
+      <ion-item>
+        <p style="float:right">{{commentContent.created | date:'yyyy/MM/dd hh:mm:ss'}}</p>
+        <p>{{commentContent.id}}</p>
+        <h3>{{commentContent.text}}</h3>
+      </ion-item>
+    </ion-list>
+  </ion-card> -->
+
+
+    <ion-list *ngFor="let service of serviceProviderDetails">
+        <div style="position: relative">
+            <img class="bigImage" [src]="service.service.imageURL" (tap)="openServiceDetailsPage(service)">
+            <div class="fab-bot-left">
+                <span class="fab-bot-text">{{service.reviewNumber}}</span>
+                <ion-icon name='chatboxes'></ion-icon>
+            </div>
+
+            <div class="fab-bot-right">
+                <span class="fab-bot-text">{{(service.user || []).length}}/{{service.userNumberLimit}}</span>
+                <ion-icon name='person'></ion-icon>
+            </div>
+            <div class="fab-bot-middle">
+                {{service.serviceName}} {{service.creator.nickname}} {{service.price}}
+            </div>
+        </div>
+    </ion-list>
+</ion-content>

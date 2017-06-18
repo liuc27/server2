@@ -10,54 +10,71 @@
 
     <div *ngFor="let event of myCalendarAsUser; let i = index " padding>
         <ion-list>
-            <ion-list-header no-padding>
-                <ion-icon item-left name="add" (tap)="addReservation(i)"></ion-icon>
-                {{event.title}}{{i+1}}
-                <span clear primary class="reservationCost">
+            <ion-title no-padding>
+                <!-- <ion-icon item-left name="add"></ion-icon> -->
+                {{event.serviceType | translate}}
+                <!-- <span clear primary class="reservationCost">
                     {{event.price}}
-                  </span>
+                  </span> -->
                 <!-- <a item-right clear primary (tap)="cancellReservation(i)">
                     cancell<ion-icon  name="close"></ion-icon>
                   </a> -->
-            </ion-list-header>
+            </ion-title>
             <ion-item>
                 <ion-label>{{ 'Start Time' | translate }}</ion-label>
-                <ion-datetime style="color:black;" min=2016 max="2020" displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.startTime" (ionChange)="recaculateTotal()"></ion-datetime>
+                <ion-datetime style="color:black;" min=2016 max="2020" displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.reservationDetails[0].startTime" (ionChange)="recaculateTotal()"></ion-datetime>
             </ion-item>
 
             <ion-item>
                 <ion-label>{{ 'End Time' | translate }}</ion-label>
-                <ion-datetime min=2016 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.endTime" (ionChange)="recaculateTotal()"></ion-datetime>
+                <ion-datetime min=2016 max=2020 displayFormat="YYYY/MM/DD HH:mm" pickerFormat="YYYY-MM-DDTHH" [(ngModel)]="event.reservationDetails[0].endTime" (ionChange)="recaculateTotal()"></ion-datetime>
             </ion-item>
 
             <ion-item>
                 <ion-label>{{ 'Price' | translate }}</ion-label>
-                <ion-note item-right style="color:black" (tap)=changeReservationPrice(event)>{{event.price}}</ion-note>
-            </ion-item>
-
-            <ion-item>
-                <ion-label>{{ 'User Number Limit' | translate }}</ion-label>
-                <ion-note item-right style="color:black" (tap)=changeCustomerNumber(event)>{{event.user.length || 0}}/{{event.userNumberLimit}}</ion-note>
-            </ion-item>
-            <ion-item *ngFor="let user of event.user">
-                <ion-label>{{ 'Service Receiver' | translate }}</ion-label>
-                <ion-note item-right style="color:blue;">
-                    <a (tap)="openJobOfferDetailsPage(user)">{{user.nickname}}</a>
-                </ion-note>
+                <ion-note item-right style="color:black">{{event.price}}</ion-note>
             </ion-item>
 
 
+            <div *ngIf="event.serviceType == 'service'">
+                <ion-item>
+                    <ion-label>{{ 'User Number Limit' | translate }}</ion-label>
+                    <ion-note item-right style="color:black">{{event.reservationDetails[0].user.length || 0}}/{{event.reservationDetails[0].userNumberLimit}}</ion-note>
+                </ion-item>
+                <ion-item *ngFor="let user of event.reservationDetails[0].user">
+                    <ion-label>{{ 'User' | translate }}</ion-label>
+                    <ion-note item-right style="color:blue;">
+                        <a (tap)="openJobOfferDetailsPage(user)">{{user.nickname}}</a>
+                    </ion-note>
+                </ion-item>
+            </div>
 
-            <ion-item>
+            <div *ngIf="event.serviceType == 'recruitment'">
+
+                <ion-item>
+                    <ion-label>{{ 'Service Provider Number Limit' | translate }}</ion-label>
+                    <ion-note item-right style="color:black">{{event.reservationDetails[0].serviceProvider.length || 0}}/{{event.reservationDetails[0].serviceProviderNumberLimit}}</ion-note>
+                </ion-item>
+
+                <ion-item *ngFor="let serviceProvider of event.reservationDetails[0].serviceProvider">
+                    <ion-label>{{ 'Service Provider' | translate }}</ion-label>
+                    <ion-note item-right style="color:blue;">
+                        <a (tap)="openServiceProviderDetailsPage(serviceProvider)">{{serviceProvider.nickname}}</a>
+                    </ion-note>
+                </ion-item>
+            </div>
+
+
+            <!-- <ion-item>
                 <ion-label>{{ 'Service Provider Number Limit' | translate }}</ion-label>
-                <ion-note item-right style="color:black" (tap)=changeCustomerNumber(event)>{{event.serviceProvider.length || 0}}/{{event.serviceProviderNumberLimit}}</ion-note>
+                <ion-note item-right style="color:black" (tap)=changeCustomerNumber(event)>{{event.reservationDetails[0].serviceProvider.length || 0}}/{{event.reservationDetails[0].serviceProviderNumberLimit}}</ion-note>
             </ion-item>
-            <ion-item *ngFor="let serviceProvider of event.serviceProvider">
+            <ion-item *ngFor="let serviceProvider of event.reservationDetails[0].serviceProvider">
                 <ion-label>{{ 'Pro' | translate }}</ion-label>
                 <ion-note item-right style="color:blue;">
                     <a (tap)="showContactInfo(event,serviceProvider)">{{serviceProvider.nickname}}</a>
                 </ion-note>
-            </ion-item>
+            </ion-item> -->
 
         </ion-list>
 

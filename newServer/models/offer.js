@@ -35,19 +35,25 @@ var offerSchema = new mongoose.Schema({
             required: false
         }
     },
-    serviceProvider: [{
-        _id: mongoose.Schema.Types.ObjectId,
-        id: String,
-        nickname: String,
-        imageURL: String
+
+    reservationDetails: [{
+        startTime: String,
+        endTime: String,
+        user: [{
+            _id: mongoose.Schema.Types.ObjectId,
+            id: String,
+            nickname: String
+        }],
+        serviceProvider: [{
+            _id: mongoose.Schema.Types.ObjectId,
+            id: String,
+            nickname: String,
+            imageURL: String
+        }],
+        userNumberLimit: Number,
+        serviceProviderNumberLimit: Number
     }],
-    user: [{
-        _id: mongoose.Schema.Types.ObjectId,
-        id: String,
-        nickname: String
-    }],
-    startTime: String,
-    endTime: String,
+
     serviceType: {
         type: String,
         required: false
@@ -61,11 +67,7 @@ var offerSchema = new mongoose.Schema({
         type: Boolean,
         required: false
     },
-    serviceProviderNumberLimit: {
-        type: Number,
-        required: false
-    },
-    userNumberLimit: Number,
+
     repeat: {
         type: Number,
         required: false

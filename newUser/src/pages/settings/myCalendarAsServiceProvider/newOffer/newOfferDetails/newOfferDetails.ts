@@ -40,7 +40,11 @@ export class NewOfferDetails {
   guidePrice = 1000;
   chatPrice = 100;
   totalPrice = 0;
-  changedEventSourceISO: any;
+  changedEventSourceISO: any = [
+  {
+  creator:{}
+  }
+  ];
   serviceType;
   addedEventSourceISO = []
   deletedEventSourceISO = []

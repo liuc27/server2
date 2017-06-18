@@ -37,7 +37,7 @@ export class ReservationDetails {
     @ViewChild(Content) content: Content;
 
     service;
-    payOrRefund;
+  //  payOrRefund;
     chargeFlag = false;
     chatroomId;
     serviceOrServiceProvider;
@@ -86,10 +86,13 @@ export class ReservationDetails {
                 if (this.changedEventSourceISO.length > 0) {
                     this.reservationPayment.contact = this.validation.contact
 
+/*
+
                     if (this.changedEventSourceISO[0].action == "put")
                         this.payOrRefund = 'pay'
                     else if (this.changedEventSourceISO[0].action == "delete")
                         this.payOrRefund = 'refund'
+*/
                     for (var i = 0; i < this.changedEventSourceISO.length; i++) {
                         console.log(this.changedEventSourceISO.length)
                         console.log(this.changedEventSourceISO)
@@ -270,7 +273,8 @@ export class ReservationDetails {
         }
         if (this.reservationPayment.contact) {
             if (x == "wechatPay") {
-
+              console.log(this.changedEventSourceISO)
+              
                 if ((<any>window).cordova) {
                     var reservationData = JSON.parse(JSON.stringify(this.changedEventSourceISO))
                     reservationData.forEach((element, index) => {

@@ -1,5 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { NavController, ToastController, NavParams,AlertController } from 'ionic-angular';
+
+import {ServiceTimeDetails} from '../newService/serviceTimeDetails/serviceTimeDetails'
+
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { TranslateService } from 'ng2-translate/ng2-translate';
@@ -56,23 +59,34 @@ export class ModifyMyServices {
   options: any = [
   {'main':'guide'},
   {'main':'teach'},
+
+  {'main':'agent','sub':'job'},
+  {'main':'agent','sub':'school'},
+  {'main':'agent','sub':'marriage'},
+  {'main':'agent','sub':'insurance'},
+  {'main':'agent','sub':'others'},
+
+  {'main':'employe','sub':'engineer'},
+  {'main':'employe','sub':'salesman'},
+  {'main':'employe','sub':'others'},
+
   {'main':'housework'},
-  {'main':'art'},
+
   {'main':'beauty','sub':'skinCare'},
   {'main':'beauty','sub':'makeup'},
   {'main':'beauty','sub':'diet'},
   {'main':'beauty','sub':'surgery'},
   {'main':'beauty','sub':'others'},
-  {'main':'jobHunt'},
-  {'main':'schoolFind'},
+
   {'main':'bizAdvise'},
   {'main':'law'},
+  {'main':'art'},
   {'main':'others'}
   ]
 
 
   constructor(private params: NavParams,
-              public navCtrl: NavController,
+              public nav: NavController,
               private http: Http,
               private userProvider:UserProvider,
               private serviceProvider: ServiceProvider,
@@ -434,38 +448,13 @@ uploadFaceImage(event) {
   replaceService() {
     this.buttonDisabled = true;
     console.log(this.service)
-    if (this.service.creator.id && this.service.service.serviceName&& this.service.startTime&& this.service.endTime&&this.service.userNumberLimit) {
+    if (this.service.creator.id && this.service.service.serviceName&&this.service.price&&this.service.currency) {
       console.log(this.service)
     //  var pricePerHour = this.validation.pricePerHour || 1000
     //  var duration = moment.duration(moment(this.service.endTime).diff(moment(this.service.startTime)));
     //  var hours = duration.asHours();
 
-      var serviceProviderArray = [];
-      serviceProviderArray.push({"id":this.validation.id, "nickname":this.validation.nickname})
       this.service.action = "put"
-
-/*
-      this.service = {
-        _id: this.service._id,
-        creator: this.validation,
-        service: this.service.service,
-        serviceProvider: serviceProviderArray,
-        user: [],
-        startTime: this.service.startTime,
-        endTime: this.service.endTime,
-        serviceType: 'service',
-        title: this.service.serviceName,
-        allDay: false,
-        serviceProviderNumberLimit: 1,
-        userNumberLimit: this.service.userNumberLimit,
-        repeat: 0,
-        action: "put",
-        currency: this.service.currency || 'jpy',
-        price: this.service.price,
-        priceBeforeDiscount: this.service.priceBeforeDiscount
-      }
-*/
-
 
       this.http.post(defaultURL+':3000/offer/service', this.service)
       .map(res => res.json())
@@ -484,5 +473,10 @@ uploadFaceImage(event) {
       this.buttonDisabled = false;
 
     }
+  }
+
+  openReservationDetails(){
+  console.log("ServiceTimeDetails")
+   this.nav.push(ServiceTimeDetails,this.service)
   }
 }

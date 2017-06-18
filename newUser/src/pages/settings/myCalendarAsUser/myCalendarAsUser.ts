@@ -6,6 +6,7 @@ import { Events, NavController, NavParams, PopoverController, AlertController } 
 import { UserProvider } from '../../../providers/userProvider'
 import { OfferProvider } from '../../../providers/offerProvider'
 import { JobOfferDetails } from '../../jobOffer/jobOfferDetails/jobOfferDetails';
+import { ServiceProviderDetails } from '../../serviceProvider/serviceProviderDetails/serviceProviderDetails';
 import { ContactInfo } from '../myCalendarAsServiceProvider/contactInfo/contactInfo'
 
 import { Storage } from '@ionic/storage'
@@ -34,7 +35,17 @@ export class MyCalendarAsUser {
   param: string = "world";
   alreadyLoggedIn = { data: false };
   validation : any = {};
-  myCalendarAsUser;
+  myCalendarAsUser : any =[
+  {
+  reservationDetails:[{
+    user:[],
+    serviceProvider:[],
+    userNumberLimit:1,
+    serviceProviderNumberLimit:1
+  }]
+
+  }
+  ];
 
   constructor(private nav: NavController,
     private events: Events,
@@ -47,9 +58,11 @@ export class MyCalendarAsUser {
         this.validation = data
         this.alreadyLoggedIn.data = true;
         this.offerProvider.myCalendarAsUser(this.validation.id).then(data2 => {
+          console.log(data2)
           this.myCalendarAsUser = data2
           this.myCalendarAsUser.forEach((element, index) => {
-            element.title = element.user.length.toString() + "/" + element.userNumberLimit.toString()
+            if(element.reservationDetails[0].user)
+            element.title = element.reservationDetails[0].user.length.toString() + "/" + element.reservationDetails[0].userNumberLimit.toString()
           })
         })
       });
@@ -65,7 +78,8 @@ export class MyCalendarAsUser {
         this.offerProvider.myCalendarAsUser(this.validation.id).then(data2 => {
           this.myCalendarAsUser = data2
           this.myCalendarAsUser.forEach((element, index) => {
-            element.title = element.user.length.toString() + "/" + element.userNumberLimit.toString()
+            if(element.reservationDetails[0].user)
+            element.title = element.reservationDetails[0].user.length.toString() + "/" + element.reservationDetails[0].userNumberLimit.toString()
           })
         })
       });
@@ -81,5 +95,11 @@ export class MyCalendarAsUser {
   openJobOfferDetailsPage(user) {
     this.nav.push(JobOfferDetails, user);
   }
+
+  openServiceProviderDetailsPage(user) {
+    this.nav.push(ServiceProviderDetails, user);
+  }
+
+
 
 }

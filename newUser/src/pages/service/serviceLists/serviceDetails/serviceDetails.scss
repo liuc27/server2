@@ -1,5 +1,4 @@
 page-serviceDetails {
-    .serviceDetails {
         background-color: white;
         z-index: 1;
         /*.calendarClass {
@@ -10,10 +9,10 @@ page-serviceDetails {
             margin: 0;
         }
         .bigImage {
+          height: 56.25vw;
             width: 100vw;
             object-fit: cover;
         }
-
         .youtubeVideo {
             position: absolute;
             top: 0;
@@ -77,7 +76,6 @@ page-serviceDetails {
                 }
             }
         }
-    }
     .nextStep {
         color: #387ef5, ;
         font-size: 1.3em;

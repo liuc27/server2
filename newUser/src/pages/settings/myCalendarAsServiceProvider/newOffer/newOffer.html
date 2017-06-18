@@ -1,7 +1,7 @@
 <ion-header>
     <ion-navbar>
         <ion-title>
-            预约
+            {{'Update Schedule' | translate}}
         </ion-title>
     </ion-navbar>
 
@@ -44,8 +44,8 @@
     </ion-card>
 
     <div class="calendarClass">
-        <calendar [scrollToHour]=7 [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate" (onCurrentDateChanged)="onCurrentDateChanged($event)" (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)" (onTimeSelected)="onTimeSelected($event)"
-            step="30">
+        <calendar [scrollToHour]=7 [eventSource]="eventSource" [calendarMode]="calendar.mode" [currentDate]="calendar.currentDate" (onCurrentDateChanged)="onCurrentDateChanged($event)" (onEventSelected)="onEventSelected($event)" (onTitleChanged)="onViewTitleChanged($event)"
+            (onTimeSelected)="onTimeSelected($event)" step="30">
             </calendar>
     </div>
     <!--</div>
@@ -74,6 +74,6 @@
 
 <ion-footer class="nextStep">
     <ion-toolbar (tap)="setReservationDetails()">
-        <ion-title>Next Step</ion-title>
+        <ion-title>{{'Next Step' | translate}}</ion-title>
     </ion-toolbar>
 </ion-footer>

@@ -7,7 +7,8 @@ var mongoosePaginate = require('mongoose-paginate');
 var userSchema = new mongoose.Schema({
     userType: {
         type: String,
-        required: true
+        required: true,
+        default: 'user'
     },
     id: {
         type: String,

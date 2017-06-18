@@ -37,7 +37,7 @@ export class JobReservationDetails {
     @ViewChild(Content) content: Content;
 
     service;
-    payOrRefund;
+  //  payOrRefund;
     chargeFlag = false;
     chatroomId;
     serviceOrServiceProvider;
@@ -86,10 +86,6 @@ export class JobReservationDetails {
                 if (this.changedEventSourceISO.length > 0) {
                     this.jobReservationPayment.contact = this.validation.contact
 
-                    if (this.changedEventSourceISO[0].action == "put")
-                        this.payOrRefund = 'pay'
-                    else if (this.changedEventSourceISO[0].action == "delete")
-                        this.payOrRefund = 'refund'
                     for (var i = 0; i < this.changedEventSourceISO.length; i++) {
                         console.log(this.changedEventSourceISO.length)
                         console.log(this.changedEventSourceISO)

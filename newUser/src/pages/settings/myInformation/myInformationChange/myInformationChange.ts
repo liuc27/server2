@@ -49,17 +49,28 @@ export class MyInformationChange {
   options: any = [
   {'main':'guide'},
   {'main':'teach'},
+
+  {'main':'agent','sub':'job'},
+  {'main':'agent','sub':'school'},
+  {'main':'agent','sub':'marriage'},
+  {'main':'agent','sub':'insurance'},
+  {'main':'agent','sub':'others'},
+
+  {'main':'employe','sub':'engineer'},
+  {'main':'employe','sub':'salesman'},
+  {'main':'employe','sub':'others'},
+
   {'main':'housework'},
-  {'main':'art'},
+
   {'main':'beauty','sub':'skinCare'},
   {'main':'beauty','sub':'makeup'},
   {'main':'beauty','sub':'diet'},
   {'main':'beauty','sub':'surgery'},
   {'main':'beauty','sub':'others'},
-  {'main':'jobHunt'},
-  {'main':'schoolFind'},
+
   {'main':'bizAdvise'},
   {'main':'law'},
+  {'main':'art'},
   {'main':'others'}
   ]
 

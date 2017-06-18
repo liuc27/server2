@@ -18,143 +18,145 @@ var User = require('../models/user')
 var Offer = require('../models/offer')
 var async = require('async');
 var fs = require('fs')
-var fileURL = 'http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/images/'
+var fileURL = 'http://localhost:3000/images/'
 var ObjectId = require('mongoose').Types.ObjectId;
 
+var cf = require('aws-cloudfront-sign')
+
 /* GET users listing. */
-router.post('/', limiterPost.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), (req, res) => {
-    const creator = req.body.creator
-    const password = req.body.password
-    const event = req.body.event
-
-    console.log(creator)
-
-
-    if (!creator || !password || !event) {
-        return res.status(404)
-            .send({
-                error: "NO creator or password or event",
-                code: 3
-            });
-    }
-
-    console.log("0")
-
-
-    User.findOne({
-        id: creator.id,
-        password: password
-    }, (err, result) => {
-        if (err) {
-            return next(err)
-        } else if (result == null) {
-            return res.status(500).send("No serviceProvider found")
-        } else {
-            if (event.length < 1) res.status(500).send("No element in req.body.event")
-            else {
-                console.log("1")
-                let flag = true
-                async.each(event, function(element, next) {
-                    console.log(element)
-                    // 処理1
-                    let thisOffer
-                    const _id = element._id
-                    const title = element.title
-                    const serviceType = element.serviceType
-                    const startTime = element.startTime
-                    const endTime = element.endTime
-                    const user = element.user
-                    const serviceProvider = element.serviceProvider
-                    const serviceProviderNumberLimit = element.serviceProviderNumberLimit
-                    const userNumberLimit = element.userNumberLimit
-                    const repeat = element.repeat
-                    //const pricePerHour = element.pricePerHour
-                    const action = element.action
-                    const price = element.price
-
-                    const currency = element.currency || 'yen'
-                    const priceBeforeDiscount = element.priceBeforeDiscount
-                    const currentTime = new Date()
-
-                    console.log("3")
-
-                    if (action === "put") {
-
-                        if (!title || !startTime || !endTime || !action || !price || !serviceProviderNumberLimit || !userNumberLimit) {
-                            flag = false
-                            console.log("parameters")
-                        }
-                        console.log("put")
-                        thisOffer = new Offer({
-                            title: user.length + "/" + userNumberLimit,
-                            serviceType: serviceType,
-                            startTime: startTime,
-                            endTime: endTime,
-                            creator: creator,
-                            serviceProvider: serviceProvider,
-                            user: user,
-                            serviceProviderNumberLimit: serviceProviderNumberLimit,
-                            userNumberLimit: userNumberLimit,
-                            repeat: repeat,
-                            action: action,
-                            price: price,
-                            currency: currency,
-                            priceBeforeDiscount: priceBeforeDiscount,
-                            created: currentTime,
-                            updated: currentTime
-                        })
-                        //thisOffer.creator = creator
-                        thisOffer.save().then(function(result2) {
-                            console.log(result2)
-                        }).catch(function(err) {
-                            flag = false
-                            throw err
-                        })
-                    } else if (action === "delete") {
-
-                        if (!_id) {
-                            flag = false
-                            console.log("parameters")
-                        } else {
-
-                            console.log("delete")
-                            console.log(element)
-                            Offer.find({
-                                _id: element._id
-                            }).then(function(data) {
-                                console.log(data)
-                                if (!data.user) {
-                                    Offer.remove({
-                                        _id: element._id
-                                    }).then(function(result3) {
-                                        console.log(result3)
-                                    }).catch(function(err) {
-                                        flag = false
-                                        throw err
-                                    })
-                                }
-                            }).catch(function(err) {
-                                flag = false
-                                throw err
-                            })
-                        }
-                    }
-                    next()
-                }, function(err) {
-                    //処理2
-                    if (err) throw err;
-                    else if (flag === false) res.status(500).send("something wrong")
-                    else res.status(200).json({})
-                });
-
-            }
-        }
-    })
-})
+// router.post('/', limiterPost.middleware({
+//     innerLimit: 15,
+//     outerLimit: 200,
+//     headers: false
+// }), (req, res) => {
+//     const creator = req.body.creator
+//     const password = req.body.password
+//     const event = req.body.event
+//
+//     console.log(creator)
+//
+//
+//     if (!creator || !password || !event) {
+//         return res.status(404)
+//             .send({
+//                 error: "NO creator or password or event",
+//                 code: 3
+//             });
+//     }
+//
+//     console.log("0")
+//
+//
+//     User.findOne({
+//         id: creator.id,
+//         password: password
+//     }, (err, result) => {
+//         if (err) {
+//             return next(err)
+//         } else if (result == null) {
+//             return res.status(500).send("No serviceProvider found")
+//         } else {
+//             if (event.length < 1) res.status(500).send("No element in req.body.event")
+//             else {
+//                 console.log("1")
+//                 let flag = true
+//                 async.each(event, function(element, next) {
+//                     console.log(element)
+//                     // 処理1
+//                     let thisOffer
+//                     const _id = element._id
+//                     const title = element.title
+//                     const serviceType = element.serviceType
+//                     const startTime = element.startTime
+//                     const endTime = element.endTime
+//                     const user = element.user
+//                     const serviceProvider = element.serviceProvider
+//                     const serviceProviderNumberLimit = element.serviceProviderNumberLimit
+//                     const userNumberLimit = element.userNumberLimit
+//                     const repeat = element.repeat
+//                     //const pricePerHour = element.pricePerHour
+//                     const action = element.action
+//                     const price = element.price
+//
+//                     const currency = element.currency || 'yen'
+//                     const priceBeforeDiscount = element.priceBeforeDiscount
+//                     const currentTime = new Date()
+//
+//                     console.log("3")
+//
+//                     if (action === "put") {
+//
+//                         if (!title || !startTime || !endTime || !action || !price || !serviceProviderNumberLimit || !userNumberLimit) {
+//                             flag = false
+//                             console.log("parameters")
+//                         }
+//                         console.log("put")
+//                         thisOffer = new Offer({
+//                             title: user.length + "/" + userNumberLimit,
+//                             serviceType: serviceType,
+//                             startTime: startTime,
+//                             endTime: endTime,
+//                             creator: creator,
+//                             serviceProvider: serviceProvider,
+//                             user: user,
+//                             serviceProviderNumberLimit: serviceProviderNumberLimit,
+//                             userNumberLimit: userNumberLimit,
+//                             repeat: repeat,
+//                             action: action,
+//                             price: price,
+//                             currency: currency,
+//                             priceBeforeDiscount: priceBeforeDiscount,
+//                             created: currentTime,
+//                             updated: currentTime
+//                         })
+//                         //thisOffer.creator = creator
+//                         thisOffer.save().then(function(result2) {
+//                             console.log(result2)
+//                         }).catch(function(err) {
+//                             flag = false
+//                             throw err
+//                         })
+//                     } else if (action === "delete") {
+//
+//                         if (!_id) {
+//                             flag = false
+//                             console.log("parameters")
+//                         } else {
+//
+//                             console.log("delete")
+//                             console.log(element)
+//                             Offer.find({
+//                                 _id: element._id
+//                             }).then(function(data) {
+//                                 console.log(data)
+//                                 if (!data.user) {
+//                                     Offer.remove({
+//                                         _id: element._id
+//                                     }).then(function(result3) {
+//                                         console.log(result3)
+//                                     }).catch(function(err) {
+//                                         flag = false
+//                                         throw err
+//                                     })
+//                                 }
+//                             }).catch(function(err) {
+//                                 flag = false
+//                                 throw err
+//                             })
+//                         }
+//                     }
+//                     next()
+//                 }, function(err) {
+//                     //処理2
+//                     if (err) throw err;
+//                     else if (flag === false) res.status(500).send("something wrong")
+//                     else res.status(200).json({})
+//                 });
+//
+//             }
+//         }
+//     })
+// })
 
 router.post('/getMyCalendarAsServiceProvider', limiterPost.middleware({
     innerLimit: 15,
@@ -184,7 +186,7 @@ router.post('/getMyCalendarAsServiceProvider', limiterPost.middleware({
                 res.status(500).send("No user found")
             } else {
                 Offer.find({
-                    serviceProvider: {
+                    'reservationDetails.serviceProvider': {
                         $elemMatch: {
                             id: id
                         }
@@ -220,7 +222,7 @@ router.get("/getMyCalendarAsUser", limiterPost.middleware({
             res.status(500).send("No user found")
         } else {
             Offer.find({
-                user: {
+                'reservationDetails.user': {
                     $elemMatch: {
                         id: id
                     }
@@ -256,7 +258,7 @@ router.get("/serviceProviderOffer", limiterPost.middleware({
     }
 
     let query = {
-        serviceProvider: {
+        'reservationDetails.serviceProvider': {
             $elemMatch: {
                 id: serviceProviderId
             }
@@ -316,7 +318,7 @@ router.get("/userOffer", limiterPost.middleware({
     }
 
     let query = {
-        user: {
+        'reservationDetails.user': {
             $elemMatch: {
                 id: userId
             }
@@ -348,31 +350,31 @@ router.get("/userOffer", limiterPost.middleware({
 })
 
 
-router.get("/productId", limiterPost.middleware({
-    innerLimit: 15,
-    outerLimit: 200,
-    headers: false
-}), (req, res) => {
-    const productId = req.query.productId
-    if (!productId) {
-        return res.status(404)
-            .send({
-                error: "NO ID",
-                code: 3
-            });
-    }
-    Offer.find({
-        productId: productId
-    }, (err, result2) => {
-        console.log(result2)
-        if (err) {
-            return res.status(500).send("err")
-        } else {
-            return res.status(200).json(result2)
-        }
-    })
-
-})
+// router.get("/productId", limiterPost.middleware({
+//     innerLimit: 15,
+//     outerLimit: 200,
+//     headers: false
+// }), (req, res) => {
+//     const productId = req.query.productId
+//     if (!productId) {
+//         return res.status(404)
+//             .send({
+//                 error: "NO ID",
+//                 code: 3
+//             });
+//     }
+//     Offer.find({
+//         productId: productId
+//     }, (err, result2) => {
+//         console.log(result2)
+//         if (err) {
+//             return res.status(500).send("err")
+//         } else {
+//             return res.status(200).json(result2)
+//         }
+//     })
+//
+// })
 
 router.get('/getMenu', function(req, res, next) {
     var data = [{
@@ -395,22 +397,70 @@ router.get('/getMenu', function(req, res, next) {
         sub: []
     }, {
         id: 2,
-        name: 'Job Hunt',
-        zh: '职位介绍',
-        ja: 'リクルーター',
+        name: 'Agent',
+        zh: '中介',
+        ja: 'エイジェント',
         icon: 'ios-trash',
         color: 'gold',
-        category: 'jobHunt',
-        sub: []
+        category: 'agent',
+        sub: [{
+                id: 21,
+                name: 'Job',
+                category: 'job',
+                color: 'lightgreen'
+            },
+            {
+                id: 22,
+                name: 'School',
+                category: 'school',
+                color: '#5383FF'
+            },
+            {
+                id: 23,
+                name: 'Marriage',
+                category: 'marriage',
+                color: 'silver'
+            },
+            {
+                id: 24,
+                name: 'Insurance',
+                category: 'insurance',
+                color: 'pink'
+            },
+            {
+                id: 25,
+                name: 'Others',
+                category: 'others',
+                color: 'yellow'
+            }
+        ]
     }, {
         id: 3,
-        name: 'School Find',
-        zh: '学校介绍',
-        ja: '学校紹介',
+        name: 'Employe',
+        zh: '职员',
+        ja: '会社員',
         icon: 'ios-construct',
         color: 'lightgreen',
-        category: 'schoolFind',
-        sub: []
+        category: 'employe',
+        sub: [{
+                id: 31,
+                name: 'Engineer',
+                category: 'engineer',
+                color: 'pink'
+            },
+            {
+                id: 32,
+                name: 'Salesman',
+                category: 'salesman',
+                color: 'yellow'
+            },
+            {
+                id: 33,
+                name: 'Others',
+                category: 'others',
+                color: 'yellow'
+            }
+        ]
     }, {
         id: 4,
         name: 'Housework',
@@ -507,7 +557,7 @@ router.get('/service', limiterPost.middleware({
     const serviceType = req.query.serviceType
     const category = req.query.category
     const subCategory = req.query.subCategory
-    const serviceProviderId = req.query.serviceProviderId
+    const creatorId = req.query.creatorId
     let query = {}
     let skipClause = 0
     let limitClause = 20
@@ -519,10 +569,10 @@ router.get('/service', limiterPost.middleware({
     if (req.query.limit) limitClause = parseInt(req.query.limit)
 
     if (serviceType) query.serviceType = serviceType
-    if (serviceProviderId) {
+    if (creatorId) {
         query = {
             'serviceType': serviceType,
-            'creator.id': serviceProviderId
+            'creator.id': creatorId
         }
     } else if (category && subCategory) {
         query = {
@@ -542,7 +592,7 @@ router.get('/service', limiterPost.middleware({
 
     Offer.paginate(query, {
         sort: sortClause,
-        select: 'service creator serviceProvider startTime endTime price reward priceBeforeDiscount userNumber userNumberLimit reviewNumber currency',
+        select: 'service creator reservationDetails price reward priceBeforeDiscount reviewNumber currency',
         offset: skipClause,
         limit: limitClause
     }, function(err, data) {
@@ -574,14 +624,15 @@ router.get('/serviceDetails', limiterPost.middleware({
         } else if (result == null) {
             res.status(500).send("service not found")
         } else {
-            // var options = {
-            //     keypairId: 'APKAJRBOBPGRJI3TZONQ',
-            //     privateKeyPath: './pk-APKAJRBOBPGRJI3TZONQ.pem',
-            //     expireTime: Date.now() + 6000000
-            // }
-            // var signedURL = cf.getSignedUrl('http://d247r75rbkpi3y.cloudfront.net/trump.mp4', options);
-            // if (signedURL) result.videoURL = signedURL
-            console.log(result)
+            var options = {
+                keypairId: 'APKAJRBOBPGRJI3TZONQ',
+                privateKeyPath: './pk-APKAJRBOBPGRJI3TZONQ.pem',
+                expireTime: Date.now() + 6000000
+            }
+            var signedURL = cf.getSignedUrl('http://d247r75rbkpi3y.cloudfront.net/trump.mp4', options);
+            if (signedURL) result.service.videoURL = signedURL
+            console.log(signedURL)
+            console.log(result.service.videoURL)
             res.status(200)
                 .json(result);
         }
@@ -597,11 +648,13 @@ router.post('/service', limiterPost.middleware({
     console.log(req.body)
     if (!req.body.creator || !req.body.service) {
         return res.status(500)
-            .send("No serviceName or serviceProviderId or password or serviceProvider_id or category or imageURL ")
-    } else if (!req.body.service.serviceName || !req.body.service || !req.body.creator.password || !req.body.creator.id || !req.body.creator._id || !req.body.service.category || !req.body.startTime || !req.body.endTime || !req.body.service.imageURL) {
+            .send("No creator or service or reservationDetails ")
+    } else if (!req.body.service.serviceName || !req.body.creator.password ||
+        !req.body.creator.id || !req.body.creator._id || !req.body.service.category ||
+        !req.body.service.imageURL) {
         console.log(req.body)
         return res.status(500)
-            .send("No serviceName or service or creatorId or password or category or imageURL ")
+            .send("No serviceName or creatorId or password or category or imageURL ")
     }
 
     const _id = req.body._id
@@ -617,15 +670,16 @@ router.post('/service', limiterPost.middleware({
     const faceImagePoints = req.body.service.faceImagePoints
     const videoURL = req.body.service.videoURL
 
-    const user = req.body.user
-    const serviceProvider = req.body.serviceProvider
-    const startTime = req.body.startTime
-    const endTime = req.body.endTime
+    // const user = req.body.reservationDetails.user
+    // const serviceProvider = req.body.reservationDetails.serviceProvider
+    // const startTime = req.body.reservationDetails.startTime
+    // const endTime = req.body.reservationDetails.endTime
+    // const serviceProviderNumberLimit = req.body.reservationDetails.serviceProviderNumberLimit || 1
+    // const userNumberLimit = req.body.reservationDetails.userNumberLimit
+    const reservationDetails = req.body.reservationDetails || []
     const serviceType = req.body.serviceType
     const title = req.body.title
     const allDay = req.body.allDay
-    const serviceProviderNumberLimit = req.body.serviceProviderNumberLimit || 1
-    const userNumberLimit = req.body.userNumberLimit
     const repeat = req.body.repeat
     const action = req.body.action
     const currency = req.body.currency || 'yen'
@@ -655,7 +709,8 @@ router.post('/service', limiterPost.middleware({
             //   return res.status(500)
             //       .send("Not qualified")
             // }
-
+            console.log("user exists")
+            if (_id) serviceData._id = _id
             if (creator) serviceData.creator = creator
 
             if (serviceName) serviceData.service.serviceName = serviceName
@@ -668,16 +723,18 @@ router.post('/service', limiterPost.middleware({
             if (videoURL) serviceData.service.videoURL = videoURL
 
 
-            if (user) serviceData.user = user || []
-            if (serviceProvider) serviceData.serviceProvider = serviceProvider
-            if (startTime) serviceData.startTime = startTime
-            if (endTime) serviceData.endTime = endTime
+            // if (user) serviceData.reservationDetails.user = user || []
+            // if (serviceProvider) serviceData.reservationDetails.serviceProvider = serviceProvider
+            // if (startTime) serviceData.reservationDetails.startTime = startTime
+            // if (endTime) serviceData.reservationDetails.endTime = endTime
+            // if (serviceProviderNumberLimit) serviceData.reservationDetails.serviceProviderNumberLimit = serviceProviderNumberLimit || 1
+            // if (userNumberLimit) serviceData.reservationDetails.userNumberLimit = userNumberLimit || 1
+
+            if (reservationDetails) serviceData.reservationDetails = reservationDetails
             if (serviceType) serviceData.serviceType = serviceType
             if (title) serviceData.title = title
             if (allDay) serviceData.allDay = allDay
 
-            if (serviceProviderNumberLimit) serviceData.serviceProviderNumberLimit = serviceProviderNumberLimit || 1
-            if (userNumberLimit) serviceData.userNumberLimit = userNumberLimit || 1
 
             if (repeat) serviceData.repeat = repeat
             if (currency) serviceData.currency = currency
@@ -719,32 +776,77 @@ router.post('/service', limiterPost.middleware({
             }
 
 
-            if (!_id) {
+            if (_id) {
+                Offer.findOne({
+                    _id: _id
+                }, (err, originalData) => {
+                    if (err) {
+                        console.log(err)
+                        throw err;
+                    } else {
+                        console.log("reservationDetails exist")
+
+                        const originalReservationDetails = JSON.parse(JSON.stringify(originalData.reservationDetails));
+                        const serviceReservationDetails = JSON.parse(JSON.stringify(serviceData.reservationDetails));
+
+                        // originalData = serviceData
+                        // originalData.reservationDetails = originalReservationDetails
+                        console.log(originalData.reservationDetails)
+                        console.log(serviceData.reservationDetails)
+                        serviceReservationDetails.forEach((serviceDataElement, serviceDataIndex) => {
+                            if (serviceDataElement.action === "add") {
+
+                                originalData.reservationDetails.push(serviceDataElement)
+
+                            } else if (serviceDataElement.action === "delete") {
+                                originalData.reservationDetails.forEach((element, i) => {
+                                    if (element._id == serviceDataElement._id) {
+                                        originalData.reservationDetails.splice(i, 1)
+                                    }
+                                })
+                            }
+                            console.log(serviceDataIndex)
+                            console.log(serviceReservationDetails.length - 1)
+                            console.log(serviceReservationDetails)
+                            console.log(originalData)
+
+
+
+                            if (serviceDataIndex == serviceReservationDetails.length - 1) {
+                                console.log("originalData")
+
+                                Offer.findOneAndUpdate({
+                                    _id: _id
+                                }, {
+                                    $set: originalData
+                                }, {
+                                    new: true
+                                }, function(err, data2) {
+                                    if (err) {
+                                        console.log(err)
+                                        return (err)
+                                    } else if (data2) {
+                                        return res.status(200)
+                                            .json(data2);
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            } else {
+                console.log(serviceData)
                 const thisOffer = new Offer(serviceData)
                 thisOffer.save().then(function(offerResult) {
                     console.log("new offer")
                     return res.status(200)
                         .json(serviceData);
                 })
-            } else {
-                Offer.update({
-                    _id: _id
-                }, serviceData, {
-                    upsert: true
-                }, (err, result2) => {
-                    if (err) {
-                        console.log(err)
-                        throw err;
-                    } else {
-                        console.log(result2)
-                        return res.status(200)
-                            .json(serviceData);
-                    }
-                })
 
             }
         }
     })
 })
+
 
 module.exports = router;

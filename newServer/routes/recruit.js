@@ -18,7 +18,7 @@ var User = require('../models/user')
 var Offer = require('../models/offer')
 var async = require('async');
 var fs = require('fs')
-var fileURL = 'http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com:3000/images/'
+var fileURL = 'http://localhost:3000/images/'
 var ObjectId = require('mongoose').Types.ObjectId;
 
 /* GET users listing. */

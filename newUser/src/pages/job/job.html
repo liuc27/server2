@@ -14,7 +14,7 @@
     </ion-navbar>-->
     <ion-navbar>
         <ion-title (tap)="goTop()">
-            {{ 'Events' | translate }}
+            {{ 'Apply for a position' | translate }}
         </ion-title>
     </ion-navbar>
 </ion-header>
@@ -57,7 +57,7 @@
             </div>
 
             <div class="fab-bot-right">
-                <span class="fab-bot-text">{{(service.user || []).length}}/{{service.userNumberLimit}}</span>
+                <span class="fab-bot-text">{{(service.serviceProvider || []).length}}/{{service.serviceProviderNumberLimit}}</span>
                 <ion-icon name='person'></ion-icon>
             </div>
 

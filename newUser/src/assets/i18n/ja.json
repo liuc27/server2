@@ -89,8 +89,26 @@
   "Art": "芸術",
   "Beauty": "美容健康",
 
-  "Job Hunt": "職業紹介",
-  "School Find": "学校紹介",
+
+  "agent": "仲介人",
+  "job": "職業紹介",
+  "school": "学校紹介",
+  "marriage": "結婚紹介",
+  "insurance": "保険紹介",
+  "Agent": "仲介人",
+  "Job": "職業紹介",
+  "School": "学校紹介",
+  "Marriage": "結婚紹介",
+  "Insurance": "保険紹介",
+
+  "employe": "会社員",
+  "engineer": "エンジニア",
+  "salesman": "営業企画",
+  "Employe": "会社員",
+  "Engineer": "エンジニア",
+  "Salesman": "営業企画",
+
+
   "Biz Advise": "ビジネス",
   "Law": "法務",
   "Others": "その他",
@@ -123,6 +141,12 @@
   "Update Schedule": "空き時間登録",
   "Schedule": "日程",
   "User": "ユーザ",
+  "Next Step": "次へ",
+  "Cancell": "取り消す",
+  "Update Free Time": "空き時間登録",
+  "Delete Free Time": "空き時間削除",
+  "Gross income":"予定収入",
+
   "Event Update": "イベント更新",
   "Tap to choose": "タップして選擇",
   "Upload your face photo here":"ここで顔写真をアップロード",
@@ -139,10 +163,15 @@
   "rmb":"人民元",
   "JPY":"円",
   "RMB":"人民元",
-  "Recruit":"求人",
-  "Apply for a position":"バイト・仕事探す",
+  "Release Recruit":"求人情報登録",
+  "Apply for a position":"バイト・仕事応募",
   "Apply for this position":"応募へ",
-  "Recruiter":"リクルーター"
+  "Recruiter":"リクルーター",
+  "Applicants":"応募者",
+  "Applicant":"応募者",
+
+  "Job Hunt": "職業紹介",
+  "School Find": "学校紹介"
 
 
 }

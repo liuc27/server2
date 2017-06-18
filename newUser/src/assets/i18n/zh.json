@@ -89,6 +89,26 @@
   "Art": "艺术",
   "Beauty": "美容健康",
 
+
+  "agent": "中介",
+  "job": "公司推荐",
+  "school": "学校推荐",
+  "marriage": "红娘",
+  "insurance": "保险推荐",
+  "Agent": "中介",
+  "Job": "公司推荐",
+  "School": "学校推荐",
+  "Marriage": "红娘",
+  "Insurance": "保险推荐",
+
+  "employe": "职员",
+  "engineer": "工程师",
+  "salesman": "营业企划",
+  "Employe": "职员",
+  "Engineer": "工程师",
+  "Salesman": "营业企划",
+
+
   "Job Hunt": "职业介绍",
   "School Find": "留学升学",
   "Biz Advise": "商业介绍",
@@ -115,6 +135,11 @@
     "Update Schedule": "发布预约",
     "Schedule": "日程",
     "User": "用户",
+    "Next Step": "下一步",
+    "Cancell": "取消",
+    "Update Free Time": "设置可服务时间",
+    "Delete Free Time": "删除可服务时间",
+    "Gross income":"预计总收入",
   "Event Update": "活动更新",
   "Tap to choose": "点击选择",
   "Upload your face photo here":"点击上传脸部照片",
@@ -131,9 +156,14 @@
   "rmb":"人民币",
   "JPY":"日元",
   "RMB":"人民币",
-  "Recruit":"发布求人信息",
-  "Apply for a position":"找工作",
+  "Release Recruit":"发布求人信息",
+  "Apply for a position":"应聘工作・零工",
   "Apply for this position":"应聘",
-  "Recruiter":"招聘方"
+  "Recruiter":"招聘方",
+  "Applicants":"应聘者",
+  "Applicant":"应聘者",
+
+  "Job Hunt": "职业介绍",
+  "School Find": "学校介绍"
 
 }

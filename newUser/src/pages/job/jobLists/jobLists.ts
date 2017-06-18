@@ -24,7 +24,7 @@ export class JobLists {
   @ViewChild('popoverText', { read: ElementRef }) text: ElementRef;
   @ViewChild(Content) content: Content;
 
-  serviceType = 'job'
+  serviceType = 'recruitment'
 //  serviceProvider;
   category;
   title
@@ -107,7 +107,7 @@ export class JobLists {
     return returnData
   }
   getMenu(data) {
-                  for (var i = 0; i < 5; i++) {
+                  for (var i = 0; i < data.length; i++) {
                       this.menu1.push(data[i])
                   }
                   this.grid.push(this.menu1);

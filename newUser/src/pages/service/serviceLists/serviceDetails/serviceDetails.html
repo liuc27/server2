@@ -18,7 +18,7 @@
     </ion-navbar>
 
 </ion-header>
-<ion-content #popoverContent class="serviceDetails">
+<ion-content #popoverContent>
 
     <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
         <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles" refreshingText="Refreshing...">
@@ -100,9 +100,9 @@
           </button>
             </ion-col>
             <ion-col text-right>
-                <button *ngIf="serviceDetails.link" ion-button clear style="padding: 0 0.3em" (tap)="purchaseService()">
+                <button *ngIf="serviceDetails.service.videoURL" ion-button clear style="padding: 0 0.3em" (tap)="openVideoPage()">
             <ion-icon name='link'></ion-icon>
-            {{ 'Purchase' | translate }}
+            {{ 'Video' | translate }}
           </button>
             </ion-col>
         </ion-row>
@@ -146,14 +146,40 @@
         <div> </div>
     </div>
 
+    <!-- (tap)="joinEvent(reservation)" -->
+    <ion-card *ngFor="let reservation of serviceDetails.reservationDetails; let i = index">
+        <div style="position: relative; height: 9rem;">
 
+            <ion-item style="width: 80%">
+                <!-- <ion-label>{{ 'Start Time' | translate }}</ion-label> -->
+                <ion-datetime [disabled]="true" style="opacity:1" displayFormat="YY/MM/DD HH:mm" [(ngModel)]="reservation.startTime"></ion-datetime>
+                ~
+                <ion-datetime [disabled]="true" style="opacity:1" displayFormat="MM/DD HH:mm" [(ngModel)]="reservation.endTime"></ion-datetime>
+
+            </ion-item>
+
+            <ion-item style="width: 80%">
+                <ion-label>{{ 'User Number Limit' | translate }}:{{reservation.user.length || 0}}/{{reservation.userNumberLimit}}</ion-label>
+            </ion-item>
+
+            <ion-checkbox *ngIf="reservation.user.length<reservation.userNumberLimit" [(ngModel)]="joinOrNot[i]" (ionChange)="updateEvent(reservation,i)" style="bottom: 6.5rem;left: 85%;"></ion-checkbox>
+
+            <!-- <button ion-button style="bottom: 18vw;left: 68%;">
+                    <ion-checkbox [(ngModel)]="joinEventIndex[i]" ></ion-checkbox>
+                </button> -->
+
+        </div>
+
+    </ion-card>
 </ion-content>
 
-<ion-footer class="nextStep">
-    <ion-toolbar (tap)="joinEvent(service)">
+<ion-footer *ngIf="serviceDetails.reservationDetails.length>0" class="nextStep">
+    <ion-toolbar (tap)="joinEvent()">
         <ion-title>{{ 'Join Event' | translate }}</ion-title>
     </ion-toolbar>
 </ion-footer>
+
+
 
 <!-- <ion-footer class="nextStep">
   <ion-segment padding>

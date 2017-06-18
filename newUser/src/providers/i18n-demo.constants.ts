@@ -19,4 +19,4 @@ export const sysOptions = {
 	systemLanguage: defaultLanguage
 };
 
-export const defaultURL = 'http://ec2-54-238-200-97.ap-northeast-1.compute.amazonaws.com';
+export const defaultURL = 'http://localhost';

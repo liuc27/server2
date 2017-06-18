@@ -6,8 +6,10 @@ import { TranslateService } from 'ng2-translate/ng2-translate';
 
 declare var ImgWarper: any;
 
-import {UserProvider} from '../../../providers/userProvider'
+import {UserProvider} from '../../../../providers/userProvider'
 import {Storage} from '@ionic/storage'
+import {RecruitmentTimeDetails} from './recruitmentTimeDetails/recruitmentTimeDetails'
+
 
 import moment from 'moment';
 //Japan locale
@@ -20,14 +22,14 @@ import 'moment/src/locale/zh-cn';
 //timezone
 import 'moment-timezone';
 
-import { defaultURL } from '../../../providers/i18n-demo.constants';
+import { defaultURL } from '../../../../providers/i18n-demo.constants';
 
 @Component({
-selector: 'page-recruit',
-templateUrl: 'recruit.html',
+selector: 'page-newRecruitment',
+templateUrl: 'newRecruitment.html',
 providers: [UserProvider]
 })
-export class Recruit {
+export class NewRecruitment {
 @ViewChild('imageButton') selectImage;
 @ViewChild('faceImageButton') selectFaceImage;
 
@@ -60,40 +62,32 @@ export class Recruit {
   options: any = [
   {'main':'guide'},
   {'main':'teach'},
+
+  {'main':'agent','sub':'job'},
+  {'main':'agent','sub':'school'},
+  {'main':'agent','sub':'marriage'},
+  {'main':'agent','sub':'insurance'},
+  {'main':'agent','sub':'others'},
+
+  {'main':'employe','sub':'engineer'},
+  {'main':'employe','sub':'salesman'},
+  {'main':'employe','sub':'others'},
+
   {'main':'housework'},
-  {'main':'art'},
+
   {'main':'beauty','sub':'skinCare'},
   {'main':'beauty','sub':'makeup'},
   {'main':'beauty','sub':'diet'},
   {'main':'beauty','sub':'surgery'},
   {'main':'beauty','sub':'others'},
-  {'main':'jobHunt'},
-  {'main':'schoolFind'},
+
   {'main':'bizAdvise'},
   {'main':'law'},
+  {'main':'art'},
   {'main':'others'}
   ]
 
-/*
-  [
-  {'name':'Guide','val':{'main':'guide'}},
-  {'name':'Teach','val':{'main':'teach'}},
-  {'name':'Housework','val':{'main':'guide'}},
-  {'name':'Art','val':{'main':'art'}},
-  {'name':'Beauty','val':{'main':'beauty'}},
-  {'name':'BeautySkinCare','val': {'main':'beauty','sub':'skinCare'} },
-  {'name':'BeautyMakeup','val': {'main':'beauty','sub':'makeup'} },
-  {'name':'BeautyDiet','val': {'main':'beauty','sub':'diet'} },
-  {'name':'BeautySurgery','val': {'main':'beauty','sub':'surgery'} },
-  {'name':'BeautyOthers','val': {'main':'beauty','sub':'others'} },
-  {'name':'Job Hunt','val':{'main':'jobHunt'}},
-  {'name':'School Find','val':{'main':'schoolFind'}},
-  {'name':'Biz Advise','val':{'main':'bizAdvise'}},
-   {'name':'Law','val':{'main':'law'}},
-   {'name':'Others','val':{'main':'others'}},
-  ]
-*/
-  constructor(public navCtrl: NavController,
+  constructor(public nav: NavController,
               private events: Events,
               private http: Http,
               public storage:Storage,
@@ -108,12 +102,14 @@ export class Recruit {
     // this.PointDefiner = ImgWarper.PointDefiner;
     // this.Warper = ImgWarper.Warper;
     // this.Animator = ImgWarper.Animator;
-    let startTime = new Date()
+
+  /*    let startTime = new Date()
     let endTime = new Date()
     startTime.setMinutes(0)
     endTime.setMinutes(0)
     this.service.startTime = moment(startTime).format() ;
     this.service.endTime = moment(endTime).format();
+    */
 
   }
   ionViewWillEnter() {
@@ -125,7 +121,6 @@ export class Recruit {
     this.service.creator.password = this.validation.password;
     this.service.creator.nickname = this.validation.nickname;
     this.service.creator.imageURL = this.validation.imageURL;
-    this.service.service.imageURL = this.validation.imageURL
     this.alreadyLoggedIn = true;
   });
   }
@@ -381,39 +376,15 @@ export class Recruit {
   replaceService() {
     this.buttonDisabled = true;
     console.log(this.service)
-    if (this.service.creator.id && this.service.service.serviceName&& this.service.startTime&& this.service.endTime&&this.service.serviceProviderNumberLimit) {
+    if (this.service.creator.id && this.service.service.serviceName&&this.service.price&&this.service.currency) {
       console.log(this.service)
-    //  var pricePerHour = this.validation.pricePerHour || 1000
-    //  var duration = moment.duration(moment(this.service.endTime).diff(moment(this.service.startTime)));
-    //  var hours = duration.asHours();
-
-      var userArray = [];
-      userArray.push({"id":this.validation.id, "nickname":this.validation.nickname})
-
-      this.service = {
-        creator: this.validation,
-        service: this.service.service,
-        user: userArray,
-        serviceProvider: [],
-        startTime: this.service.startTime,
-        endTime: this.service.endTime,
-        serviceType: 'job',
-        title: this.service.serviceName,
-        allDay: false,
-        serviceProviderNumberLimit: this.service.serviceProviderNumberLimit,
-        userNumberLimit: 1,
-        repeat: 0,
-        action: "put",
-        currency: this.service.currency || 'jpy',
-        price: this.service.price,
-        reward: this.service.reward,
-        priceBeforeDiscount: this.service.priceBeforeDiscount
-      }
-
+      this.service.action = "put"
+      this.service.serviceType = "recruitment"
       this.http.post(defaultURL+':3000/offer/service', this.service)
+      .map(res => res.json())
         .subscribe(data => {
             console.log(data);
-            this.presentAlert(data.statusText)
+            this.presentAlert("success")
             this.buttonDisabled = false;
           },
           (err) => {
@@ -422,9 +393,16 @@ export class Recruit {
           }
         )
     }else{
-    this.presentAlert("Please login first, then input service name, start time, end time and serviceProviderNumberLimit!")
+    this.presentAlert("Please login first, then input service name, start time, end time and userNumberLimit!")
       this.buttonDisabled = false;
 
     }
   }
+
+  openReservationDetails(){
+  console.log("openReservationDetails")
+   this.nav.push(RecruitmentTimeDetails,this.service)
+  }
+
+
 }

@@ -14,17 +14,19 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 })
 export class Video {
 
-  private videoDetails = {
+  private serviceDetails = {
     imageURL:"",
     videoURL:""
   };
   private url;
 
   constructor(public navCtrl: NavController,private params: NavParams,  sanitizer: DomSanitizer) {
-      this.videoDetails = params.data.videoDetails;
+      if(params.data.service)
+      this.serviceDetails = params.data.service;
+      console.log(this.serviceDetails)
           console.log("params.data.videoDetails");
-          console.log(params.data.videoDetails);
-          this.url = sanitizer.bypassSecurityTrustResourceUrl(this.videoDetails.videoURL);
+          console.log(params.data.service);
+          this.url = sanitizer.bypassSecurityTrustResourceUrl(this.serviceDetails.videoURL);
   }
 
   ionViewDidLoad() {
